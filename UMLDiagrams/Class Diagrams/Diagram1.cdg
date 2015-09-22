@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Diagram1">
+  <ClassDiagramComponents>
+    <Class name="Placed" package="" visibility="public" xPosition="221.0" yPosition="58.0">
+      <Fields>
+        <Field name="x" type="int" visibility="protected"/>
+        <Field name="y" type="int" visibility="protected"/>
+        <Field name="width" type="int" visibility="protected"/>
+        <Field name="heigh" type="int" visibility="protected"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Interface name="Drawable" package="" visibility="public" xPosition="430.0" yPosition="61.0">
+      <Methods>
+        <Method name="draw" returnType="Graphics" visibility="public">
+          <Argument type="Graphics" name="g"/>
+        </Method>
+      </Methods>
+    </Interface>
+    <Class name="Moving" package="" visibility="public" xPosition="221.0" yPosition="320.0">
+      <Fields>
+        <Field name="moveSpeed" type="int" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="Block" package="" visibility="public" xPosition="10.0" yPosition="320.0">
+      <Fields/>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Enum name="Material" package="" visibility="public" xPosition="10.0" yPosition="48.0">
+      <Literals>
+        <Literal name="BRICKS"/>
+        <Literal name="WATER"/>
+        <Literal name="WOOD"/>
+        <Literal name="ARMOR"/>
+        <Literal name="ICE"/>
+      </Literals>
+    </Enum>
+    <Interface name="Movable" package="" visibility="public" xPosition="470.0" yPosition="320.0">
+      <Methods>
+        <Method name="move" returnType="boolean" visibility="public">
+          <Argument type="Object" name="map"/>
+        </Method>
+      </Methods>
+    </Interface>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <IsRelation name="is" source="Block" target="Placed"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Moving" target="Movable"/>
+    <IsRelation name="is" source="Moving" target="Placed"/>
+    <HasRelation name="material" source="Block" target="Material" type="Aggregation" sourceCardinality="0..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Placed" target="Drawable"/>
+  </ClassDiagramRelations>
+</ClassDiagram>
