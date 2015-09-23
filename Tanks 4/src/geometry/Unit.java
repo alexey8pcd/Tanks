@@ -1,5 +1,6 @@
 package geometry;
 
+import actions.MoveAction;
 import battle.Attackable;
 import java.awt.Graphics;
 
@@ -11,10 +12,13 @@ public class Unit extends GeometryShape implements Movable, Attackable {
 
     private int moveSpeed;
     private Direction direction;
+    private final MoveAction moveAction;
 
-    public Unit(int x, int y, int width, int height, int moveSpeed) {
-        super(x, y, width, height);
+    public Unit(int x, int y, int size,
+            int moveSpeed, MoveAction moveAction) {
+        super(x, y, size);
         this.moveSpeed = moveSpeed;
+        this.moveAction = moveAction;
     }
 
     @Override
@@ -24,7 +28,7 @@ public class Unit extends GeometryShape implements Movable, Attackable {
 
     @Override
     public boolean move(GeometryMap map) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return moveAction.move(this, map);
     }
 
     @Override
@@ -44,8 +48,8 @@ public class Unit extends GeometryShape implements Movable, Attackable {
 
     @Override
     public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
+         this.direction = direction;
+     }
 
     @Override
     public void setSpeed(int moveSpeed) {
@@ -56,6 +60,11 @@ public class Unit extends GeometryShape implements Movable, Attackable {
     public void setLocation(int x, int y) {
         this.point.x = x;
         this.point.y = y;
+    }
+
+    @Override
+    public boolean canMove(GeometryMap map) {
+        return moveAction.canMove(this, map);
     }
 
 }

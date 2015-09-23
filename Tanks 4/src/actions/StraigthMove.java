@@ -1,7 +1,9 @@
 package actions;
 
 import geometry.GeometryMap;
+import geometry.GeometryMap.Material;
 import geometry.Movable;
+import java.util.EnumSet;
 
 /**
  * Перемещение прямо в заданном направлении.
@@ -10,37 +12,56 @@ import geometry.Movable;
  */
 public class StraigthMove implements MoveAction {
 
+    private int dLeftX;
+    private int dTopY;
+    private final EnumSet<Material> impassable;
+
+    public StraigthMove(EnumSet<Material> impassableMaterial) {
+        this.impassable = impassableMaterial;
+    }
+
     @Override
     public boolean move(Movable movable, GeometryMap map) {
+        if (canMove(movable, map)) {
+            movable.setLocation(dLeftX, dTopY);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canMove(Movable movable, GeometryMap map) {
         int speed = movable.getSpeed();
         //вычислить желаемую позицию
-        int dx = movable.getX();
-        int dy = movable.getY();
+        dLeftX = movable.getX();
+        dTopY = movable.getY();
         switch (movable.getDirection()) {
             case LEFT:
-                dx -= speed;
+                dLeftX -= speed;
             case RIGHT:
-                dx += speed;
+                dLeftX += speed;
                 break;
             case UP:
-                dy -= speed;
+                dTopY -= speed;
                 break;
             case DOWN:
-                dy += speed;
+                dTopY += speed;
                 break;
             default:
                 throw new AssertionError(movable.getDirection().name());
         }
+        int dRightX = dLeftX + movable.getWidth();
+        int dDownY = dTopY + movable.getHeight();
         //проверить, что желаемая позиция находится в пределах карты и
         //на пути нет препятствий
-        if (dx < 0 || dx >= map.getWidth() || dy < 0 || dy >= map.getHeight()) {
+        if (dLeftX < 0 || dRightX >= map.getWidth()
+                || dTopY < 0 || dDownY >= map.getHeight()) {
             return false;
         }
-        if (map.getTile(dx, dy) != GeometryMap.Material.TERRA) {
-            return false;
-        }
-        movable.setLocation(dx, dy);
-        return true;
+        return (!impassable.contains(map.getTile(dLeftX, dTopY))
+                && !impassable.contains(map.getTile(dRightX, dTopY))
+                && !impassable.contains(map.getTile(dLeftX, dDownY))
+                && !impassable.contains(map.getTile(dRightX, dDownY)));
     }
 
 }
