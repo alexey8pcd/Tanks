@@ -41,7 +41,7 @@ public class GeometryMap extends GeometryShape {
         }
     }
 
-    private final Material[][] tiles;
+    private final Material[] tiles;
     private final int rowsCount;
     private final int columnsCount;
     private final int tileSize;
@@ -51,10 +51,10 @@ public class GeometryMap extends GeometryShape {
         this.tileSize = tileSize;
         rowsCount = height / tileSize;
         columnsCount = width / tileSize;
-        tiles = new Material[rowsCount][columnsCount];
+        tiles = new Material[rowsCount * columnsCount];
         for (int i = 0; i < rowsCount; ++i) {
             for (int j = 0; j < columnsCount; ++j) {
-                tiles[i][j] = Material.TERRA;
+                tiles[i * columnsCount + j] = Material.TERRA;
             }
         }
     }
@@ -75,18 +75,28 @@ public class GeometryMap extends GeometryShape {
         if (material == null) {
             throw new NullPointerException("Материал не может быть null");
         }
-        tiles[row][column] = material;
+        tiles[row * columnsCount + column] = material;
     }
 
-    private void removeTile(int row, int column) {
-        tiles[row][column] = Material.TERRA;
+    public Material getTile(int x, int y) {
+        int row = y / tileSize;
+        int column = x / tileSize;
+        return getTileAt(column, row);
+    }
+
+    public Material getTileAt(int row, int column) {
+        return tiles[row * columnsCount + column];
+    }
+
+    public void removeTile(int row, int column) {
+        tiles[row * columnsCount + column] = Material.TERRA;
     }
 
     @Override
     public void draw(Graphics g) {
         for (int i = 0, y = 0; i < rowsCount; ++i, y += tileSize) {
             for (int j = 0, x = 0; j < columnsCount; ++j, x += tileSize) {
-                g.setColor(tiles[i][j].getColor());
+                g.setColor(tiles[i * columnsCount + j].getColor());
                 g.fillRect(x, y, tileSize, tileSize);
             }
         }

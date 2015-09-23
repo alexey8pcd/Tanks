@@ -1,7 +1,8 @@
 package geometry;
 
 /**
- *
+ * Представляет пару координат (x;y), заданную целыми числами
+ * 
  * @author alex
  */
 public class GeometryPoint {
@@ -30,6 +31,12 @@ public class GeometryPoint {
         this.y = y;
     }
 
+    /**
+     * Если сравниваемый объект имеет тип <code>GeometryPoint</code>,
+     * сравнение происходит по координатма
+     * @param obj - объект для сравнения
+     * @return 
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
