@@ -4,6 +4,7 @@ import actions.MoveAction;
 import geometry.Drawable;
 import geometry.Movable;
 import geometry.RelocatingShape;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 
@@ -31,7 +32,26 @@ public class CombatUnit extends RelocatingShape
 
     @Override
     public void draw(Graphics g) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(x, y, width, height);
+        g.setColor(Color.BLACK);
+        switch (getDirection()) {
+            case LEFT:
+                g.fillRect(x, y + height / 2, width / 4, height / 4);
+                break;
+            case RIGHT:
+                g.fillRect(x + width, y + height / 2, width / 4, height / 4);
+                break;
+            case UP:
+                g.fillRect(x + width / 2, y, width / 4, height / 4);
+                break;
+            case DOWN:
+                g.fillRect(x + width / 2, y + height, width / 4, height / 4);
+        }
     }
 
     @Override

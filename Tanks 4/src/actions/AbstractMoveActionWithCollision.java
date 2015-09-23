@@ -8,7 +8,7 @@ import java.util.EnumSet;
 /**
  * Используется для проверки перемещения по карте. Перемещение невозможно, если
  * встречается препятствие.
- * 
+ *
  * @author alex
  */
 public abstract class AbstractMoveActionWithCollision implements MoveAction {
@@ -33,6 +33,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
         switch (movable.getDirection()) {
             case LEFT:
                 dLeftX -= speed;
+                break;
             case RIGHT:
                 dLeftX += speed;
                 break;
@@ -53,10 +54,11 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
                 || dTopY < 0 || dDownY >= map.getHeight()) {
             return false;
         }
-        return (!impassable.contains(map.getTile(dLeftX, dTopY))
-                && !impassable.contains(map.getTile(dRightX, dTopY))
-                && !impassable.contains(map.getTile(dLeftX, dDownY))
-                && !impassable.contains(map.getTile(dRightX, dDownY)));
+        throw new UnsupportedOperationException();
+//        return (!impassable.contains(map.getTile(dLeftX, dTopY))
+//                && !impassable.contains(map.getTile(dRightX, dTopY))
+//                && !impassable.contains(map.getTile(dLeftX, dDownY))
+//                && !impassable.contains(map.getTile(dRightX, dDownY)));
     }
 
 }

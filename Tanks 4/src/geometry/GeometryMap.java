@@ -7,7 +7,7 @@ import java.awt.Graphics;
  *
  * @author alex
  */
-public class GeometryMap extends GeometryShape implements Drawable{
+public class GeometryMap extends GeometryShape implements Drawable {
 
     public static final int MIN_TILE_SIZE = 1;
     public static final int MAX_TILE_SIZE = 16;
@@ -17,7 +17,7 @@ public class GeometryMap extends GeometryShape implements Drawable{
     public static enum Material {
 
         TERRA(1, Color.WHITE),//по-умолчанию, можно установить цвет фона
-        BRICK(2, new Color(0xff, 0xff, 0)),//коричневый
+        BRICK(2, new Color(0xff, 0x88, 0)),//коричневый
         ARMOR(3, Color.GRAY),
         WATER(4, Color.BLUE),
         WOOD(5, Color.GREEN),
@@ -76,10 +76,19 @@ public class GeometryMap extends GeometryShape implements Drawable{
         tiles[row * columnsCount + column] = material;
     }
 
+    public void setTile(int x, int y, Material material) {
+        if (material == null) {
+            throw new NullPointerException("Материал не может быть null");
+        }
+        int row = y / tileSize;
+        int column = x / tileSize;
+        setTileAt(row, column, material);
+    }
+
     public Material getTile(int x, int y) {
         int row = y / tileSize;
         int column = x / tileSize;
-        return getTileAt(column, row);
+        return getTileAt(row, column);
     }
 
     public Material getTileAt(int row, int column) {

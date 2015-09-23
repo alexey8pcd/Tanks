@@ -3,8 +3,8 @@ package geometry;
 import java.util.Objects;
 
 /**
- * Представляет базовый двумерный объект с длиной и шириной, 
- * координатами левого верхнего угла
+ * Представляет базовый двумерный объект с длиной и шириной, координатами левого
+ * верхнего угла
  *
  * @author alex
  */
@@ -47,15 +47,13 @@ public abstract class GeometryShape {
     }
 
     public GeometryShape(int x, int y, int width, int height) {
-        this.point.x = x;
-        this.point.y = y;
+        this.point = new GeometryPoint(x, y);
         this.width = width;
         this.height = height;
     }
 
     public GeometryShape(int x, int y, int size) {
-        this.point.x = x;
-        this.point.y = y;
+        this.point = new GeometryPoint(x, y);
         this.width = size;
         this.height = size;
     }
