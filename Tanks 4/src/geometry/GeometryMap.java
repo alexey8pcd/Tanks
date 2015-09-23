@@ -2,14 +2,12 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author alex
  */
-public class GeometryMap extends GeometryShape {
+public class GeometryMap extends GeometryShape implements Drawable{
 
     public static final int MIN_TILE_SIZE = 1;
     public static final int MAX_TILE_SIZE = 16;

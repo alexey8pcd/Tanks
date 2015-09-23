@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @author alex
  */
-public abstract class GeometryShape implements Drawable {
+public abstract class GeometryShape {
 
     GeometryPoint point;//левый верхний угол геометрической фигуры
     int width;

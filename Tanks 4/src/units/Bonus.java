@@ -1,5 +1,7 @@
-package geometry;
+package units;
 
+import geometry.Drawable;
+import geometry.GeometryShape;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -7,7 +9,7 @@ import java.awt.Graphics;
  *
  * @author alex
  */
-public class Bonus extends GeometryShape {
+public class Bonus extends GeometryShape implements Drawable{
 
     public static enum BonusType {
 
@@ -33,7 +35,7 @@ public class Bonus extends GeometryShape {
 
     }
 
-    private BonusType bonusType;
+    private final BonusType bonusType;
 
     public Bonus(Color color, int x, int y, int size, BonusType bonusType) {
         super(x, y, size);
@@ -43,7 +45,7 @@ public class Bonus extends GeometryShape {
     @Override
     public void draw(Graphics g) {
         g.setColor(bonusType.getColor());
-        g.fillOval(getX(), getY(), width, height);
+        g.fillOval(getX(), getY(), getWidth(), getHeight());
     }
 
 }

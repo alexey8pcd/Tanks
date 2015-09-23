@@ -6,28 +6,23 @@ import geometry.Movable;
 import java.util.EnumSet;
 
 /**
- * Перемещение прямо в заданном направлении.
- *
+ * Используется для проверки перемещения по карте. Перемещение невозможно, если
+ * встречается препятствие.
+ * 
  * @author alex
  */
-public class StraigthMove implements MoveAction {
+public abstract class AbstractMoveActionWithCollision implements MoveAction {
 
-    private int dLeftX;
-    private int dTopY;
-    private final EnumSet<Material> impassable;
+    protected int dLeftX;
+    protected int dTopY;
+    protected final EnumSet<Material> impassable;
 
-    public StraigthMove(EnumSet<Material> impassableMaterial) {
-        this.impassable = impassableMaterial;
+    public AbstractMoveActionWithCollision(EnumSet<Material> impassable) {
+        this.impassable = impassable;
     }
 
     @Override
-    public boolean move(Movable movable, GeometryMap map) {
-        if (canMove(movable, map)) {
-            movable.setLocation(dLeftX, dTopY);
-            return true;
-        }
-        return false;
-    }
+    public abstract boolean move(Movable movable, GeometryMap map);
 
     @Override
     public boolean canMove(Movable movable, GeometryMap map) {
