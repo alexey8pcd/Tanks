@@ -2,11 +2,10 @@ package units.battle;
 
 import actions.MoveAction;
 import geometry.Drawable;
-import units.battle.Attacker;
-import geometry.GeometryMap;
 import geometry.Movable;
 import geometry.RelocatingShape;
 import java.awt.Graphics;
+import java.util.List;
 
 /**
  *
@@ -18,6 +17,7 @@ public class CombatUnit extends RelocatingShape
     private int damage;
     private int armor;
     private int health;
+    private BreakingStrength breakingStrength;
 
     public CombatUnit(int speed, int x, int y, int size,
             Direction direction, MoveAction moveAction) {
@@ -35,8 +35,12 @@ public class CombatUnit extends RelocatingShape
     }
 
     @Override
-    public void attack() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void attack(List<Shell> shells) {
+        Shell shell = ShellPool.getInstance().take();
+        shell.setLocation(getX() + getWidth() / 2, getY() + getHeight() / 2);
+        shell.setBreakingStrength(breakingStrength);
+        shell.setDirection(getDirection());
+        shells.add(shell);
     }
 
 }
