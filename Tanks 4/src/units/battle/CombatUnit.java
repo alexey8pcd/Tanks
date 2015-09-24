@@ -7,22 +7,27 @@ import geometry.RelocatingShape;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
+import units.LiveAndDeath;
 
 /**
  *
  * @author alex
  */
 public class CombatUnit extends RelocatingShape
-        implements Movable, Attacker, Drawable {
+        implements Movable, Attacker, Drawable, LiveAndDeath {
 
     private int damage;
     private int armor;
     private int health;
+    private final int maxHealth;
     private BreakingStrength breakingStrength;
+    public static final int MIN_HEALTH = 0;
 
     public CombatUnit(int speed, int x, int y, int size,
-            Direction direction, MoveAction moveAction) {
+            Direction direction, MoveAction moveAction,
+            int maxHealth) {
         super(speed, x, y, size, direction, moveAction);
+        this.maxHealth = maxHealth;
     }
 
     @Override
@@ -61,6 +66,16 @@ public class CombatUnit extends RelocatingShape
         shell.setBreakingStrength(breakingStrength);
         shell.setDirection(getDirection());
         shells.add(shell);
+    }
+
+    @Override
+    public boolean isLive() {
+        return health > MIN_HEALTH;
+    }
+
+    @Override
+    public void setLive(boolean alive) {
+        health = alive ? maxHealth : MIN_HEALTH;
     }
 
 }

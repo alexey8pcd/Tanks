@@ -14,24 +14,28 @@ public class GeometryMap extends GeometryShape implements Drawable {
     public static final int MAX_WIDTH = 768;
     public static final int MAX_HEIGTH = 512;
 
+    /**
+     * Представляет материал для формирования объектов карты. Имеет цвет и
+     * твердость.
+     */
     public static enum Material {
 
-        TERRA(1, Color.WHITE),//по-умолчанию, можно установить цвет фона
+        TERRA(0, Color.WHITE),//по-умолчанию, можно установить цвет фона
         BRICK(2, new Color(0xff, 0x88, 0)),//коричневый
         ARMOR(3, Color.GRAY),
-        WATER(4, Color.BLUE),
-        WOOD(5, Color.GREEN),
-        ICE(6, Color.CYAN);
-        private final int value;
+        WATER(0, Color.BLUE),
+        WOOD(1, Color.GREEN),
+        ICE(0, Color.CYAN);
+        private final int hardness;//твердость
         private final Color color;
 
-        private Material(int value, Color color) {
-            this.value = value;
+        private Material(int hardness, Color color) {
+            this.hardness = hardness;
             this.color = color;
         }
 
-        public int getValue() {
-            return value;
+        public int getHardness() {
+            return hardness;
         }
 
         public Color getColor() {

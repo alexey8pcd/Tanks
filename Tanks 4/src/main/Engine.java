@@ -30,7 +30,11 @@ public class Engine extends Surface {
         mouseCursorSize = new Dimension(0, 0);
         mouseCursorColor = Color.BLACK;
         playerUnit = new CombatUnit(1, 0, 0, 32, Movable.Direction.LEFT,
-                new StraigthMoveWithoutBreaking(EnumSet.of(Material.ARMOR, Material.BRICK, Material.WATER)));
+                new StraigthMoveWithoutBreaking(
+                        EnumSet.of(Material.ARMOR,
+                                Material.BRICK,
+                                Material.WATER)
+                ), 100);
     }
 
     public GeometryMap getMap() {

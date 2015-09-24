@@ -27,7 +27,22 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
     @Override
     public boolean canMove(Movable movable, GeometryMap map) {
         int speed = movable.getSpeed();
-        //вычислить желаемую позицию
+        calculateDesirePosition(movable, speed);
+        int dRightX = dLeftX + movable.getWidth();
+        int dDownY = dTopY + movable.getHeight();
+        if (intoMap(dRightX, dDownY, map)) {
+            return false;
+        }
+        return !detectCollisions(map, dRightX, dDownY);
+    }
+
+    /**
+     * Вычислить желаемую позицию. Результат сохраняется в полях dLeftX и dTopY
+     *
+     * @param movable
+     * @param speed
+     */
+    protected void calculateDesirePosition(Movable movable, int speed) {
         dLeftX = movable.getX();
         dTopY = movable.getY();
         switch (movable.getDirection()) {
@@ -43,22 +58,23 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
             case DOWN:
                 dTopY += speed;
                 break;
-            default:
-                throw new AssertionError(movable.getDirection().name());
         }
-        int dRightX = dLeftX + movable.getWidth();
-        int dDownY = dTopY + movable.getHeight();
-        //проверить, что желаемая позиция находится в пределах карты и        
-        if (dLeftX < 0 || dRightX >= map.getWidth()
-                || dTopY < 0 || dDownY >= map.getHeight()) {
-            return false;
-        }
-        //на пути нет препятствий
+    }
+
+    /**
+     * Проверяет столкновение с объектами карты
+     *
+     * @param map
+     * @param dRightX
+     * @param dDownY
+     * @return true, если обнаружено столкновение, false иначе
+     */
+    protected boolean detectCollisions(GeometryMap map, int dRightX, int dDownY) {
         int tileSize = map.getTileSize();
         for (int x = dLeftX; x < dRightX;) {
-            for (int y = dTopY; y < dDownY; ) {
+            for (int y = dTopY; y < dDownY;) {
                 if (impassable.contains(map.getTile(x, y))) {
-                    return false;
+                    return true;
                 }
                 if (y >= dDownY - tileSize) {
                     ++y;
@@ -72,7 +88,20 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
                 x += tileSize;
             }
         }
-        return true;
+        return false;
+    }
+
+    /**
+     * Проверяет, что желаемая позиция находится в пределах карты
+     *
+     * @param dRightX
+     * @param map
+     * @param dDownY
+     * @return
+     */
+    protected boolean intoMap(int dRightX, int dDownY, GeometryMap map) {
+        return dLeftX < 0 || dRightX >= map.getWidth()
+                || dTopY < 0 || dDownY >= map.getHeight();
     }
 
 }

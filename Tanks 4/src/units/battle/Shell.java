@@ -14,18 +14,20 @@ import java.util.EnumSet;
  *
  * @author alex
  */
-public class Shell extends RelocatingShape implements Movable, Drawable {
+public class Shell extends RelocatingShape
+        implements Movable, Drawable, Breaking {
 
     private final int damage;
     private boolean alive;
     private BreakingStrength breakingStrength;
 
+    @Override
     public void setBreakingStrength(BreakingStrength breakingStrength) {
         this.breakingStrength = breakingStrength;
     }
     public static final int SHELL_SIZE = 2;
     public static final int SHELL_SPEED = 1;
-    //снаряд не может пролететь через лес, кирпич и броню
+    //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(
             EnumSet.of(Material.ARMOR, Material.BRICK, Material.WOOD));
 
@@ -55,14 +57,7 @@ public class Shell extends RelocatingShape implements Movable, Drawable {
         return damage;
     }
 
-    public boolean isAlive() {
-        return alive;
-    }
-
-    public void setAlive(boolean alive) {
-        this.alive = alive;
-    }
-
+    @Override
     public BreakingStrength getBreakingStrength() {
         return breakingStrength;
     }
@@ -71,6 +66,16 @@ public class Shell extends RelocatingShape implements Movable, Drawable {
     public void draw(Graphics g) {
         g.setColor(breakingStrength.getColor());
         g.fillRect(getX(), getY(), SHELL_SIZE, SHELL_SIZE);
+    }
+
+    @Override
+    public boolean isLive() {
+        return alive;
+    }
+
+    @Override
+    public void setLive(boolean alive) {
+        this.alive = alive;
     }
 
 }
