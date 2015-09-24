@@ -57,6 +57,18 @@ public class GeometryMap extends GeometryShape implements Drawable {
         }
     }
 
+    public int getRowsCount() {
+        return rowsCount;
+    }
+
+    public int getColumnsCount() {
+        return columnsCount;
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
     public static GeometryMap newInstance(int tileSize, int rows, int columns) {
         if (tileSize < MIN_TILE_SIZE || tileSize > MAX_TILE_SIZE) {
             throw new IllegalArgumentException("Размер ячейки карты задан неверно");

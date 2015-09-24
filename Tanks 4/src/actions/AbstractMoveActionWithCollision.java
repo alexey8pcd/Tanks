@@ -48,17 +48,31 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
         }
         int dRightX = dLeftX + movable.getWidth();
         int dDownY = dTopY + movable.getHeight();
-        //проверить, что желаемая позиция находится в пределах карты и
-        //на пути нет препятствий
+        //проверить, что желаемая позиция находится в пределах карты и        
         if (dLeftX < 0 || dRightX >= map.getWidth()
                 || dTopY < 0 || dDownY >= map.getHeight()) {
             return false;
         }
-        throw new UnsupportedOperationException();
-//        return (!impassable.contains(map.getTile(dLeftX, dTopY))
-//                && !impassable.contains(map.getTile(dRightX, dTopY))
-//                && !impassable.contains(map.getTile(dLeftX, dDownY))
-//                && !impassable.contains(map.getTile(dRightX, dDownY)));
+        //на пути нет препятствий
+        int tileSize = map.getTileSize();
+        for (int x = dLeftX; x < dRightX;) {
+            for (int y = dTopY; y < dDownY; ) {
+                if (impassable.contains(map.getTile(x, y))) {
+                    return false;
+                }
+                if (y >= dDownY - tileSize) {
+                    ++y;
+                } else {
+                    y += tileSize;
+                }
+            }
+            if (x >= dRightX - tileSize) {
+                ++x;
+            } else {
+                x += tileSize;
+            }
+        }
+        return true;
     }
 
 }
