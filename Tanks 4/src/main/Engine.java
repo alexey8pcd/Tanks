@@ -9,8 +9,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import units.battle.CombatUnit;
+import units.battle.Shell;
 
 /**
  * @author Alexey
@@ -22,6 +25,7 @@ public class Engine extends Surface {
     private Dimension mouseCursorSize;
     private Color mouseCursorColor;
     private CombatUnit playerUnit;
+    private List<Shell> shells;
 
     public Engine(int width, int height, int framesPerSecond, GeometryMap geometryMap) {
         super(width, height, framesPerSecond);
@@ -35,6 +39,7 @@ public class Engine extends Surface {
                                 Material.BRICK,
                                 Material.WATER)
                 ), 100);
+        shells = new ArrayList<>();
     }
 
     public GeometryMap getMap() {
@@ -59,11 +64,23 @@ public class Engine extends Surface {
             playerUnit.setDirection(Movable.Direction.DOWN);
             playerUnit.move(geometryMap);
         }
+        if (isKeyPressed(KeyEvent.VK_SPACE)) {
+            playerUnit.attack(shells);
+        }
 
     }
 
     @Override
     public void update() {
+        for (int i = 0, n = shells.size(); i < n;) {
+            Shell s = shells.get(i);
+            if (!s.move(geometryMap)) {
+                shells.remove(s);
+                --n;
+            } else {
+                ++i;
+            }
+        }
     }
 
     @Override
@@ -73,6 +90,12 @@ public class Engine extends Surface {
         g.setColor(mouseCursorColor);
         g.drawRect(mouseCursorPosition.x, mouseCursorPosition.y,
                 mouseCursorSize.width, mouseCursorSize.height);
+        if (shells != null) {
+            for (Shell s : shells) {
+                s.draw(g);
+            }
+        }
+
     }
 
     public void setMouseCursor(int x, int y, int blockSize, Color color) {

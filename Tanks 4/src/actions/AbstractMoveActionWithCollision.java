@@ -30,7 +30,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
         calculateDesirePosition(movable, speed);
         int dRightX = dLeftX + movable.getWidth();
         int dDownY = dTopY + movable.getHeight();
-        if (intoMap(dRightX, dDownY, map)) {
+        if (!intoMap(dRightX, dDownY, map)) {
             return false;
         }
         return !detectCollisions(map, dRightX, dDownY);
@@ -100,8 +100,8 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      * @return
      */
     protected boolean intoMap(int dRightX, int dDownY, GeometryMap map) {
-        return dLeftX < 0 || dRightX >= map.getWidth()
-                || dTopY < 0 || dDownY >= map.getHeight();
+        return !(dLeftX < 0 || dRightX >= map.getWidth()
+                || dTopY < 0 || dDownY >= map.getHeight());
     }
 
 }

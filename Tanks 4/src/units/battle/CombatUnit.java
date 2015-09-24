@@ -28,6 +28,15 @@ public class CombatUnit extends RelocatingShape
             int maxHealth) {
         super(speed, x, y, size, direction, moveAction);
         this.maxHealth = maxHealth;
+        this.breakingStrength = BreakingStrength.BREAK_ARMOR;
+    }
+
+    public void setBreakingStrength(BreakingStrength breakingStrength) {
+        this.breakingStrength = breakingStrength;
+    }
+
+    public BreakingStrength getBreakingStrength() {
+        return breakingStrength;
     }
 
     @Override

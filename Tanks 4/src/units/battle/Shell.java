@@ -20,11 +20,7 @@ public class Shell extends RelocatingShape
     private final int damage;
     private boolean alive;
     private BreakingStrength breakingStrength;
-
-    @Override
-    public void setBreakingStrength(BreakingStrength breakingStrength) {
-        this.breakingStrength = breakingStrength;
-    }
+    
     public static final int SHELL_SIZE = 2;
     public static final int SHELL_SPEED = 1;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
@@ -33,7 +29,6 @@ public class Shell extends RelocatingShape
 
     public Shell(int x, int y, int size, int speed, int damage,
             BreakingStrength breakingStrength, Direction direction) {
-
         super(speed, x, y, size, direction, MOVE_ACTION);
         this.damage = damage;
         this.breakingStrength = breakingStrength;
@@ -57,6 +52,11 @@ public class Shell extends RelocatingShape
         return damage;
     }
 
+    @Override
+    public void setBreakingStrength(BreakingStrength breakingStrength) {
+        this.breakingStrength = breakingStrength;
+    }
+    
     @Override
     public BreakingStrength getBreakingStrength() {
         return breakingStrength;

@@ -34,6 +34,7 @@ public class MainForm extends javax.swing.JFrame {
         engine.addKey(KeyEvent.VK_RIGHT);
         engine.addKey(KeyEvent.VK_UP);
         engine.addKey(KeyEvent.VK_DOWN);
+        engine.addKey(KeyEvent.VK_SPACE);
         engine.addMouseListener(new MouseAdapter() {
 
             @Override

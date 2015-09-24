@@ -37,7 +37,7 @@ public abstract class Surface extends Canvas implements Runnable {
 
     private void setKeys() {
         this.addKeyListener(new KeyAdapter() {
-            
+
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
@@ -71,15 +71,25 @@ public abstract class Surface extends Canvas implements Runnable {
 
     @Override
     public void run() {
+        int time = 0;
+        int longDelay = delay * 4;
         while (running) {
-            checkKeys();
+            if (time % longDelay == 0) {
+                checkKeys();
+            }
             update();
-            render();
+            if (time % delay == 0) {
+                render();
+            }
             try {
-                Thread.sleep(delay);
+                Thread.sleep(1);
             } catch (InterruptedException ex) {
 
             }
+            if (time > longDelay) {
+                time = 0;
+            }
+            ++time;
         }
     }
 
