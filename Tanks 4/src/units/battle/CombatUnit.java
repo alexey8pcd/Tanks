@@ -23,12 +23,31 @@ public class CombatUnit extends RelocatingShape
     private BreakingStrength breakingStrength;
     public static final int MIN_HEALTH = 0;
 
+    public static enum UnitSpeed {
+
+        VERY_SLOW(1),
+        LOW(2),
+        NORMAL(4),
+        HIGH(6),
+        VERY_HIGH(8);
+        private final int value;
+
+        private UnitSpeed(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+    }
+
     public CombatUnit(int speed, int x, int y, int size,
             Direction direction, MoveAction moveAction,
             int maxHealth) {
         super(speed, x, y, size, direction, moveAction);
         this.maxHealth = maxHealth;
-        this.breakingStrength = BreakingStrength.BREAK_ARMOR;
+        this.breakingStrength = BreakingStrength.BREAK_BRICKS;
     }
 
     public void setBreakingStrength(BreakingStrength breakingStrength) {

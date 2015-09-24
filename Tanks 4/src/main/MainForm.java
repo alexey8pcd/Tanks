@@ -15,11 +15,10 @@ import units.battle.CombatUnit;
 public class MainForm extends javax.swing.JFrame {
 
     private Engine engine;
-    private int width = 512;
+    private int width = 768;
     private int height = 512;
     private int blockSize = 8;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    
 
     /**
      * Creates new form MainForm
@@ -27,7 +26,7 @@ public class MainForm extends javax.swing.JFrame {
     public MainForm() {
         initComponents();
         GeometryMap map = GeometryMap.newInstance(blockSize,
-                width / blockSize, height / blockSize);
+                height / blockSize, width / blockSize);
         map.setTileAt(20, 5, GeometryMap.Material.BRICK);
         engine = new Engine(width, height, 60, map);
         engine.addKey(KeyEvent.VK_LEFT);
@@ -40,8 +39,25 @@ public class MainForm extends javax.swing.JFrame {
             @Override
             public void mousePressed(MouseEvent evt) {
                 super.mousePressed(evt);
-                engine.getMap().setTile(evt.getX(), evt.getY(),
-                        GeometryMap.Material.BRICK);
+                if (evt.getButton() == 1) {
+                    engine.getMap().setTile(evt.getX(), evt.getY(),
+                            GeometryMap.Material.BRICK);
+                } else if (evt.getButton() == 2) {
+                    engine.getMap().setTile(evt.getX(), evt.getY(),
+                            GeometryMap.Material.WOOD);
+                } else if (evt.getButton() == 3) {
+                    engine.getMap().setTile(evt.getX(), evt.getY(),
+                            GeometryMap.Material.WATER);
+                }
+                if (evt.getClickCount() == 2) {
+                    if (evt.getButton() == 1) {
+                        engine.getMap().setTile(evt.getX(), evt.getY(),
+                                GeometryMap.Material.ARMOR);
+                    } else if (evt.getButton() == 3) {
+                        engine.getMap().setTile(evt.getX(), evt.getY(),
+                                GeometryMap.Material.ICE);
+                    }
+                }
             }
         });
 //        engine.addMouseMotionListener(new MouseMotionAdapter() {
@@ -53,7 +69,7 @@ public class MainForm extends javax.swing.JFrame {
 //            }
 //
 //        });
-        this.setSize(width, height);
+        this.setSize(width, height + 32);
 
         this.setLocation(screenSize.width / 2 - width / 2,
                 screenSize.height / 2 - height / 2);

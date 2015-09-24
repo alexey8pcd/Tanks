@@ -21,7 +21,7 @@ public class Shell extends RelocatingShape
     private boolean alive;
     private BreakingStrength breakingStrength;
     
-    public static final int SHELL_SIZE = 2;
+    public static final int SHELL_SIZE = 4;
     public static final int SHELL_SPEED = 1;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(

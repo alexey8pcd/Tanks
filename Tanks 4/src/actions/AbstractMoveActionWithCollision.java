@@ -15,6 +15,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
 
     protected int dLeftX;
     protected int dTopY;
+    protected boolean slowMove;
     protected final EnumSet<Material> impassable;
 
     public AbstractMoveActionWithCollision(EnumSet<Material> impassable) {
@@ -71,9 +72,14 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      */
     protected boolean detectCollisions(GeometryMap map, int dRightX, int dDownY) {
         int tileSize = map.getTileSize();
+        slowMove = false;
         for (int x = dLeftX; x < dRightX;) {
             for (int y = dTopY; y < dDownY;) {
-                if (impassable.contains(map.getTile(x, y))) {
+                Material material = map.getTile(x, y);
+                if (material == Material.ICE) {
+                    slowMove = true;
+                }
+                if (impassable.contains(material)) {
                     return true;
                 }
                 if (y >= dDownY - tileSize) {
