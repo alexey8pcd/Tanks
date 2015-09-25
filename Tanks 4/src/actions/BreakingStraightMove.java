@@ -4,7 +4,7 @@ import geometry.GeometryMap;
 import geometry.GeometryMap.Material;
 import geometry.Movable;
 import java.util.EnumSet;
-import units.LiveAndDeath;
+import units.battle.LiveAndDeath;
 import units.battle.Breaking;
 
 /**

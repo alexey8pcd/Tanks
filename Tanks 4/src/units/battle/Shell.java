@@ -15,12 +15,12 @@ import java.util.EnumSet;
  * @author alex
  */
 public class Shell extends RelocatingShape
-        implements Movable, Drawable, Breaking {
+        implements Movable, Drawable, Breaking, DDamage {
 
     private final int damage;
     private boolean alive;
     private BreakingStrength breakingStrength;
-    
+
     public static final int SHELL_SIZE = 4;
     public static final int SHELL_SPEED = 1;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
@@ -48,6 +48,7 @@ public class Shell extends RelocatingShape
         damage = 0;
     }
 
+    @Override
     public int getDamage() {
         return damage;
     }
@@ -56,7 +57,7 @@ public class Shell extends RelocatingShape
     public void setBreakingStrength(BreakingStrength breakingStrength) {
         this.breakingStrength = breakingStrength;
     }
-    
+
     @Override
     public BreakingStrength getBreakingStrength() {
         return breakingStrength;
@@ -76,6 +77,11 @@ public class Shell extends RelocatingShape
     @Override
     public void setLive(boolean alive) {
         this.alive = alive;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return true;
     }
 
 }

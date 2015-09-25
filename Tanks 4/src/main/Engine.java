@@ -1,9 +1,7 @@
 package main;
 
-import actions.MoveAction;
-import actions.StraigthMoveWithoutBreaking;
+import geometry.Drawable;
 import geometry.GeometryMap;
-import geometry.GeometryMap.Material;
 import geometry.Movable;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,10 +9,10 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 import units.battle.CombatUnit;
+import units.battle.DDamage;
 import units.battle.Shell;
 
 /**
@@ -27,11 +25,10 @@ public class Engine extends Surface {
     private Dimension mouseCursorSize;
     private Color mouseCursorColor;
     private CombatUnit playerUnit;
-    private List<Shell> shells;
+    private List<DDamage> shells;
     private List<CombatUnit> enemies;
     private final Random random = new Random();
-    private MoveAction unitMoveAction = new StraigthMoveWithoutBreaking(
-            EnumSet.of(Material.ARMOR, Material.BRICK, Material.WATER));
+
     private int time;
     private int moveDelay = 64;
 
@@ -42,13 +39,13 @@ public class Engine extends Surface {
         mouseCursorPosition = new Point(-1, -1);
         mouseCursorSize = new Dimension(0, 0);
         mouseCursorColor = Color.BLACK;
-        playerUnit = new CombatUnit(CombatUnit.UnitSpeed.NORMAL.getValue(), 0, 0, 32,
-                Movable.Direction.LEFT, unitMoveAction, 100);
+//        playerUnit = new CombatUnit(CombatUnit.UnitSpeed.NORMAL.getValue(), 0, 0, 32,
+//                Movable.Direction.LEFT, unitMoveAction, 100);
         enemies = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
             int v = random.nextInt(CombatUnit.UnitSpeed.values().length);
-            enemies.add(new CombatUnit(CombatUnit.UnitSpeed.values()[v].getValue(),
-                    0, 0, 32, Movable.Direction.LEFT, unitMoveAction, 100));
+//            enemies.add(new CombatUnit(CombatUnit.UnitSpeed.values()[v].getValue(),
+//                    0, 0, 32, Movable.Direction.LEFT, unitMoveAction, 100));
         }
         shells = new ArrayList<>();
     }
@@ -59,24 +56,21 @@ public class Engine extends Surface {
 
     @Override
     public void checkKeys() {
+        if (isKeyPressed(KeyEvent.VK_SPACE)) {
+            playerUnit.attack(shells);
+        }
         if (isKeyPressed(KeyEvent.VK_RIGHT)) {
             playerUnit.setDirection(Movable.Direction.RIGHT);
             playerUnit.move(geometryMap);
-        }
-        if (isKeyPressed(KeyEvent.VK_LEFT)) {
+        } else if (isKeyPressed(KeyEvent.VK_LEFT)) {
             playerUnit.setDirection(Movable.Direction.LEFT);
             playerUnit.move(geometryMap);
-        }
-        if (isKeyPressed(KeyEvent.VK_UP)) {
+        } else if (isKeyPressed(KeyEvent.VK_UP)) {
             playerUnit.setDirection(Movable.Direction.UP);
             playerUnit.move(geometryMap);
-        }
-        if (isKeyPressed(KeyEvent.VK_DOWN)) {
+        } else if (isKeyPressed(KeyEvent.VK_DOWN)) {
             playerUnit.setDirection(Movable.Direction.DOWN);
             playerUnit.move(geometryMap);
-        }
-        if (isKeyPressed(KeyEvent.VK_SPACE)) {
-            playerUnit.attack(shells);
         }
 
     }
@@ -88,7 +82,7 @@ public class Engine extends Surface {
         }
         //перемещение снарядов
         for (int i = 0, n = shells.size(); i < n;) {
-            Shell s = shells.get(i);
+            Shell s = (Shell) shells.get(i);
             if (!s.move(geometryMap)) {
                 shells.remove(s);
                 --n;
@@ -121,7 +115,10 @@ public class Engine extends Surface {
                 mouseCursorSize.width, mouseCursorSize.height);
         if (shells != null) {
             shells.parallelStream().forEach((s) -> {
-                s.draw(g);
+                if (s.isVisible()) {
+                    ((Drawable) s).draw(g);
+                }
+
             });
         }
         if (enemies != null && !enemies.isEmpty()) {

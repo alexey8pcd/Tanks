@@ -1,7 +1,5 @@
 package units.battle;
 
-import units.LiveAndDeath;
-
 /**
  *
  * @author alex

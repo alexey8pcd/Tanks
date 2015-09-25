@@ -1,13 +1,13 @@
 package units.battle;
 
+import actions.AttackAction;
 import actions.MoveAction;
 import geometry.Drawable;
 import geometry.Movable;
 import geometry.RelocatingShape;
-import java.awt.Color;
+import geometry.drawers.RelocatingShapeDrawer;
 import java.awt.Graphics;
-import java.util.List;
-import units.LiveAndDeath;
+import java.util.Collection;
 
 /**
  *
@@ -18,10 +18,24 @@ public class CombatUnit extends RelocatingShape
 
     private int damage;
     private int armor;
-    private int health;
+    private int currentHealth;
+    private final UnitType type;
     private final int maxHealth;
+    private AttackAction attackAction;
+    private RelocatingShapeDrawer drawer;
     private BreakingStrength breakingStrength;
     public static final int MIN_HEALTH = 0;
+    public static final int UNIT_SIZE = 24;
+
+    @Override
+    public void attack(Collection<DDamage> container) {
+        attackAction.attack(this, container);
+    }
+
+    @Override
+    public boolean isVisible() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     public static enum UnitSpeed {
 
@@ -42,12 +56,44 @@ public class CombatUnit extends RelocatingShape
 
     }
 
-    public CombatUnit(int speed, int x, int y, int size,
-            Direction direction, MoveAction moveAction,
-            int maxHealth) {
-        super(speed, x, y, size, direction, moveAction);
+    public CombatUnit(UnitSpeed unitSpeed, UnitType type, int x, int y, int maxHealth,
+            BreakingStrength breakingStrength,
+            MoveAction moveAction,
+            AttackAction attackAction,
+            RelocatingShapeDrawer drawer) {
+
+        super(unitSpeed.getValue(), x, y, UNIT_SIZE, Direction.RIGHT, moveAction);
+        this.type = type;
         this.maxHealth = maxHealth;
-        this.breakingStrength = BreakingStrength.BREAK_BRICKS;
+        this.breakingStrength = breakingStrength;
+        this.attackAction = attackAction;
+        this.drawer = drawer;
+    }
+
+    public RelocatingShapeDrawer getDrawer() {
+        return drawer;
+    }
+
+    public void setDrawer(RelocatingShapeDrawer drawer) {
+        this.drawer = drawer;
+    }
+
+    public int getArmor() {
+        return armor;
+    }
+
+    public void setArmor(int armor) {
+        this.armor = armor;
+    }
+
+    @Override
+    public AttackAction getAttackAction() {
+        return attackAction;
+    }
+
+    @Override
+    public void setAttackAction(AttackAction attackAction) {
+        this.attackAction = attackAction;
     }
 
     public void setBreakingStrength(BreakingStrength breakingStrength) {
@@ -63,47 +109,50 @@ public class CombatUnit extends RelocatingShape
         return damage;
     }
 
-    @Override
-    public void draw(Graphics g) {
-        int x = getX();
-        int y = getY();
-        int width = getWidth();
-        int height = getHeight();
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(x, y, width, height);
-        g.setColor(Color.BLACK);
-        switch (getDirection()) {
-            case LEFT:
-                g.fillRect(x, y + height / 2, width / 4, height / 4);
-                break;
-            case RIGHT:
-                g.fillRect(x + width, y + height / 2, width / 4, height / 4);
-                break;
-            case UP:
-                g.fillRect(x + width / 2, y, width / 4, height / 4);
-                break;
-            case DOWN:
-                g.fillRect(x + width / 2, y + height, width / 4, height / 4);
-        }
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public UnitType getType() {
+        return type;
     }
 
     @Override
-    public void attack(List<Shell> shells) {
-        Shell shell = ShellPool.getInstance().take();
-        shell.setLocation(getX() + getWidth() / 2, getY() + getHeight() / 2);
-        shell.setBreakingStrength(breakingStrength);
-        shell.setDirection(getDirection());
-        shells.add(shell);
+    public void draw(Graphics g) {
+        drawer.drawUnit(this, g);
+        /* для тестирования
+         int x = getX();
+         int y = getY();
+         int width = getWidth();
+         int height = getHeight();
+         g.setColor(Color.DARK_GRAY);
+         g.fillRect(x, y, width, height);
+         g.setColor(Color.BLACK);
+         switch (getDirection()) {
+         case LEFT:
+         g.fillRect(x, y + height / 2, width / 4, height / 4);
+         break;
+         case RIGHT:
+         g.fillRect(x + width, y + height / 2, width / 4, height / 4);
+         break;
+         case UP:
+         g.fillRect(x + width / 2, y, width / 4, height / 4);
+         break;
+         case DOWN:
+         g.fillRect(x + width / 2, y + height, width / 4, height / 4);
+         }
+         */
     }
+
 
     @Override
     public boolean isLive() {
-        return health > MIN_HEALTH;
+        return currentHealth > MIN_HEALTH;
     }
 
     @Override
     public void setLive(boolean alive) {
-        health = alive ? maxHealth : MIN_HEALTH;
+        currentHealth = alive ? maxHealth : MIN_HEALTH;
     }
 
 }
