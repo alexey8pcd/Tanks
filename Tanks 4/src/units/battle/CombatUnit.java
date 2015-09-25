@@ -8,6 +8,7 @@ import geometry.RelocatingShape;
 import geometry.drawers.RelocatingShapeDrawer;
 import java.awt.Graphics;
 import java.util.Collection;
+import units.UnitSpeed;
 
 /**
  *
@@ -26,37 +27,15 @@ public class CombatUnit extends RelocatingShape
     private BreakingStrength breakingStrength;
     public static final int MIN_HEALTH = 0;
     public static final int UNIT_SIZE = 24;
+    public static final int MAX_ARMOR = 80;
+    public static final int MAX_DAMAGE = 100;
 
-    @Override
-    public void attack(Collection<DDamage> container) {
-        attackAction.attack(this, container);
-    }
-
-    @Override
-    public boolean isVisible() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public static enum UnitSpeed {
-
-        VERY_SLOW(1),
-        LOW(2),
-        NORMAL(4),
-        HIGH(6),
-        VERY_HIGH(8);
-        private final int value;
-
-        private UnitSpeed(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-    }
-
-    public CombatUnit(UnitSpeed unitSpeed, UnitType type, int x, int y, int maxHealth,
+    public CombatUnit(UnitSpeed unitSpeed, UnitType type,
+            int x, 
+            int y, 
+            int maxHealth, 
+            int armor,
+            int damage,
             BreakingStrength breakingStrength,
             MoveAction moveAction,
             AttackAction attackAction,
@@ -68,6 +47,22 @@ public class CombatUnit extends RelocatingShape
         this.breakingStrength = breakingStrength;
         this.attackAction = attackAction;
         this.drawer = drawer;
+        setArmor(armor);
+    }
+
+    @Override
+    public void attack(Collection<DDamage> container) {
+        attackAction.attack(this, container);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
+
+    @Override
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 
     public RelocatingShapeDrawer getDrawer() {
@@ -82,7 +77,9 @@ public class CombatUnit extends RelocatingShape
         return armor;
     }
 
-    public void setArmor(int armor) {
+    public final void setArmor(int armor) {
+        armor = armor < 0 ? 0 : armor;
+        armor = armor > MAX_ARMOR ? MAX_ARMOR : armor;
         this.armor = armor;
     }
 
@@ -143,7 +140,6 @@ public class CombatUnit extends RelocatingShape
          }
          */
     }
-
 
     @Override
     public boolean isLive() {

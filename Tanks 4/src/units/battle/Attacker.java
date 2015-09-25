@@ -14,5 +14,7 @@ public interface Attacker extends DDamage {
     public AttackAction getAttackAction();
 
     public void attack(Collection<DDamage> container);
+    
+    public void setDamage(int damage);
 
 }

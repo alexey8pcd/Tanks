@@ -7,11 +7,12 @@ import geometry.GeometryShape;
  *
  * @author alex
  */
-public class InvisibleBomb extends GeometryShape {
+public class InvisibleBomb extends GeometryShape implements DDamage {
 
     private int damage;
     private boolean alive;
 
+    @Override
     public int getDamage() {
         return damage;
     }
@@ -27,6 +28,11 @@ public class InvisibleBomb extends GeometryShape {
     public InvisibleBomb(int x, int y, int size, int damage) {
         super(x, y, size);
         alive = true;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return false;
     }
 
 }

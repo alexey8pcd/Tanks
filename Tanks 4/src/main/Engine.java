@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import units.UnitSpeed;
 import units.battle.CombatUnit;
 import units.battle.DDamage;
 import units.battle.Shell;
@@ -43,7 +44,7 @@ public class Engine extends Surface {
 //                Movable.Direction.LEFT, unitMoveAction, 100);
         enemies = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
-            int v = random.nextInt(CombatUnit.UnitSpeed.values().length);
+            int v = random.nextInt(UnitSpeed.values().length);
 //            enemies.add(new CombatUnit(CombatUnit.UnitSpeed.values()[v].getValue(),
 //                    0, 0, 32, Movable.Direction.LEFT, unitMoveAction, 100));
         }
