@@ -4,7 +4,7 @@ package units.battle;
  *
  * @author alex
  */
-public interface LiveAndDeath {
+public interface Liveable {
 
     public boolean isLive();
     

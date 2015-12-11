@@ -11,6 +11,11 @@ import java.awt.Graphics;
  */
 public class Bonus extends GeometryShape implements Drawable{
 
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
+
     public static enum BonusType {
 
         POWER_UP(1, Color.RED),//увеличение скорости стрельбы и пробивание брони

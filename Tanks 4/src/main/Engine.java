@@ -1,52 +1,57 @@
 package main;
 
+import actions.StraigthMoveWithoutBreaking;
 import geometry.Drawable;
 import geometry.GeometryMap;
+import geometry.GeometryMap.Material;
 import geometry.Movable;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 import units.UnitSpeed;
 import units.battle.CombatUnit;
-import units.battle.DDamage;
+import units.battle.DamageDealer;
 import units.battle.Shell;
+import units.battle.UnitType;
+import units.battle.factory.UnitFactory;
 
 /**
  * @author Alexey
  */
 public class Engine extends Surface {
 
-    private GeometryMap geometryMap;
-    private Point mouseCursorPosition;
-    private Dimension mouseCursorSize;
+    private final GeometryMap geometryMap;
+    private final Point mouseCursorPosition;
+    private final Dimension mouseCursorSize;
     private Color mouseCursorColor;
-    private CombatUnit playerUnit;
-    private List<DDamage> shells;
-    private List<CombatUnit> enemies;
+    private final CombatUnit playerUnit;
+    private final List<DamageDealer> shells;
+    private final List<CombatUnit> enemies;
     private final Random random = new Random();
 
     private int time;
-    private int moveDelay = 64;
+    private final int moveDelay = 64;
 
-    public Engine(int width, int height, int framesPerSecond, GeometryMap geometryMap) {
+    public Engine(int width, int height, int framesPerSecond, GeometryMap geometryMap) throws IOException {
         super(width, height, framesPerSecond);
         this.geometryMap = geometryMap;
         time = 0;
         mouseCursorPosition = new Point(-1, -1);
         mouseCursorSize = new Dimension(0, 0);
         mouseCursorColor = Color.BLACK;
-//        playerUnit = new CombatUnit(CombatUnit.UnitSpeed.NORMAL.getValue(), 0, 0, 32,
-//                Movable.Direction.LEFT, unitMoveAction, 100);
+        playerUnit = UnitFactory.createPlayerUnit();
         enemies = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
-            int v = random.nextInt(UnitSpeed.values().length);
-//            enemies.add(new CombatUnit(CombatUnit.UnitSpeed.values()[v].getValue(),
-//                    0, 0, 32, Movable.Direction.LEFT, unitMoveAction, 100));
+        int unitTypeCount = UnitType.values().length;
+        for (int i = 0; i < 30; ++i) {
+            int typeNumber = random.nextInt(unitTypeCount);
+            enemies.add(UnitFactory.createEnemyUnit(UnitType.values()[typeNumber]));
         }
         shells = new ArrayList<>();
     }

@@ -6,7 +6,9 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import units.battle.CombatUnit;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,15 +17,16 @@ import units.battle.CombatUnit;
 public class MainForm extends javax.swing.JFrame {
 
     private Engine engine;
-    private int width = 768;
-    private int height = 512;
-    private int blockSize = 8;
-    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private final int width = 768;
+    private final int height = 512;
+    private final int blockSize = 8;
+    private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     /**
      * Creates new form MainForm
+     * @throws java.io.IOException
      */
-    public MainForm() {
+    public MainForm() throws IOException {
         initComponents();
         GeometryMap map = GeometryMap.newInstance(blockSize,
                 height / blockSize, width / blockSize);
@@ -35,25 +38,29 @@ public class MainForm extends javax.swing.JFrame {
         engine.addKey(KeyEvent.VK_DOWN);
         engine.addKey(KeyEvent.VK_SPACE);
         engine.addMouseListener(new MouseAdapter() {
-
+            
+            private static final int MOUSE_LEFT_BUTTON = MouseEvent.BUTTON1;
+            private static final int MOUSE_MIDDLE_BUTTON = MouseEvent.BUTTON2;
+            private static final int MOUSE_RIGHT_BUTTON = MouseEvent.BUTTON3;
+            
             @Override
             public void mousePressed(MouseEvent evt) {
                 super.mousePressed(evt);
-                if (evt.getButton() == 1) {
+                if (evt.getButton() == MOUSE_LEFT_BUTTON) {
                     engine.getMap().setTile(evt.getX(), evt.getY(),
                             GeometryMap.Material.BRICK);
-                } else if (evt.getButton() == 2) {
+                } else if (evt.getButton() == MOUSE_MIDDLE_BUTTON) {
                     engine.getMap().setTile(evt.getX(), evt.getY(),
                             GeometryMap.Material.WOOD);
-                } else if (evt.getButton() == 3) {
+                } else if (evt.getButton() == MOUSE_RIGHT_BUTTON) {
                     engine.getMap().setTile(evt.getX(), evt.getY(),
                             GeometryMap.Material.WATER);
                 }
                 if (evt.getClickCount() == 2) {
-                    if (evt.getButton() == 1) {
+                    if (evt.getButton() == MOUSE_LEFT_BUTTON) {
                         engine.getMap().setTile(evt.getX(), evt.getY(),
                                 GeometryMap.Material.ARMOR);
-                    } else if (evt.getButton() == 3) {
+                    } else if (evt.getButton() == MOUSE_RIGHT_BUTTON) {
                         engine.getMap().setTile(evt.getX(), evt.getY(),
                                 GeometryMap.Material.ICE);
                     }
@@ -116,7 +123,11 @@ public class MainForm extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new MainForm().setVisible(true);
+            try {
+                new MainForm().setVisible(true);
+            } catch (IOException ex) {
+                Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
 

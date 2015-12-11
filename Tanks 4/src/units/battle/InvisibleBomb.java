@@ -7,7 +7,7 @@ import geometry.GeometryShape;
  *
  * @author alex
  */
-public class InvisibleBomb extends GeometryShape implements DDamage {
+public class InvisibleBomb extends GeometryShape implements DamageDealer {
 
     private int damage;
     private boolean alive;

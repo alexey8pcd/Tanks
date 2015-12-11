@@ -4,7 +4,7 @@ import geometry.GeometryMap;
 import geometry.GeometryMap.Material;
 import geometry.Movable;
 import java.util.EnumSet;
-import units.battle.LiveAndDeath;
+import units.battle.Liveable;
 import units.battle.Breaking;
 
 /**
@@ -50,7 +50,7 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
             movable.setLocation(dLeftX, dTopY);
             return true;
         }
-        ((LiveAndDeath) movable).setLive(false);
+        ((Liveable) movable).setLive(false);
         return false;
     }
 

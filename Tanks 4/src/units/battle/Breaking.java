@@ -4,7 +4,7 @@ package units.battle;
  *
  * @author alex
  */
-public interface Breaking extends LiveAndDeath {
+public interface Breaking extends Liveable {
 
     public BreakingStrength getBreakingStrength();
 

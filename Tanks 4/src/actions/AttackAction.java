@@ -2,7 +2,7 @@ package actions;
 
 import java.util.Collection;
 import units.battle.CombatUnit;
-import units.battle.DDamage;
+import units.battle.DamageDealer;
 import units.battle.Shell;
 import units.battle.ShellPool;
 
@@ -13,7 +13,7 @@ import units.battle.ShellPool;
 public interface AttackAction {
 
     public static final AttackAction UNIT_ATTACK_ACTION_WITH_SHELLS = 
-            (CombatUnit attacker, Collection<DDamage> container) -> {
+            (CombatUnit attacker, Collection<DamageDealer> container) -> {
         Shell shell = ShellPool.getInstance().take();
         shell.setLocation(attacker.getX() + attacker.getWidth() / 2,
                 attacker.getY() + attacker.getHeight() / 2);
@@ -22,5 +22,5 @@ public interface AttackAction {
         container.add(shell);
     };
 
-    public void attack(CombatUnit attacker, Collection<DDamage> container);
+    public void attack(CombatUnit attacker, Collection<DamageDealer> container);
 }

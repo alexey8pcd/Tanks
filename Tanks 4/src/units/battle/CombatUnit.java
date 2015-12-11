@@ -15,7 +15,7 @@ import units.UnitSpeed;
  * @author alex
  */
 public class CombatUnit extends RelocatingShape
-        implements Movable, Attacker, Drawable, LiveAndDeath {
+        implements Movable, Attacker, Drawable, Liveable {
 
     private int damage;
     private int armor;
@@ -51,7 +51,7 @@ public class CombatUnit extends RelocatingShape
     }
 
     @Override
-    public void attack(Collection<DDamage> container) {
+    public void attack(Collection<DamageDealer> container) {
         attackAction.attack(this, container);
     }
 

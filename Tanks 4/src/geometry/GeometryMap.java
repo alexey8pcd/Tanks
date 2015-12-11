@@ -14,6 +14,11 @@ public class GeometryMap extends GeometryShape implements Drawable {
     public static final int MAX_WIDTH = 768;
     public static final int MAX_HEIGTH = 512;
 
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
+
     /**
      * Представляет материал для формирования объектов карты. Имеет цвет и
      * твердость.

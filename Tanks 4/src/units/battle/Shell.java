@@ -15,7 +15,7 @@ import java.util.EnumSet;
  * @author alex
  */
 public class Shell extends RelocatingShape
-        implements Movable, Drawable, Breaking, DDamage {
+        implements Movable, Drawable, Breaking, DamageDealer {
 
     private final int damage;
     private boolean alive;
