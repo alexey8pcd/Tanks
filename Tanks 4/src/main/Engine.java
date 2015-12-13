@@ -1,9 +1,7 @@
 package main;
 
-import actions.StraigthMoveWithoutBreaking;
 import geometry.Drawable;
 import geometry.GeometryMap;
-import geometry.GeometryMap.Material;
 import geometry.Movable;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,10 +10,8 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
-import units.UnitSpeed;
 import units.battle.CombatUnit;
 import units.battle.DamageDealer;
 import units.battle.Shell;
@@ -36,8 +32,10 @@ public class Engine extends Surface {
     private final List<CombatUnit> enemies;
     private final Random random = new Random();
 
+
+
     private int time;
-    private final int moveDelay = 64;
+    private final int enemyUnitMoveDelayInMillis = 64;
 
     public Engine(int width, int height, int framesPerSecond, GeometryMap geometryMap) throws IOException {
         super(width, height, framesPerSecond);
@@ -83,10 +81,41 @@ public class Engine extends Surface {
 
     @Override
     public void update() {
-        if (time > 1024) {
+        int maxTime = 1024;
+        if (time > maxTime) {
             time = 0;
         }
-        //перемещение снарядов
+        relocateShells();
+        relocateUnits();
+        ++time;
+
+    }
+
+    private void relocateUnits() {
+        if (time % enemyUnitMoveDelayInMillis == 0) {
+            for (CombatUnit unit : enemies) {
+                changeDirectionOfUnitIfCanNotMove(unit);
+                changeDirectionOfUnitWithChance(unit);
+            }
+        }
+    }
+
+    private void changeDirectionOfUnitIfCanNotMove(CombatUnit unit) {
+        final int restriction = Movable.Direction.values().length;
+        if (!unit.move(geometryMap)) {
+            unit.setDirection(Movable.Direction.values()[random.nextInt(restriction)]);
+        }
+    }
+
+    private void changeDirectionOfUnitWithChance(CombatUnit unit) {
+        final int chanceDirection = 5;
+        final int restriction = Movable.Direction.values().length;
+        if (random.nextInt(100) < chanceDirection) {
+            unit.setDirection(Movable.Direction.values()[random.nextInt(restriction)]);
+        }
+    }
+
+    private void relocateShells() {
         for (int i = 0, n = shells.size(); i < n;) {
             Shell s = (Shell) shells.get(i);
             if (!s.move(geometryMap)) {
@@ -96,29 +125,29 @@ public class Engine extends Surface {
                 ++i;
             }
         }
-
-        if (time % moveDelay == 0) {
-            //перемещение боевых единиц
-            for (CombatUnit unit : enemies) {
-                if (!unit.move(geometryMap)) {
-                    unit.setDirection(Movable.Direction.values()[random.nextInt(4)]);
-                }
-                if (random.nextInt(100) < 5) {
-                    unit.setDirection(Movable.Direction.values()[random.nextInt(4)]);
-                }
-            }
-        }
-        ++time;
-
     }
 
     @Override
     public void display(Graphics g) {
         geometryMap.draw(g);
+//        g.setColor(mouseCursorColor);
+//        g.drawRect(mouseCursorPosition.x, mouseCursorPosition.y,
+//                mouseCursorSize.width, mouseCursorSize.height);
+        drawShells(g);
+        drawUnits(g);
+
+    }
+
+    private void drawUnits(Graphics g) {
         playerUnit.draw(g);
-        g.setColor(mouseCursorColor);
-        g.drawRect(mouseCursorPosition.x, mouseCursorPosition.y,
-                mouseCursorSize.width, mouseCursorSize.height);
+        if (enemies != null && !enemies.isEmpty()) {
+            enemies.parallelStream().forEach((e) -> {
+                e.draw(g);
+            });
+        }
+    }
+
+    private void drawShells(Graphics g) {
         if (shells != null) {
             shells.parallelStream().forEach((s) -> {
                 if (s.isVisible()) {
@@ -127,12 +156,6 @@ public class Engine extends Surface {
 
             });
         }
-        if (enemies != null && !enemies.isEmpty()) {
-            enemies.parallelStream().forEach((e) -> {
-                e.draw(g);
-            });
-        }
-
     }
 
     public void setMouseCursor(int x, int y, int blockSize, Color color) {

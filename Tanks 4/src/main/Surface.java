@@ -72,24 +72,38 @@ public abstract class Surface extends Canvas implements Runnable {
     @Override
     public void run() {
         int time = 0;
-        int longDelay = delay * 4;
         while (running) {
-            if (time % longDelay == 0) {
-                checkKeys();
-            }
+            tryCheckKeys(time);
             update();
-            if (time % delay == 0) {
-                render();
-            }
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {
+            tryRender(time);
+            time = flowTime(time);
+        }
+    }
 
-            }
-            if (time > longDelay) {
-                time = 0;
-            }
-            ++time;
+    private int flowTime(int time) {
+        int longDelay = delay * 4;
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException ex) {
+            running = false;
+        }
+        if (time > longDelay) {
+            time = 0;
+        }
+        ++time;
+        return time;
+    }
+
+    private void tryRender(int time) {
+        if (time % delay == 0) {
+            render();
+        }
+    }
+
+    private void tryCheckKeys(int time) {
+        final int keyCheckDelay = delay * 2;
+        if (time % keyCheckDelay == 0) {
+            checkKeys();
         }
     }
 
