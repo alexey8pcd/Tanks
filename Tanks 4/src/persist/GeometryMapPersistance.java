@@ -9,13 +9,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.swing.JOptionPane;
+import main.MapEditor;
 
 /**
  * @author Alexey Ипользуется для загрузки и сохранения карты на диске
  */
-public class GeometryMapPersistance {
+public abstract class GeometryMapPersistance {
 
-    public static boolean saveMapToFile(File toSave, GeometryMap map) {
+    public final static boolean saveMapToFile(File toSave, MapEditor mapEditor) {
+        GeometryMap map = mapEditor.getCurrentMap();
         try {
             try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(toSave))) {
                 saveMap(outputStream, map);

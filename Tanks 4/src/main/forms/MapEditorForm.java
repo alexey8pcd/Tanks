@@ -1,93 +1,31 @@
 package main.forms;
 
-import geometry.Drawable;
-import geometry.GeometryMap;
 import geometry.GeometryMap.Material;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.MouseWheelEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import main.MapEditor;
 import persist.GeometryMapPersistance;
 
 /**
  *
  * @author Алексей
  */
-public class MapEditor extends javax.swing.JDialog {
+public class MapEditorForm extends javax.swing.JDialog {
 
-    private class Tool implements Drawable {
-
-        Material material;
-        int x;
-        int y;
-        int width;
-        int height;
-
-        public Tool(Material material, int startX, int startY) {
-            this.material = material;
-            this.x = startX;
-            this.y = startY;
-        }
-
-        public void setSize(int size) {
-            this.width = size;
-            this.height = size;
-        }
-
-        public void setLocationOfCenter(int x, int y) {
-            this.x = x - width / 2;
-            this.y = y - height / 2;
-        }
-
-        @Override
-        public void draw(Graphics g) {
-            g.setColor(Color.BLACK);
-            g.drawRect(x - 1, y - 1, width + 1, height + 1);
-            g.setColor(material.getColor());
-            g.fillRect(x, y, width, height);
-        }
-
-        @Override
-        public boolean isVisible() {
-            return true;
-        }
-
-    }
-    private GeometryMap currentMap;
-    private BufferedImage buffer;
-    private Graphics rootGraphics;
-    private Tool tool;
-    private int scale;
+    private final MapEditor mapEditor;
     private final int minScale = 4;
+    private final int defaultScale = 16;
     private final int maxScale = 128;
 
-    public MapEditor(java.awt.Frame parent, boolean modal) {
+    public MapEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        buffer = new BufferedImage(paneDraw.getWidth(),
-                paneDraw.getHeight(),
-                BufferedImage.TYPE_INT_RGB);
-        rootGraphics = paneDraw.getGraphics();
-        currentMap = GeometryMap.newInstance();
-        tool = new Tool(Material.BRICK, 0, 0);
-        scale = 16;
-        sliderScale.setValue(scale);
-        tool.setSize(scale);
-    }
-
-    private void draw() {
-        Graphics temp = buffer.getGraphics();
-        temp.clearRect(0, 0, buffer.getWidth(), buffer.getHeight());
-        drawObjects(temp);
-        rootGraphics.drawImage(buffer, 0, 0, null);
-    }
-
-    private void drawObjects(Graphics graphics) {
-        currentMap.drawWithGrid(graphics);
-        tool.draw(graphics);
+        sliderForScaling.setValue(defaultScale);
+        mapEditor = new MapEditor(paneDraw.getWidth(), paneDraw.getHeight(),
+                defaultScale, sliderForScaling, paneDraw.getGraphics());
+        mapEditor.setMaxScale(maxScale);
+        mapEditor.setMinScale(minScale);
     }
 
     @SuppressWarnings("unchecked")
@@ -106,11 +44,11 @@ public class MapEditor extends javax.swing.JDialog {
         bRedo = new javax.swing.JButton();
         bClear = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        jButton9 = new javax.swing.JButton();
+        bSaveMap = new javax.swing.JButton();
         bExit = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jLabel1 = new javax.swing.JLabel();
-        sliderScale = new javax.swing.JSlider();
+        sliderForScaling = new javax.swing.JSlider();
         paneDraw = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -124,9 +62,6 @@ public class MapEditor extends javax.swing.JDialog {
         bTerra.setDoubleBuffered(true);
         bTerra.setFocusable(false);
         bTerra.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        bTerra.setMaximumSize(new java.awt.Dimension(32, 32));
-        bTerra.setMinimumSize(new java.awt.Dimension(32, 32));
-        bTerra.setPreferredSize(new java.awt.Dimension(32, 32));
         bTerra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bTerraActionPerformed(evt);
@@ -216,16 +151,16 @@ public class MapEditor extends javax.swing.JDialog {
         toolBarForEditor.add(bClear);
         toolBarForEditor.add(jSeparator2);
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
-        jButton9.setFocusable(false);
-        jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        bSaveMap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
+        bSaveMap.setFocusable(false);
+        bSaveMap.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bSaveMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bSaveMap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                bSaveMapActionPerformed(evt);
             }
         });
-        toolBarForEditor.add(jButton9);
+        toolBarForEditor.add(bSaveMap);
 
         bExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit.png"))); // NOI18N
         bExit.setFocusable(false);
@@ -242,20 +177,20 @@ public class MapEditor extends javax.swing.JDialog {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/scale.png"))); // NOI18N
         toolBarForEditor.add(jLabel1);
 
-        sliderScale.setMajorTickSpacing(32);
-        sliderScale.setMaximum(128);
-        sliderScale.setMinimum(8);
-        sliderScale.setMinorTickSpacing(16);
-        sliderScale.setPaintTicks(true);
-        sliderScale.setValue(16);
-        sliderScale.setDoubleBuffered(true);
-        sliderScale.setPreferredSize(new java.awt.Dimension(100, 31));
-        sliderScale.addChangeListener(new javax.swing.event.ChangeListener() {
+        sliderForScaling.setMajorTickSpacing(32);
+        sliderForScaling.setMaximum(128);
+        sliderForScaling.setMinimum(8);
+        sliderForScaling.setMinorTickSpacing(16);
+        sliderForScaling.setPaintTicks(true);
+        sliderForScaling.setValue(16);
+        sliderForScaling.setDoubleBuffered(true);
+        sliderForScaling.setPreferredSize(new java.awt.Dimension(100, 31));
+        sliderForScaling.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sliderScaleStateChanged(evt);
+                sliderForScalingStateChanged(evt);
             }
         });
-        toolBarForEditor.add(sliderScale);
+        toolBarForEditor.add(sliderForScaling);
 
         getContentPane().add(toolBarForEditor, java.awt.BorderLayout.PAGE_START);
 
@@ -296,27 +231,23 @@ public class MapEditor extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void paneDrawMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMousePressed
-        addTilesOnMap();
+        mapEditor.addTilesOnMap();
     }//GEN-LAST:event_paneDrawMousePressed
 
     private void paneDrawMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseMoved
-        tool.setLocationOfCenter(evt.getX(), evt.getY());
-        draw();
+        mapEditor.handleMouseMove(evt.getX(), evt.getY());
     }//GEN-LAST:event_paneDrawMouseMoved
 
     private void paneDrawMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_paneDrawMouseWheelMoved
-        changeScale(evt);
+        mapEditor.changeScale(evt, sliderForScaling);
     }//GEN-LAST:event_paneDrawMouseWheelMoved
 
-    private void sliderScaleStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderScaleStateChanged
-        scale = sliderScale.getValue();
-        tool.setSize(scale);
-        draw();
-    }//GEN-LAST:event_sliderScaleStateChanged
+    private void sliderForScalingStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderForScalingStateChanged
+        mapEditor.setScaleOfTool(sliderForScaling.getValue());
+    }//GEN-LAST:event_sliderForScalingStateChanged
 
     private void paneDrawMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseDragged
-        tool.setLocationOfCenter(evt.getX(), evt.getY());
-        addTilesOnMap();
+        mapEditor.handleMouseDrag(evt.getX(), evt.getY());
     }//GEN-LAST:event_paneDrawMouseDragged
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
@@ -324,87 +255,52 @@ public class MapEditor extends javax.swing.JDialog {
     }//GEN-LAST:event_bExitActionPerformed
 
     private void bPlaceBricksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceBricksActionPerformed
-        tool.material = Material.BRICK;
-        draw();
+        mapEditor.setMaterial(Material.BRICK);
     }//GEN-LAST:event_bPlaceBricksActionPerformed
 
     private void bPlaceMetalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceMetalActionPerformed
-        tool.material = Material.ARMOR;
-        draw();
+        mapEditor.setMaterial(Material.ARMOR);
     }//GEN-LAST:event_bPlaceMetalActionPerformed
 
     private void bPlaceForestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceForestActionPerformed
-        tool.material = Material.WOOD;
-        draw();
+        mapEditor.setMaterial(Material.WOOD);
     }//GEN-LAST:event_bPlaceForestActionPerformed
 
     private void bPlaceWaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceWaterActionPerformed
-        tool.material = Material.WATER;
-        draw();
+        mapEditor.setMaterial(Material.WATER);
     }//GEN-LAST:event_bPlaceWaterActionPerformed
 
     private void bPlaceIceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceIceActionPerformed
-        tool.material = Material.ICE;
-        draw();
+        mapEditor.setMaterial(Material.ICE);
     }//GEN-LAST:event_bPlaceIceActionPerformed
 
     private void bTerraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bTerraActionPerformed
-        tool.material = Material.TERRA;
-        draw();
+        mapEditor.setMaterial(Material.TERRA);
     }//GEN-LAST:event_bTerraActionPerformed
 
     private void bClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bClearActionPerformed
-        currentMap.clear();
-        draw();
+        mapEditor.clearMap();
     }//GEN-LAST:event_bClearActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void bSaveMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSaveMapActionPerformed
         saveMap();
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }//GEN-LAST:event_bSaveMapActionPerformed
 
     private void saveMap() {
         JFileChooser chooser = new JFileChooser();
         chooser.setSelectedFile(new File("map.dat"));
-        int result = chooser.showSaveDialog(this);
+        int result = chooser.showSaveDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = chooser.getSelectedFile();
             boolean saved = GeometryMapPersistance.saveMapToFile(selectedFile,
-                    currentMap);
+                    mapEditor);
             if (saved) {
-                JOptionPane.showMessageDialog(null, "Карта сохранена успешно",
+                JOptionPane.showMessageDialog(this, "Карта сохранена успешно",
                         "Информация", JOptionPane.INFORMATION_MESSAGE);
             }
+
         }
     }
-
-    private void addTilesOnMap() {
-        for (int x = tool.x; x < tool.x + tool.width; x++) {
-            for (int y = tool.y; y < tool.y + tool.height; y++) {
-                currentMap.setTile(x, y, tool.material);
-            }
-        }
-        draw();
-    }
-
-    private void changeScale(MouseWheelEvent evt) {
-        if (evt.getWheelRotation() > 0) {
-            scale -= 4;
-            if (scale < minScale) {
-                scale = minScale;
-            }
-        } else {
-            scale += 4;
-            if (scale > maxScale) {
-                scale = maxScale;
-            }
-        }
-        sliderScale.setValue(scale);
-        sliderScale.updateUI();
-        tool.setSize(scale);
-        tool.setLocationOfCenter(evt.getX(), evt.getY());
-        draw();
-    }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClear;
@@ -415,15 +311,15 @@ public class MapEditor extends javax.swing.JDialog {
     private javax.swing.JButton bPlaceMetal;
     private javax.swing.JButton bPlaceWater;
     private javax.swing.JButton bRedo;
+    private javax.swing.JButton bSaveMap;
     private javax.swing.JButton bTerra;
     private javax.swing.JButton bUndo;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JPanel paneDraw;
-    private javax.swing.JSlider sliderScale;
+    private javax.swing.JSlider sliderForScaling;
     private javax.swing.JToolBar toolBarForEditor;
     // End of variables declaration//GEN-END:variables
 

@@ -141,7 +141,7 @@ public class MainForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bMapEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bMapEditorActionPerformed
-        new MapEditor(this, true).setVisible(true);
+        new MapEditorForm(this, true).setVisible(true);
     }//GEN-LAST:event_bMapEditorActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
