@@ -4,11 +4,15 @@ import java.awt.Canvas;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Game;
 import ru.ovcharov_alexey.tanks.v4.engine.GameMode;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
+import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
 
 /**
@@ -28,15 +32,27 @@ public class GameForm extends javax.swing.JDialog {
     private void initGame() throws IOException {
         int width = (int) Global.getMapWidth();
         int height = (int) Global.getMapHeight();
-        this.setSize(width + 4, height + 24);
+        this.setSize(width + 1, height + 1);
         this.setLocationRelativeTo(null);
         Canvas canvas = new Canvas();
         this.getContentPane().add(canvas);
-        canvas.setSize(width, height);
+        canvas.setSize(width - 1, height - 1);
         engine = new Game(canvas, width, height);
-        engine.addGameListener(() -> {
-            if(engine.getGameMode() == GameMode.OFF){
-                dispose();
+        engine.addGameListener((GameEvent event) -> {
+            if (null != event) {
+                switch (event) {
+                    case GAME_WIN:
+                        Global.getStatistics().addWinGame();
+                    case GAME_LOSE:
+                    case GAME_BREAK:
+                        dispose();
+                        break;
+                    case GAME_START:
+                        Global.getStatistics().addStartedGame();
+                        break;
+                    case ENEMY_KILL:
+                        Global.getStatistics().addEnemyKill();
+                }
             }
         });
         this.addKeyListener(new KeyAdapter() {
@@ -53,11 +69,6 @@ public class GameForm extends javax.swing.JDialog {
             }
 
         });
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 
     public void singlePlayGame() {
@@ -83,6 +94,16 @@ public class GameForm extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    public void campaign(Campaign campaign) {
+        try {
+            engine.initGame(campaign);
+            engine.start();
+            this.setVisible(true);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -24,6 +24,16 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
     }
 
     @Override
+    public void addImpassible(Material material) {
+        impassable.add(material);
+    }
+
+    @Override
+    public void removeImpassible(Material material) {
+        impassable.remove(material);
+    }
+
+    @Override
     public abstract boolean move(Movable movable, GeometryMap map, GeometryPoint target);
 
     @Override
@@ -32,7 +42,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
         calculateDesirePosition(movable, speed);
         float dRightX = dLeftX + movable.getWidth();
         float dDownY = dTopY + movable.getHeight();
-        if (!intoMap((int) dRightX, (int) dDownY, map)) {
+        if (!intoMap(Math.round(dRightX), Math.round(dDownY), map)) {
             return false;
         }
         return !detectCollisions(map, dRightX, dDownY);

@@ -1,11 +1,11 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 
 /**
  *
@@ -15,7 +15,12 @@ public class MainForm extends javax.swing.JFrame {
 
     public MainForm() throws IOException {
         initComponents();
+        init();
+    }
+
+    private void init() {
         setLocationRelativeTo(null);
+        Global.load();
     }
 
     @SuppressWarnings("unchecked")
@@ -45,6 +50,11 @@ public class MainForm extends javax.swing.JFrame {
         bCampaign.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bCampaign.setText("Кампания");
         bCampaign.setPreferredSize(new java.awt.Dimension(460, 80));
+        bCampaign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bCampaignActionPerformed(evt);
+            }
+        });
 
         bMapEditor.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bMapEditor.setText("Редактор карт");
@@ -67,6 +77,11 @@ public class MainForm extends javax.swing.JFrame {
         bStats.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bStats.setText("Статистика");
         bStats.setPreferredSize(new java.awt.Dimension(460, 80));
+        bStats.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bStatsActionPerformed(evt);
+            }
+        });
 
         bSettings.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bSettings.setText("Настройки");
@@ -130,6 +145,7 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bMapEditorActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
+        Global.save();
         dispose();
         System.exit(0);
     }//GEN-LAST:event_bExitActionPerformed
@@ -153,6 +169,26 @@ public class MainForm extends javax.swing.JFrame {
     private void bSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSettingsActionPerformed
         new SettingsForm(this, true).setVisible(true);
     }//GEN-LAST:event_bSettingsActionPerformed
+
+    private void bStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStatsActionPerformed
+        new StatisticsForm(this, true).setVisible(true);
+    }//GEN-LAST:event_bStatsActionPerformed
+
+    private void bCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignActionPerformed
+        CampaignChooseForm campaignChooseForm = new CampaignChooseForm(this, true);
+        campaignChooseForm.setVisible(true);
+        Campaign campaign = campaignChooseForm.getChoosenCampaign();
+        if (campaign != null) {
+            GameForm gameForm;
+            try {
+                gameForm = new GameForm(this, true);
+                gameForm.campaign(campaign);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_bCampaignActionPerformed
 
     /**
      * @param args the command line arguments

@@ -2,6 +2,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 
 /**
@@ -22,5 +23,9 @@ public interface MoveAction {
     boolean move(Movable movable, GeometryMap map, GeometryPoint target);
 
     boolean canMove(Movable movable, GeometryMap map, GeometryPoint target);
+    
+    void addImpassible(Material material);
+    
+    void removeImpassible(Material material);
 
 }

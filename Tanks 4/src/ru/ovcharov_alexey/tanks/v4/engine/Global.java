@@ -1,12 +1,76 @@
 package ru.ovcharov_alexey.tanks.v4.engine;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 /**
-@author Alexey
-*/
+ * @author Alexey
+ */
 public class Global {
 
+    private static int mapSizeIndex;
+    private static Statistics statistics = Statistics.empty();
+    private static String pathToCompaniesFolder = ".";
+
+    public static Statistics getStatistics() {
+        return statistics;
+    }
+
+    public static int getMapSizeIndex() {
+        return mapSizeIndex;
+    }
+
+    public static String getPathToCompaniesFolder() {
+        return pathToCompaniesFolder;
+    }
+
+    public static void setPathToCompaniesFolder(String pathToCompaniesFolder) {
+        Global.pathToCompaniesFolder = pathToCompaniesFolder;
+    }
+
+    public static void save() {
+        try {
+            File settings = new File("settings.dat");
+            if (!settings.exists()) {
+                settings.createNewFile();
+            }
+            if (settings.exists()) {
+                try (DataOutputStream dataOutputStream
+                        = new DataOutputStream(new FileOutputStream(settings))) {
+                    dataOutputStream.writeInt(mapSizeIndex);
+                    dataOutputStream.writeInt(speed);
+                    statistics.save(dataOutputStream);
+                    dataOutputStream.writeUTF(pathToCompaniesFolder);
+                }
+            }
+        } catch (Exception ex) {
+        }
+
+    }
+
+    public static void load() {
+        try {
+            File settings = new File("settings.dat");
+            try (DataInputStream dataInputStream
+                    = new DataInputStream(new FileInputStream(settings))) {
+                Global.setMapSizeIndex(dataInputStream.readInt());
+                Global.setSpeed(dataInputStream.readInt());
+                Global.statistics = Statistics.load(dataInputStream);
+                Global.pathToCompaniesFolder = dataInputStream.readUTF();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public static void clearStatistics() {
+        Global.statistics = Statistics.empty();
+    }
 
     public static class Size {
+
         private int width;
         private int heigth;
 
@@ -22,7 +86,7 @@ public class Global {
         public int getHeigth() {
             return heigth;
         }
-        
+
     }
     public static final Size[] MAP_SIZE_VALUES = {
         new Size(768, 512),
@@ -40,28 +104,26 @@ public class Global {
         return mapWidth;
     }
 
-    public static void setMapWidth(int mapWidth) {
-        Global.mapWidth = mapWidth;
+    public static void setMapSizeIndex(int selectedIndex) {
+        if (selectedIndex >= 0 && selectedIndex < MAP_SIZE_VALUES.length) {
+            Global.mapSizeIndex = selectedIndex;
+            Size size = MAP_SIZE_VALUES[selectedIndex];
+            Global.mapWidth = size.getWidth();
+            Global.mapHeight = size.getHeigth();
+        }
+
     }
 
-    public static void setMapSize(Size size){
-        Global.mapWidth = size.getWidth();
-        Global.mapHeight = size.getHeigth();
-    }
     public static double getMapHeight() {
         return mapHeight;
     }
 
-    public static void setMapHeight(int mapHeight) {
-        Global.mapHeight = mapHeight;
-    }
-
-    public static int getSpeed() {
+    public static float getSpeed() {
         return speed;
     }
 
     public static void setSpeed(int speed) {
         Global.speed = speed;
     }
-    
+
 }

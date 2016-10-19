@@ -16,6 +16,7 @@ public class Level {
     private String name;
     private GeometryMap map;
     private List<CombatUnit> units;
+    private int bonusesCount;
 
     public Level(String name) {
         this.name = name;
@@ -46,11 +47,17 @@ public class Level {
         this.units.add(unit);
     }
 
+    public void setBonusesCount(int bonusesCount) {
+        this.bonusesCount = bonusesCount;
+    }
+
     static Level loadLevel(DataInputStream dis) throws Exception {
         String name = dis.readUTF();
         GeometryMap gm = GeometryMap.load(dis);
         Level level = new Level(name);
         level.setMap(gm);
+        int bonusesCount = dis.readInt();
+        level.setBonusesCount(bonusesCount);
         int unitsCount = dis.readInt();
         for (int i = 0; i < unitsCount; i++) {
             level.addUnit(CombatUnit.load(dis));
@@ -61,6 +68,7 @@ public class Level {
     void save(DataOutputStream dos) throws IOException {
         dos.writeUTF(name);
         map.save(dos);
+        dos.writeInt(bonusesCount);
         dos.writeInt(units.size());
         for (CombatUnit unit : units) {
             unit.save(dos);
@@ -69,6 +77,10 @@ public class Level {
 
     void addUnits(List<CombatUnit> units) {
         this.units.addAll(units);
+    }
+
+    public int getBonusesCount() {
+        return bonusesCount;
     }
 
 }

@@ -78,9 +78,10 @@ public class LevelCreator {
         units = rest;
     }
 
-    public Level createLevel(String name) {
+    public Level createLevel(String name, int bonusesCount) {
         Level level = new Level(name);
         level.setMap(map);
+        level.setBonusesCount(bonusesCount);
         level.addUnits(units);
         return level;
     }

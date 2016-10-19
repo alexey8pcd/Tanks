@@ -223,11 +223,17 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         if (getY() > 1) {
             g.fillRect((int) getX(), (int) getY() - 2,
                     (int) (rechargeProgress * dv), 2);
+        } else {
+            g.fillRect((int) getX(), (int) getY() + getHeight() + 1,
+                    (int) (rechargeProgress * dv), 2);
         }
         double dh = (double) getWidth() / maxHealth;
         g.setColor(Color.GREEN);
         if (getY() > 3) {
             g.fillRect((int) getX(), (int) getY() - 4,
+                    (int) (currentHealth * dh), 2);
+        } else {
+            g.fillRect((int) getX(), (int) getY() + getHeight() + 3,
                     (int) (currentHealth * dh), 2);
         }
     }

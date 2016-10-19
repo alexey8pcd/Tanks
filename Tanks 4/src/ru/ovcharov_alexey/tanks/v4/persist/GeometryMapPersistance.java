@@ -5,6 +5,7 @@ import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,6 +46,18 @@ public class GeometryMapPersistance {
     public static MapData loadFromFile() {
         try {
             JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Выбрать карту");
+            chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    return (f.getName().endsWith(".dat"));
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Файлы карт(*.dat)";
+                }
+            });
             int result = chooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();

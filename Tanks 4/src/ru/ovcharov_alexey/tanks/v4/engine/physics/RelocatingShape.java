@@ -65,6 +65,10 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
         setY(y);
     }
 
+    public MoveAction getMoveAction() {
+        return moveAction;
+    }
+
     @Override
     public Direction getDirection() {
         return direction;

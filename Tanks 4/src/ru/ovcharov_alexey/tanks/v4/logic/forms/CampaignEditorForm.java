@@ -52,7 +52,6 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         });
     }
 
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -346,7 +345,8 @@ public class CampaignEditorForm extends javax.swing.JDialog {
 
     private void bAddLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAddLevelActionPerformed
         if (!tfLevelName.getText().isEmpty() && levelCreator.isValid()) {
-            campaign.addLevel(levelCreator.createLevel(tfLevelName.getText()));
+            campaign.addLevel(levelCreator.createLevel(tfLevelName.getText(),
+                    (int) spinnerBonusesCount.getValue()));
             listLevels.updateUI();
         }
     }//GEN-LAST:event_bAddLevelActionPerformed
@@ -359,7 +359,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
             if (result == JFileChooser.APPROVE_OPTION) {
                 try {
                     String fileName = fileChooser.getSelectedFile().getCanonicalPath();
-                    campaign.save(fileName);
+                    campaign.save(fileName + ".campaign");
                     JOptionPane.showMessageDialog(null, "Кампания сохранена");
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(null, "Не удалось сохранить "

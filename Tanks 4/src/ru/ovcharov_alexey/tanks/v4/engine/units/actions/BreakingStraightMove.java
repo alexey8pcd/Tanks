@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Liveable;
@@ -32,6 +33,25 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
                         Breaking breaking = (Breaking) movable;
                         if (breaking.getBreakingStrength().isBreak(material)) {
                             map.setTile((int) x, (int) y, Material.TERRA);
+                            int x1, x2, y1, y2;
+                            if (movable.getDirection() == Direction.LEFT
+                                    || movable.getDirection() == Direction.RIGHT) {
+                                x1 = (int) x;
+                                x2 = (int) x;
+                                y1 = (int) (y + map.getTileSize());
+                                y2 = (int) (y - map.getTileSize());
+                            } else {
+                                x1 = (int) (x + map.getTileSize());
+                                x2 = (int) (x - map.getTileSize());
+                                y1 = (int) y;
+                                y2 = (int) y;
+                            }
+                            if (impassable.contains(map.getTile(x1, y1))) {
+                                map.setTile(x1, y1, Material.TERRA);
+                            }
+                            if (impassable.contains(map.getTile(x2, y2))) {
+                                map.setTile(x2, y2, Material.TERRA);
+                            }
                             breaking.setLive(false);
                         }
                         return false;

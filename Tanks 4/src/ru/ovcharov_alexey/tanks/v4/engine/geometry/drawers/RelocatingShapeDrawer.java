@@ -3,8 +3,6 @@ package ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.RelocatingShape;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 /**
  *

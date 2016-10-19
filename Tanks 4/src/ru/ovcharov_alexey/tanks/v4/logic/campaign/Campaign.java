@@ -19,6 +19,7 @@ public class Campaign {
 
     public Campaign(String name) {
         levels = new ArrayList<>();
+        this.name = name;
     }
     public Campaign(){
         levels = new ArrayList<>();
@@ -71,5 +72,9 @@ public class Campaign {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

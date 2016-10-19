@@ -18,14 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
+import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.BreakingStrength;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
@@ -50,7 +51,7 @@ public class Game implements Runnable {
     private List<CombatUnit> enemies;
     private Random random = new Random();
     private Level currentLevel;
-    private Iterator<Level> Leveliterator;
+    private Iterator<Level> leveliterator;
     private BufferedImage bufferedImage;
     private static final int TIMER_MAX_TIME = 20;
     private Timer timer;
@@ -58,7 +59,6 @@ public class Game implements Runnable {
     private int time;
     private int width;
     private int heigth;
-    private static final int MOVE_DELAY = 5;
     private Collection<DamageDealer> enemiesShells;
     private static final Logger logger = Logger.getLogger(Game.class.getName());
     private Thread thread;
@@ -66,23 +66,23 @@ public class Game implements Runnable {
     private Map<Integer, Boolean> keys = new HashMap<>();
     private final List<Bonus> bonuses = new ArrayList<>();
     private final List<Explosion> explosions = new ArrayList<>();
+    private double yScale;
+    private double xScale;
 
     static {
         logger.setLevel(java.util.logging.Level.INFO);
     }
-    private static final float DELAY = 1000 / 60f;
+    private float delay = 1000f / (10 + Global.getSpeed());
+    private int playerMoveDelay = (int) (11 - Global.getSpeed() / 10);
+    private int explosionDelay = (int) (11 - Global.getSpeed() / 10);
     private boolean enemiesCanMove;
     private Bonus currentBonus;
     private int timerTime;
-    private int EXPLOSION_DELAY = 5;
     private GameMode gameMode;
     private List<GameListener> listeners = new ArrayList<>();
 
     public Game(Canvas canvas, int width, int height) throws IOException {
-        FileHandler fileHandler = new FileHandler("log.txt");
-        fileHandler.setFormatter(new SimpleFormatter());
         gameMode = GameMode.OFF;
-        logger.addHandler(fileHandler);
         shells = new ArrayList<>();
         enemiesShells = new ArrayList<>();
         this.width = width;
@@ -104,6 +104,9 @@ public class Game implements Runnable {
                         case ARMOR_UP:
                             playerUnit.setArmor(playerUnit.getArmor() / 2);
                             break;
+                        case SWIM:
+                            playerUnit.getMoveAction().addImpassible(Material.WATER);
+                            break;
                     }
                     currentBonus = null;
                 }
@@ -121,7 +124,7 @@ public class Game implements Runnable {
             thread.start();
             enemiesCanMove = true;
             gameMode = GameMode.RUN;
-            notifyListeners();
+            notifyListeners(GameEvent.GAME_START);
         }
     }
 
@@ -130,7 +133,7 @@ public class Game implements Runnable {
             logger.info("Завершаю игру");
             gameMode = GameMode.OFF;
             timer.stop();
-            notifyListeners();
+            notifyListeners(GameEvent.GAME_BREAK);
             thread.interrupt();
             Thread.currentThread().interrupt();
         }
@@ -148,9 +151,9 @@ public class Game implements Runnable {
             long now = System.currentTimeMillis();
             long elapsed = (now - lastTime);
             lastTime = now;
-            delta += (elapsed / DELAY);
+            delta += (elapsed / delay);
             boolean render = false;
-            if (time % MOVE_DELAY == 0) {
+            if (time % playerMoveDelay == 0) {
                 checkKeys();
             }
             while (delta > 1 && gameMode != GameMode.OFF) {
@@ -172,12 +175,16 @@ public class Game implements Runnable {
 
     public void initGame(Campaign campaign) throws IOException {
         init();
-        Leveliterator = campaign.getLevels().iterator();
-        currentLevel = Leveliterator.next();
+        leveliterator = campaign.getLevels().iterator();
+        currentLevel = leveliterator.next();
+        refreshLevel();
     }
 
     private void init() throws IOException {
         Explosion.init();
+        Bonus.init();
+        xScale = Global.getMapWidth() / GeometryMap.MAX_WIDTH;
+        yScale = Global.getMapHeight() / GeometryMap.MAX_HEIGTH;
     }
 
     public void initRandomGame(GeometryMap map) throws IOException {
@@ -188,15 +195,8 @@ public class Game implements Runnable {
             currentLevel.addUnit(
                     UnitFactory.createEnemyUnit(UnitType.randomType(random)));
         }
-        playerUnit = UnitFactory.createPlayerUnit();
-        playerUnit.setLocation(map.getWidth() - map.getTileSize() * 4,
-                map.getHeight() - map.getTileSize() * 4);
-        bonuses.clear();
-        for (int i = 0; i < 4; i++) {
-            bonuses.add(new Bonus(random.nextInt(width),
-                    random.nextInt(heigth), Bonus.SIZE, BonusType.randomType(random)));
-        }
-        Leveliterator = new Iterator<Level>() {
+        currentLevel.setBonusesCount(4);
+        leveliterator = new Iterator<Level>() {
             @Override
             public boolean hasNext() {
                 return false;
@@ -207,7 +207,6 @@ public class Game implements Runnable {
                 return currentLevel;
             }
         };
-
         refreshLevel();
     }
 
@@ -215,6 +214,14 @@ public class Game implements Runnable {
         shells.clear();
         enemies = new ArrayList<>(currentLevel.getUnits());
         time = 0;
+        playerUnit = UnitFactory.createPlayerUnit();
+        playerUnit.setLocation(currentLevel.getMap().getWidth() - CombatUnit.UNIT_SIZE - 1,
+                currentLevel.getMap().getHeight() - CombatUnit.UNIT_SIZE - 1);
+        bonuses.clear();
+        for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
+            bonuses.add(new Bonus(random.nextInt(width), random.nextInt(heigth),
+                    Bonus.SIZE, BonusType.randomType(random)));
+        }
     }
 
     public void pressKey(KeyEvent e) {
@@ -288,21 +295,22 @@ public class Game implements Runnable {
     private void update() {
         if (gameMode == GameMode.RUN) {
             if (enemies.isEmpty()) {
-                if (Leveliterator.hasNext()) {
+                if (leveliterator.hasNext()) {
                     displayWinLevel();
-                    currentLevel = Leveliterator.next();
+                    currentLevel = leveliterator.next();
+                    notifyListeners(GameEvent.GAME_NEXT_LEVEL);
                     refreshLevel();
                 } else {
                     displayWinGame();
                     gameMode = GameMode.OFF;
-                    notifyListeners();
+                    notifyListeners(GameEvent.GAME_WIN);
                     return;
                 }
             }
             if (!playerUnit.isLive()) {
                 displayLoseGame();
                 gameMode = GameMode.OFF;
-                notifyListeners();
+                notifyListeners(GameEvent.GAME_LOSE);
                 return;
             }
             updateAttack();
@@ -313,7 +321,7 @@ public class Game implements Runnable {
             }
             removeDeadUnits();
             checkBonuses();
-            if (time % EXPLOSION_DELAY == 0) {
+            if (time % explosionDelay == 0) {
                 updateExplosions();
             }
         }
@@ -334,6 +342,7 @@ public class Game implements Runnable {
             CombatUnit unit = iterator.next();
             if (!unit.isLive()) {
                 iterator.remove();
+                notifyListeners(GameEvent.ENEMY_KILL);
             }
         }
     }
@@ -362,7 +371,9 @@ public class Game implements Runnable {
                         case ARMOR_UP:
                             playerUnit.setArmor(playerUnit.getArmor() * 2);
                             break;
-
+                        case SWIM:
+                            playerUnit.getMoveAction().removeImpassible(Material.WATER);
+                            break;
                     }
                     iterator.remove();
                 }
@@ -398,6 +409,7 @@ public class Game implements Runnable {
                 if (bomb.intersectsWith(playerUnit)) {
                     playerUnit.decreaseHealth(bomb.getDamage());
                     explosions.add(new Explosion(bomb));
+                    iterator.remove();
                 }
             } else {
                 Shell s = (Shell) dd;
@@ -471,8 +483,7 @@ public class Game implements Runnable {
     private void display() {
         if (gameMode == GameMode.RUN) {
             Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
-            g.scale(Global.getMapWidth() / GeometryMap.MAX_WIDTH,
-                    Global.getMapHeight() / GeometryMap.MAX_HEIGTH);
+            g.scale(xScale, yScale);
             g.clearRect(0, 0, width, heigth);
             currentLevel.getMap().draw(g);
             drawBonuses(g);
@@ -527,23 +538,22 @@ public class Game implements Runnable {
         logger.info("Получил команду на остановку игры");
         timer.stop();
         gameMode = GameMode.PAUSE;
-        Graphics drawGraphics = bufferStrategy.getDrawGraphics();
-        GeometryMap map = currentLevel.getMap();
-        drawGraphics.clearRect(0, 0, map.getWidth(), map.getHeight());
+        Graphics2D drawGraphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+        drawGraphics.scale(xScale, yScale);
+        drawGraphics.clearRect(0, 0, width, heigth);
         drawGraphics.drawString("Игра приостановлена. Нажмите Enter для "
-                + "продолжения или Esc для выхода", map.getWidth() / 3,
-                map.getHeight() / 2);
+                + "продолжения или Esc для выхода", width / 3, heigth / 2);
         bufferStrategy.show();
-        notifyListeners();
+        notifyListeners(GameEvent.GAME_PAUSE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
         }
     }
 
-    private void notifyListeners() {
-        logger.info("Оповещаю слушателей");
-        listeners.stream().forEach(GameListener::actionPerformed);
+    private void notifyListeners(GameEvent event) {
+        logger.info(() -> "Оповещаю слушателей о событии " + event);
+        listeners.stream().forEach((GameListener l) -> l.actionPerformed(event));
         logger.info("Оповестил слушателей");
     }
 
@@ -551,7 +561,7 @@ public class Game implements Runnable {
         logger.info("Получил команду на продолжение игры");
         timer.start();
         gameMode = GameMode.RUN;
-        notifyListeners();
+        notifyListeners(GameEvent.GAME_RESUME);
     }
 
     public GameMode getGameMode() {

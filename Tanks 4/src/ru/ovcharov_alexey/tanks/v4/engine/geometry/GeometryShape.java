@@ -53,7 +53,7 @@ public abstract class GeometryShape implements Shape {
     public GeometryPoint getPoint() {
         return point;
     }
-    
+
     public GeometryShape(float x, float y, int width, int height) {
         this.point = new GeometryPoint(x, y);
         this.width = width;
@@ -69,11 +69,13 @@ public abstract class GeometryShape implements Shape {
     public GeometryShape(int width, int height) {
         this.width = width;
         this.height = height;
+        this.point = new GeometryPoint(0, 0);
     }
 
     public GeometryShape(int size) {
         this.width = size;
         this.height = size;
+        this.point = new GeometryPoint(0, 0);
     }
 
     public boolean intersectsWith(Shape shape) {

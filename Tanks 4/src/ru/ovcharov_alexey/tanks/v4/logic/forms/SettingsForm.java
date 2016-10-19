@@ -1,5 +1,9 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 
 /**
@@ -7,11 +11,21 @@ import ru.ovcharov_alexey.tanks.v4.engine.Global;
  * @author Алексей
  */
 public class SettingsForm extends javax.swing.JDialog {
+
     public SettingsForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        setLocationRelativeTo(null);
+        init();
     }
+
+    private void init() {
+        setLocationRelativeTo(null);
+        this.cbMapSize.setSelectedIndex(Global.getMapSizeIndex());
+        cbMapSize.setSelectedIndex(Global.getMapSizeIndex());
+        sliderGameSpeed.setValue((int) Global.getSpeed());
+        tfCampaignFolderPath.setText(Global.getPathToCompaniesFolder());
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -21,6 +35,9 @@ public class SettingsForm extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         sliderGameSpeed = new javax.swing.JSlider();
         bApply = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        tfCampaignFolderPath = new javax.swing.JTextField();
+        bFindCampaignFolder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -37,6 +54,15 @@ public class SettingsForm extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setText("Путь к папке, где лежат файлы кампаний:");
+
+        bFindCampaignFolder.setText("Найти...");
+        bFindCampaignFolder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bFindCampaignFolderActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -44,16 +70,23 @@ public class SettingsForm extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(44, 44, 44)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(sliderGameSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbMapSize, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(70, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bApply)
+                    .addComponent(tfCampaignFolderPath)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(bApply))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(44, 44, 44)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(sliderGameSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbMapSize, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 60, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bFindCampaignFolder)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -67,7 +100,13 @@ public class SettingsForm extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(sliderGameSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(bFindCampaignFolder))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(tfCampaignFolderPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
                 .addComponent(bApply)
                 .addContainerGap())
         );
@@ -76,18 +115,35 @@ public class SettingsForm extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bApplyActionPerformed
-        Global.setMapSize(Global.MAP_SIZE_VALUES[cbMapSize.getSelectedIndex()]);
+        Global.setMapSizeIndex(cbMapSize.getSelectedIndex());
         Global.setSpeed(sliderGameSpeed.getValue());
+        Global.setPathToCompaniesFolder(tfCampaignFolderPath.getText());
         dispose();
     }//GEN-LAST:event_bApplyActionPerformed
+
+    private void bFindCampaignFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bFindCampaignFolderActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                tfCampaignFolderPath.setText(chooser.getSelectedFile().getCanonicalPath());
+            } catch (IOException ex) {
+                tfCampaignFolderPath.setText(ex.toString());
+            }
+        }
+    }//GEN-LAST:event_bFindCampaignFolderActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bApply;
+    private javax.swing.JButton bFindCampaignFolder;
     private javax.swing.JComboBox<String> cbMapSize;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JSlider sliderGameSpeed;
+    private javax.swing.JTextField tfCampaignFolderPath;
     // End of variables declaration//GEN-END:variables
 
 }

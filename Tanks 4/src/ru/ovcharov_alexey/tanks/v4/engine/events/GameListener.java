@@ -7,5 +7,5 @@ package ru.ovcharov_alexey.tanks.v4.engine.events;
 @FunctionalInterface
 public interface GameListener {
 
-    void actionPerformed();
+    void actionPerformed(GameEvent eventType);
 }
