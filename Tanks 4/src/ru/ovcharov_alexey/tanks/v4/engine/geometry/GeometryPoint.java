@@ -7,27 +7,27 @@ package ru.ovcharov_alexey.tanks.v4.engine.geometry;
  */
 public class GeometryPoint {
 
-    int x;
-    int y;
+    float x;
+    float y;
 
-    public GeometryPoint(int x, int y) {
+    public GeometryPoint(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
@@ -55,8 +55,8 @@ public class GeometryPoint {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + this.x;
-        hash = 67 * hash + this.y;
+        hash = (int) (67 * hash + this.x);
+        hash = (int) (67 * hash + this.y);
         return hash;
     }
 

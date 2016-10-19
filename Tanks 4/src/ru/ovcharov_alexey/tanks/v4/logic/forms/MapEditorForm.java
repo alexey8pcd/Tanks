@@ -1,5 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import ru.ovcharov_alexey.tanks.v4.logic.controllers.MapEditorController;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import javax.swing.JOptionPane;
@@ -9,18 +11,23 @@ import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
  *
  * @author Алексей
  */
-public class MapEditor extends javax.swing.JDialog {
+public class MapEditorForm extends javax.swing.JDialog {
 
     private MapEditorController mapEditorController;
     private boolean saveOnClose;
 
-    public MapEditor(java.awt.Frame parent, boolean modal) {
+    public MapEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        init();
+    }
+
+    private void init() {
         saveOnClose = true;
         mapEditorController = new MapEditorController(paneDraw.getWidth(),
                 paneDraw.getHeight(), paneDraw.getGraphics());
         sliderScale.setValue(mapEditorController.getScale());
+        setLocationRelativeTo(null);
     }
 
     private void exit() {
@@ -275,29 +282,10 @@ public class MapEditor extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void paneDrawMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMousePressed
-        mapEditorController.addTilesOnMap();
-    }//GEN-LAST:event_paneDrawMousePressed
-
-    private void paneDrawMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseMoved
-        mapEditorController.setToolLocation(evt.getX(), evt.getY());
-    }//GEN-LAST:event_paneDrawMouseMoved
-
-    private void paneDrawMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_paneDrawMouseWheelMoved
-        mapEditorController.changeScale(evt.getWheelRotation(), evt.getX(), evt.getY());
-        sliderScale.setValue(mapEditorController.getScale());
-        sliderScale.updateUI();
-    }//GEN-LAST:event_paneDrawMouseWheelMoved
-
     private void sliderScaleStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderScaleStateChanged
         int scale = sliderScale.getValue();
         mapEditorController.setToolSize(scale);
     }//GEN-LAST:event_sliderScaleStateChanged
-
-    private void paneDrawMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseDragged
-        mapEditorController.setToolLocation(evt.getX(), evt.getY());
-        mapEditorController.addTilesOnMap();
-    }//GEN-LAST:event_paneDrawMouseDragged
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
         exit();
@@ -346,6 +334,25 @@ public class MapEditor extends javax.swing.JDialog {
     private void bRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRedoActionPerformed
         mapEditorController.redo();
     }//GEN-LAST:event_bRedoActionPerformed
+
+    private void paneDrawMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMousePressed
+        mapEditorController.addTilesOnMap();
+    }//GEN-LAST:event_paneDrawMousePressed
+
+    private void paneDrawMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_paneDrawMouseWheelMoved
+        mapEditorController.changeScale(evt.getWheelRotation(), evt.getX(), evt.getY());
+        sliderScale.setValue(mapEditorController.getScale());
+        sliderScale.updateUI();
+    }//GEN-LAST:event_paneDrawMouseWheelMoved
+
+    private void paneDrawMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseMoved
+        mapEditorController.setToolLocation(evt.getX(), evt.getY());
+    }//GEN-LAST:event_paneDrawMouseMoved
+
+    private void paneDrawMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paneDrawMouseDragged
+        mapEditorController.setToolLocation(evt.getX(), evt.getY());
+        mapEditorController.addTilesOnMap();
+    }//GEN-LAST:event_paneDrawMouseDragged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

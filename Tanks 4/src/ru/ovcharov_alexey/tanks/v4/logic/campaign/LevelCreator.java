@@ -12,7 +12,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.factory.UnitFactory;
-import ru.ovcharov_alexey.tanks.v4.logic.forms.MapEditor;
+import ru.ovcharov_alexey.tanks.v4.logic.forms.MapEditorForm;
 import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
 
 /**
@@ -29,7 +29,7 @@ public class LevelCreator {
     }
 
     public String createMap() {
-        MapEditor mapEditor = new MapEditor(null, true);
+        MapEditorForm mapEditor = new MapEditorForm(null, true);
         mapEditor.disableSaveOnClose();
         mapEditor.setVisible(true);
         this.map = mapEditor.getMap();
@@ -37,19 +37,13 @@ public class LevelCreator {
     }
 
     public String loadMap() {
-        try {
-            JFileChooser chooser = new JFileChooser();
-            int result = chooser.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = chooser.getSelectedFile();
-                this.map = GeometryMapPersistance.loadFromFile(selectedFile);
-                return selectedFile.getCanonicalPath();
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Произошла ошибка при"
-                    + " открытии файла: " + e.getMessage());
+        GeometryMapPersistance.MapData mapData = GeometryMapPersistance.loadFromFile();
+        if (mapData == GeometryMapPersistance.MapData.EMPTY) {
+            return "Карта не выбрана";
+        } else {
+            this.map = mapData.getGeometryMap();
+            return mapData.getFileName();
         }
-        return "Карта не выбрана";
     }
 
     public void addUnits(int count, int selectedIndex) {

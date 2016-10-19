@@ -2,6 +2,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.physics;
 
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
 
 /**
@@ -10,15 +11,15 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
  */
 public interface Movable extends Shape {
 
-    boolean move(GeometryMap map);
+    boolean move(GeometryMap map, GeometryPoint point);
 
-    boolean canMove(GeometryMap map);
+    boolean canMove(GeometryMap map, GeometryPoint point);
 
-    int getSpeed();
+    float getSpeed();
 
-    void setSpeed(int moveSpeed);
+    void setSpeed(float moveSpeed);
 
-    void setLocation(int x, int y);
+    void setLocation(float x, float y);
 
     Direction getDirection();
 

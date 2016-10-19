@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 
 /**
@@ -13,8 +14,8 @@ import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
  */
 public abstract class AbstractMoveActionWithCollision implements MoveAction {
 
-    protected int dLeftX;
-    protected int dTopY;
+    protected float dLeftX;
+    protected float dTopY;
     protected boolean slowMove;
     protected final EnumSet<Material> impassable;
 
@@ -23,15 +24,15 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
     }
 
     @Override
-    public abstract boolean move(Movable movable, GeometryMap map);
+    public abstract boolean move(Movable movable, GeometryMap map, GeometryPoint target);
 
     @Override
-    public boolean canMove(Movable movable, GeometryMap map) {
-        int speed = movable.getSpeed();
+    public boolean canMove(Movable movable, GeometryMap map, GeometryPoint target) {
+        float speed = movable.getSpeed();
         calculateDesirePosition(movable, speed);
-        int dRightX = dLeftX + movable.getWidth();
-        int dDownY = dTopY + movable.getHeight();
-        if (!intoMap(dRightX, dDownY, map)) {
+        float dRightX = dLeftX + movable.getWidth();
+        float dDownY = dTopY + movable.getHeight();
+        if (!intoMap((int) dRightX, (int) dDownY, map)) {
             return false;
         }
         return !detectCollisions(map, dRightX, dDownY);
@@ -43,7 +44,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      * @param movable
      * @param speed
      */
-    protected void calculateDesirePosition(Movable movable, int speed) {
+    protected void calculateDesirePosition(Movable movable, float speed) {
         dLeftX = movable.getX();
         dTopY = movable.getY();
         switch (movable.getDirection()) {
@@ -70,12 +71,12 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      * @param dDownY
      * @return true, если обнаружено столкновение, false иначе
      */
-    protected boolean detectCollisions(GeometryMap map, int dRightX, int dDownY) {
+    protected boolean detectCollisions(GeometryMap map, float dRightX, float dDownY) {
         int tileSize = map.getTileSize();
         slowMove = false;
-        for (int x = dLeftX; x < dRightX;) {
-            for (int y = dTopY; y < dDownY;) {
-                Material material = map.getTile(x, y);
+        for (float x = dLeftX; x < dRightX;) {
+            for (float y = dTopY; y < dDownY;) {
+                Material material = map.getTile((int) x, (int) y);
                 if (material == Material.ICE) {
                     slowMove = true;
                 }

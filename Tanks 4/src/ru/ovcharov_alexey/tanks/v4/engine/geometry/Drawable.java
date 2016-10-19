@@ -9,4 +9,5 @@ import java.awt.Graphics;
 public interface Drawable extends Visibility{
 
     public void draw(Graphics g);
+
 }

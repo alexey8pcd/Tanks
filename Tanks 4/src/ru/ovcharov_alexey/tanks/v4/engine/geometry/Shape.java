@@ -9,8 +9,8 @@ public interface Shape {
 
     int getWidth();
 
-    int getX();
+    float getX();
 
-    int getY();
+    float getY();
 
 }

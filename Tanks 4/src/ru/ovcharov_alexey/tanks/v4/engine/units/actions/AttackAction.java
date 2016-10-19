@@ -10,6 +10,6 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
  */
 public interface AttackAction {
 
-    void attack(CombatUnit attacker, Collection<DamageDealer> container);
+    void attack(CombatUnit attacker, Collection<DamageDealer> container, CombatUnit attackable);
 
 }

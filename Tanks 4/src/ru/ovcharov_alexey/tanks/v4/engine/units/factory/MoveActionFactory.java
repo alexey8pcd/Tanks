@@ -1,9 +1,10 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.factory;
 
+import ru.ovcharov_alexey.tanks.v4.engine.units.actions.SimpleSearchMove;
 import java.util.EnumSet;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.MoveAction;
-import ru.ovcharov_alexey.tanks.v4.engine.units.actions.StraigthMoveWithoutBreaking;
+import ru.ovcharov_alexey.tanks.v4.engine.units.actions.StraigthMove;
 
 /**
  * @author Alexey
@@ -11,14 +12,16 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.actions.StraigthMoveWithoutBreak
 public class MoveActionFactory {
 
     public static final MoveAction UNIT_STRAIGHT_MOVE_WITHOUT_BREAKING
-            = new StraigthMoveWithoutBreaking(
+            = new StraigthMove(
                     EnumSet.of(Material.ARMOR,
                             Material.BRICK,
                             Material.WATER)
             );
+    public static final MoveAction UNIT_SIMPLE_SEARCH_MOVE = new SimpleSearchMove(
+            EnumSet.of(Material.ARMOR, Material.BRICK, Material.WATER));
 
     public static MoveAction createMoveAction(String className) {
-        if (StraigthMoveWithoutBreaking.class.getCanonicalName().equals(className)) {
+        if (StraigthMove.class.getCanonicalName().equals(className)) {
             return UNIT_STRAIGHT_MOVE_WITHOUT_BREAKING;
         } else {
             throw new IllegalArgumentException("Класс с именем " + className + " не найден");

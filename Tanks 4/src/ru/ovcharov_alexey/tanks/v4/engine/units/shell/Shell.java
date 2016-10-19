@@ -1,5 +1,6 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.shell;
 
+import java.awt.Color;
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.BreakingStraightMove;
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.MoveAction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
@@ -20,7 +21,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
 public class Shell extends RelocatingShape
         implements Drawable, Breaking, DamageDealer {
 
-    private final int damage;
+    private int damage;
     private boolean alive;
     private BreakingStrength breakingStrength;
 
@@ -30,7 +31,7 @@ public class Shell extends RelocatingShape
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(
             EnumSet.of(Material.ARMOR, Material.BRICK, Material.WOOD));
 
-    public Shell(int x, int y, int size, int speed, int damage,
+    public Shell(float x, float y, int size, int speed, int damage,
             BreakingStrength breakingStrength, Direction direction) {
         super(speed, x, y, size, direction, MOVE_ACTION);
         this.damage = damage;
@@ -69,7 +70,9 @@ public class Shell extends RelocatingShape
     @Override
     public void draw(Graphics g) {
         g.setColor(breakingStrength.getColor());
-        g.fillRect(getX(), getY(), SHELL_SIZE, SHELL_SIZE);
+        g.fillOval((int)getX(), (int)getY(), SHELL_SIZE, SHELL_SIZE);
+        g.setColor(Color.BLACK);
+        g.drawRect((int)getX(), (int)getY(), getWidth(), getHeight());
     }
 
     @Override
@@ -85,6 +88,15 @@ public class Shell extends RelocatingShape
     @Override
     public boolean isVisible() {
         return true;
+    }
+
+    @Override
+    public boolean isFixedPosition() {
+        return false;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 
 }

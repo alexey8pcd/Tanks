@@ -8,27 +8,27 @@ import java.util.Objects;
  *
  * @author alex
  */
-public abstract class GeometryShape implements Shape{
+public abstract class GeometryShape implements Shape {
 
     protected GeometryPoint point;//левый верхний угол геометрической фигуры
     protected int width;
     protected int height;
 
     @Override
-    public int getX() {
+    public float getX() {
         return point.x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.point.x = x;
     }
 
     @Override
-    public int getY() {
+    public float getY() {
         return point.y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.point.y = y;
     }
 
@@ -50,13 +50,17 @@ public abstract class GeometryShape implements Shape{
         this.height = height;
     }
 
-    public GeometryShape(int x, int y, int width, int height) {
+    public GeometryPoint getPoint() {
+        return point;
+    }
+    
+    public GeometryShape(float x, float y, int width, int height) {
         this.point = new GeometryPoint(x, y);
         this.width = width;
         this.height = height;
     }
 
-    public GeometryShape(int x, int y, int size) {
+    public GeometryShape(float x, float y, int size) {
         this.point = new GeometryPoint(x, y);
         this.width = size;
         this.height = size;
@@ -66,10 +70,19 @@ public abstract class GeometryShape implements Shape{
         this.width = width;
         this.height = height;
     }
-    
-    public GeometryShape(int size){
+
+    public GeometryShape(int size) {
         this.width = size;
         this.height = size;
+    }
+
+    public boolean intersectsWith(Shape shape) {
+        int shapeRightX = (int) (shape.getX() + shape.getWidth());
+        int shapeDownY = (int) (shape.getY() + shape.getHeight());
+        int rightX = (int) (getX() + width);
+        int downY = (int) (getY() + height);
+        return !(getY() > shapeDownY || downY < shape.getY()
+                || rightX < shape.getX() || getX() > shapeRightX);
     }
 
     @Override

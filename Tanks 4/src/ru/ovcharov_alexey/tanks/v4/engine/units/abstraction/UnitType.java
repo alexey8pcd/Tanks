@@ -1,5 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.abstraction;
 
+import java.util.Random;
+
 /**
  *
  * @author alex
@@ -12,6 +14,7 @@ public enum UnitType {
     TANK(4, "Танк"),
     FOCUSED_BLASTING(5, "Фугас"),
     DOUBLE_WEAPON_VEHICLE(6, "Двухорудийная машина");
+
     private final int type;
     private final String name;
 
@@ -24,9 +27,9 @@ public enum UnitType {
         throw new IllegalArgumentException("Тип " + type + " не существует");
     }
 
-    public static UnitType typeOf(String name){
+    public static UnitType typeOf(String name) {
         for (UnitType value : values()) {
-            if(value.name.equals(name)){
+            if (value.name.equals(name)) {
                 return value;
             }
         }
@@ -46,7 +49,13 @@ public enum UnitType {
     public String toString() {
         return name;
     }
-    
-    
+
+    public static UnitType randomType(Random random) {
+        if (random == null) {
+            random = new Random();
+        }
+        int type = random.nextInt(values().length) + 1;
+        return typeOf(type);
+    }
 
 }

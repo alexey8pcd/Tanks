@@ -21,9 +21,10 @@ public class RelocatingShapeDrawer {
     public NamedImage[] getImages() {
         return images;
     }
+
     public void drawUnit(RelocatingShape shape, Graphics g) {
         Image image = images[shape.getDirection().getIndex()].getImage();
-        g.drawImage(image, shape.getX(), shape.getY(),
+        g.drawImage(image, (int) shape.getX(), (int) shape.getY(),
                 shape.getWidth(), shape.getHeight(), null);
     }
 

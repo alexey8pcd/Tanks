@@ -8,7 +8,8 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
  */
 public interface DamageDealer extends Visibility{
 
-    public int getDamage();
+    int getDamage();
 
+    boolean isFixedPosition();
     
 }

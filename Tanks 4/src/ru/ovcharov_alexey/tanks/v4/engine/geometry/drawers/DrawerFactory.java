@@ -17,15 +17,15 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 public class DrawerFactory {
 
     private static RelocatingShapeDrawer playerUnitDrawer;
-    private static final Map<UnitType, RelocatingShapeDrawer> drawers;
+    private static final Map<UnitType, RelocatingShapeDrawer> DRAWERS;
     private static final int DIRECTIONS_COUNT = 4;
 
     static {
-        drawers = new HashMap<>();
+        DRAWERS = new HashMap<>();
         try {
             playerUnitDrawer = createPlayerUnitDrawer();
             for (UnitType type : UnitType.values()) {
-                drawers.put(type, createDrawer(type));
+                DRAWERS.put(type, createDrawer(type));
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ошибка при загрузке изображений, " + e);
@@ -62,12 +62,12 @@ public class DrawerFactory {
     }
     
 
-    public static RelocatingShapeDrawer getPlayerUnitDrawer() throws IOException {
+    public static RelocatingShapeDrawer getPlayerUnitDrawer() {
         return playerUnitDrawer;
     }
 
     public static RelocatingShapeDrawer getDrawer(UnitType unitType) {
-        return drawers.get(unitType);
+        return DRAWERS.get(unitType);
     }
 
 }

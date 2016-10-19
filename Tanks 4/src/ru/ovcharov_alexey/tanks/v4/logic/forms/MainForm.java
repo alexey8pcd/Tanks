@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,19 +13,9 @@ import java.util.logging.Logger;
  */
 public class MainForm extends javax.swing.JFrame {
 
-    private final int width = 768;
-    private final int height = 512;
-    private final Dimension screenSize 
-            = Toolkit.getDefaultToolkit().getScreenSize();
-
-    /**
-     * Creates new form MainForm
-     *
-     * @throws java.io.IOException
-     */
     public MainForm() throws IOException {
         initComponents();
-        setLocation();
+        setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -36,62 +27,106 @@ public class MainForm extends javax.swing.JFrame {
         bMapEditor = new javax.swing.JButton();
         bCampaignEditor = new javax.swing.JButton();
         bStats = new javax.swing.JButton();
+        bSettings = new javax.swing.JButton();
         bExit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(500, 500));
         setResizable(false);
-        getContentPane().setLayout(new java.awt.GridLayout(6, 3));
 
         bSinglePlayer.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bSinglePlayer.setText("Одиночная игра");
-        getContentPane().add(bSinglePlayer);
+        bSinglePlayer.setPreferredSize(new java.awt.Dimension(460, 80));
+        bSinglePlayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bSinglePlayerActionPerformed(evt);
+            }
+        });
 
         bCampaign.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bCampaign.setText("Кампания");
-        getContentPane().add(bCampaign);
+        bCampaign.setPreferredSize(new java.awt.Dimension(460, 80));
 
         bMapEditor.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bMapEditor.setText("Редактор карт");
+        bMapEditor.setPreferredSize(new java.awt.Dimension(460, 80));
         bMapEditor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bMapEditorActionPerformed(evt);
             }
         });
-        getContentPane().add(bMapEditor);
 
         bCampaignEditor.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bCampaignEditor.setText("Редактор кампаний");
+        bCampaignEditor.setPreferredSize(new java.awt.Dimension(460, 80));
         bCampaignEditor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bCampaignEditorActionPerformed(evt);
             }
         });
-        getContentPane().add(bCampaignEditor);
 
         bStats.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bStats.setText("Статистика");
-        getContentPane().add(bStats);
+        bStats.setPreferredSize(new java.awt.Dimension(460, 80));
+
+        bSettings.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        bSettings.setText("Настройки");
+        bSettings.setPreferredSize(new java.awt.Dimension(460, 80));
+        bSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bSettingsActionPerformed(evt);
+            }
+        });
 
         bExit.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bExit.setText("Выйти");
+        bExit.setPreferredSize(new java.awt.Dimension(460, 80));
         bExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bExitActionPerformed(evt);
             }
         });
-        getContentPane().add(bExit);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(bCampaign, javax.swing.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
+                    .addComponent(bCampaignEditor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bMapEditor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bStats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bSinglePlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(bSinglePlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bCampaign, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bMapEditor, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bCampaignEditor, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bSettings, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bStats, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bExit, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-   
-    final void setLocation(){
-        this.setLocation(screenSize.width / 2 - width / 2,
-                screenSize.height / 2 - height / 2);
-    }
 
     private void bMapEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bMapEditorActionPerformed
-        new MapEditor(this, true).setVisible(true);
+        new MapEditorForm(this, true).setVisible(true);
     }//GEN-LAST:event_bMapEditorActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
@@ -100,8 +135,24 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bExitActionPerformed
 
     private void bCampaignEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignEditorActionPerformed
-        new CampaignEditor(this, true).setVisible(true);
+        new CampaignEditorForm(this, true).setVisible(true);
     }//GEN-LAST:event_bCampaignEditorActionPerformed
+
+    private void bSinglePlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSinglePlayerActionPerformed
+        GameForm gameForm;
+        try {
+            gameForm = new GameForm(this, true);
+            gameForm.singlePlayGame();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+
+
+    }//GEN-LAST:event_bSinglePlayerActionPerformed
+
+    private void bSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSettingsActionPerformed
+        new SettingsForm(this, true).setVisible(true);
+    }//GEN-LAST:event_bSettingsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,6 +196,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton bCampaignEditor;
     private javax.swing.JButton bExit;
     private javax.swing.JButton bMapEditor;
+    private javax.swing.JButton bSettings;
     private javax.swing.JButton bSinglePlayer;
     private javax.swing.JButton bStats;
     // End of variables declaration//GEN-END:variables

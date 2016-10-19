@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
@@ -27,8 +28,6 @@ public class GeometryMapPersistance {
         return false;
     }
 
-    
-
     private static void showSaveErrorMessage(Exception ex) throws HeadlessException {
         showErrorMessage(ex, "сохранении");
     }
@@ -43,16 +42,45 @@ public class GeometryMapPersistance {
         showErrorMessage(ex, "загрузке");
     }
 
-    public static GeometryMap loadFromFile(File source) {
+    public static MapData loadFromFile() {
         try {
-            try (DataInputStream inputStream = new DataInputStream(new FileInputStream(source))) {
-                return GeometryMap.load(inputStream);
+            JFileChooser chooser = new JFileChooser();
+            int result = chooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = chooser.getSelectedFile();
+                String canonicalPath = selectedFile.getCanonicalPath();
+                try (DataInputStream inputStream
+                        = new DataInputStream(new FileInputStream(selectedFile))) {
+                    GeometryMap geometryMap = GeometryMap.load(inputStream);
+                    return new MapData(geometryMap, canonicalPath);
+                }
             }
         } catch (IOException ex) {
             showLoadErrorMessage(ex);
         }
-        return null;
+        return MapData.EMPTY;
     }
 
+    public static class MapData {
+
+        public static final MapData EMPTY = new MapData(null, null);
+
+        private final GeometryMap geometryMap;
+        private final String fileName;
+
+        public MapData(GeometryMap geometryMap, String fileName) {
+            this.geometryMap = geometryMap;
+            this.fileName = fileName;
+        }
+
+        public GeometryMap getGeometryMap() {
+            return geometryMap;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+    }
 
 }

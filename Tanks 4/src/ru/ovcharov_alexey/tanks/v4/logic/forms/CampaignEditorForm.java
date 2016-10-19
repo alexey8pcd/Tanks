@@ -1,8 +1,8 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -13,14 +13,19 @@ import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelCreator;
  *
  * @author Алексей
  */
-public class CampaignEditor extends javax.swing.JDialog {
+public class CampaignEditorForm extends javax.swing.JDialog {
 
     private LevelCreator levelCreator;
     private Campaign campaign;
 
-    public CampaignEditor(java.awt.Frame parent, boolean modal) {
+    public CampaignEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        init();
+    }
+
+    private void init() {
+        setLocationRelativeTo(null);
         campaign = new Campaign();
         levelCreator = new LevelCreator();
         listLevels.setModel(new AbstractListModel<String>() {
@@ -47,6 +52,7 @@ public class CampaignEditor extends javax.swing.JDialog {
         });
     }
 
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

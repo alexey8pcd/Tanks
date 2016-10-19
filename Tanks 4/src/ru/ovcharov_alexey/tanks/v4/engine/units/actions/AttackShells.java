@@ -11,16 +11,14 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.shell.ShellPool;
 */
 public class AttackShells implements AttackAction {
 
-    public AttackShells() {
-    }
-
     @Override
-    public void attack(CombatUnit attacker, Collection<DamageDealer> container) {
+    public void attack(CombatUnit attacker, Collection<DamageDealer> container, CombatUnit attackable) {
         Shell shell = ShellPool.getInstance().take();
         shell.setLocation(attacker.getX() + attacker.getWidth() / 2, 
                 attacker.getY() + attacker.getHeight() / 2);
         shell.setBreakingStrength(attacker.getBreakingStrength());
         shell.setDirection(attacker.getDirection());
+        shell.setDamage(attacker.getDamage());
         container.add(shell);
     }
 

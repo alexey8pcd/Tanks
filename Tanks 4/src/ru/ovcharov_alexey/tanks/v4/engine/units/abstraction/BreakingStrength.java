@@ -10,8 +10,8 @@ import java.awt.Color;
 public enum BreakingStrength {
 
     BREAK_WOOD(Color.GREEN, 1),
-    BREAK_BRICKS(Color.RED, 2),
-    BREAK_ARMOR(Color.BLUE, 3);
+    BREAK_BRICKS(Color.YELLOW, 2),
+    BREAK_ARMOR(Color.RED, 3);
 
     private final Color color;
     private final int power;

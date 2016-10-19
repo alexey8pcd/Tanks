@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Liveable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Breaking;
@@ -18,19 +19,19 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
     }
 
     @Override
-    public boolean move(Movable movable, GeometryMap map) {
+    public boolean move(Movable movable, GeometryMap map, GeometryPoint point) {
         calculateDesirePosition(movable, movable.getSpeed());
-        int dRightX = dLeftX + movable.getWidth();
-        int dDownY = dTopY + movable.getHeight();
-        if (intoMap(dRightX, dDownY, map)) {
+        float dRightX = dLeftX + movable.getWidth();
+        float dDownY = dTopY + movable.getHeight();
+        if (intoMap((int) dRightX, (int) dDownY, map)) {
             int tileSize = map.getTileSize();
-            for (int x = dLeftX; x < dRightX;) {
-                for (int y = dTopY; y < dDownY;) {
-                    Material material = map.getTile(x, y);
+            for (float x = dLeftX; x < dRightX;) {
+                for (float y = dTopY; y < dDownY;) {
+                    Material material = map.getTile((int) x, (int) y);
                     if (impassable.contains(material)) {
                         Breaking breaking = (Breaking) movable;
                         if (breaking.getBreakingStrength().isBreak(material)) {
-                            map.setTile(x, y, Material.TERRA);
+                            map.setTile((int) x, (int) y, Material.TERRA);
                             breaking.setLive(false);
                         }
                         return false;
