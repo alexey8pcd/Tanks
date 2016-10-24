@@ -2,7 +2,8 @@ package ru.ovcharov_alexey.tanks.v4.engine;
 
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,22 +16,23 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
  */
 public class GeometryMap extends GeometryShape implements Drawable {
 
-
     public static final int MIN_TILE_SIZE = 1;
     public static final int DEFAUL_TILE_SIZE = 8;
     public static final int MAX_TILE_SIZE = 16;
     public static final int MAX_WIDTH = 768;
     public static final int MAX_HEIGTH = 512;
 
-    
     private final Material[] tiles;
     private final int rowsCount;
     private final int columnsCount;
     private final int tileSize;
+    private final BufferedImage offset;
 
-    private GeometryMap(int width, int height, int tileSize) {
+    private GeometryMap(int width, int height, int tileSize) throws Exception {
         super(0, 0, width, height);
         this.tileSize = tileSize;
+        Material.init(tileSize);
+        offset = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         rowsCount = height / tileSize;
         columnsCount = width / tileSize;
         tiles = new Material[rowsCount * columnsCount];
@@ -40,7 +42,7 @@ public class GeometryMap extends GeometryShape implements Drawable {
             }
         }
     }
-    
+
     public void save(DataOutputStream outputStream) throws IOException {
         outputStream.writeInt(getTileSize());
         outputStream.writeInt(getRowsCount());
@@ -51,8 +53,8 @@ public class GeometryMap extends GeometryShape implements Drawable {
             }
         }
     }
-    
-    public static GeometryMap load(DataInputStream inputStream) throws IOException {
+
+    public static GeometryMap load(DataInputStream inputStream) throws Exception {
         int tileSize = inputStream.readInt();
         int rowCount = inputStream.readInt();
         int columnCount = inputStream.readInt();
@@ -86,12 +88,13 @@ public class GeometryMap extends GeometryShape implements Drawable {
      * Создает новую карту 768*512 пикселей с ячейками в 1 пиксель.
      *
      * @return
+     * @throws java.lang.Exception
      */
-    public static GeometryMap newInstance() {
+    public static GeometryMap newInstance() throws Exception {
         return new GeometryMap(MAX_WIDTH, MAX_HEIGTH, DEFAUL_TILE_SIZE);
     }
 
-    public static GeometryMap copyMap(GeometryMap toCopy) {
+    public static GeometryMap copyMap(GeometryMap toCopy) throws Exception {
         GeometryMap map = new GeometryMap(toCopy.getWidth(), toCopy.getHeight(),
                 toCopy.getTileSize());
         for (int row = 0; row < map.rowsCount; row++) {
@@ -102,7 +105,7 @@ public class GeometryMap extends GeometryShape implements Drawable {
         return map;
     }
 
-    public static GeometryMap newInstance(int tileSize, int rows, int columns) {
+    public static GeometryMap newInstance(int tileSize, int rows, int columns) throws Exception {
         if (tileSize < MIN_TILE_SIZE || tileSize > MAX_TILE_SIZE) {
             throw new IllegalArgumentException("Размер ячейки карты задан неверно");
         }
@@ -160,20 +163,25 @@ public class GeometryMap extends GeometryShape implements Drawable {
     }
 
     @Override
-    public void draw(Graphics g) {
-        for (int i = 0, y = 0; i < rowsCount; ++i, y += tileSize) {
-            for (int j = 0, x = 0; j < columnsCount; ++j, x += tileSize) {
-                g.setColor(tiles[i * columnsCount + j].getColor());
-                g.fillRect(x, y, tileSize, tileSize);
-            }
-        }
+    public void draw(Graphics2D g) {
+        g.drawImage(drawIntoImage(), 0, 0, null);
     }
 
-    public void drawWithGrid(Graphics g) {
+    public BufferedImage drawIntoImage() {
         for (int i = 0, y = 0; i < rowsCount; ++i, y += tileSize) {
             for (int j = 0, x = 0; j < columnsCount; ++j, x += tileSize) {
-                g.setColor(tiles[i * columnsCount + j].getColor());
-                g.fillRect(x, y, tileSize, tileSize);
+                Material tile = tiles[i * columnsCount + j];
+                int[] buffer = tile.getImageBuffer();
+                offset.setRGB(x, y, tileSize, tileSize, buffer, 0, tileSize);
+            }
+        }
+        return offset;
+    }
+
+    public void drawWithGrid(Graphics2D g) {
+        draw(g);
+        for (int i = 0, y = 0; i < rowsCount; ++i, y += tileSize) {
+            for (int j = 0, x = 0; j < columnsCount; ++j, x += tileSize) {
                 g.setColor(Color.BLACK);
                 g.drawLine(x, 0, x, height);
                 g.drawLine(0, y, width, y);

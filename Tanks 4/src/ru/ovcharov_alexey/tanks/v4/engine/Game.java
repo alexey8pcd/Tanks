@@ -2,9 +2,12 @@ package ru.ovcharov_alexey.tanks.v4.engine;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
@@ -17,29 +20,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
-import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.BreakingStrength;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Liveable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 import ru.ovcharov_alexey.tanks.v4.engine.units.bonus.Bonus;
 import ru.ovcharov_alexey.tanks.v4.engine.units.bonus.BonusType;
+import ru.ovcharov_alexey.tanks.v4.engine.units.bonus.GameContext;
 import ru.ovcharov_alexey.tanks.v4.engine.units.shell.Shell;
 import ru.ovcharov_alexey.tanks.v4.engine.units.factory.UnitFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.units.shell.InvisibleBomb;
 import ru.ovcharov_alexey.tanks.v4.engine.units.shell.ShellPool;
-import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Level;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
 
 /**
  * @author Alexey
@@ -57,8 +57,6 @@ public class Game implements Runnable {
     private Timer timer;
 
     private int time;
-    private int width;
-    private int heigth;
     private Collection<DamageDealer> enemiesShells;
     private static final Logger logger = Logger.getLogger(Game.class.getName());
     private Thread thread;
@@ -73,47 +71,43 @@ public class Game implements Runnable {
         logger.setLevel(java.util.logging.Level.INFO);
     }
     private float delay = 1000f / (10 + Global.getSpeed());
-    private int playerMoveDelay = (int) (11 - Global.getSpeed() / 10);
-    private int explosionDelay = (int) (11 - Global.getSpeed() / 10);
+//    private int playerMoveDelay = (int) (11 - Global.getSpeed() / 10);
+//    private int explosionDelay = (int) (11 - Global.getSpeed() / 10);
     private boolean enemiesCanMove;
     private Bonus currentBonus;
     private int timerTime;
     private GameMode gameMode;
     private List<GameListener> listeners = new ArrayList<>();
+    private static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 20);
+    private int playerMoveDelay = 0;
+    private int explosionDelay = 4;
 
-    public Game(Canvas canvas, int width, int height) throws IOException {
+    public Game(Canvas canvas) throws IOException {
         gameMode = GameMode.OFF;
         shells = new ArrayList<>();
         enemiesShells = new ArrayList<>();
-        this.width = width;
-        this.heigth = height;
         canvas.createBufferStrategy(2);
         bufferStrategy = canvas.getBufferStrategy();
-        bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        bufferedImage = new BufferedImage((int) Global.getMapWidth(),
+                (int) Global.getMapHeight(), BufferedImage.TYPE_INT_RGB);
+        GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         timer = new Timer(1000, (ActionEvent e) -> {
             if (timerTime-- <= 0) {
-                if (currentBonus != null) {
-                    switch (currentBonus.getBonusType()) {
-                        case POWER_UP:
-                            playerUnit.setRechargeTime(playerUnit.getRechargeTime() * 2);
-                            playerUnit.setBreakingStrength(BreakingStrength.BREAK_BRICKS);
-                            break;
-                        case STOP_ENEMIES:
-                            enemiesCanMove = true;
-                            break;
-                        case ARMOR_UP:
-                            playerUnit.setArmor(playerUnit.getArmor() / 2);
-                            break;
-                        case SWIM:
-                            playerUnit.getMoveAction().addImpassible(Material.WATER);
-                            break;
-                    }
-                    currentBonus = null;
-                }
+                clearBonus();
                 timer.stop();
             }
         });
         timer.setRepeats(true);
+    }
+
+    private void clearBonus() {
+        if (currentBonus != null) {
+            GameContext gameContext
+                    = currentBonus.resetTo(playerUnit, enemiesCanMove);
+            enemiesCanMove = gameContext.isEmemiesCanMove();
+            playerUnit = gameContext.getPlayerUnit();
+            currentBonus = null;
+        }
     }
 
     public synchronized void start() {
@@ -153,10 +147,8 @@ public class Game implements Runnable {
             lastTime = now;
             delta += (elapsed / delay);
             boolean render = false;
-            if (time % playerMoveDelay == 0) {
-                checkKeys();
-            }
             while (delta > 1 && gameMode != GameMode.OFF) {
+                checkKeys();
                 update();
                 delta--;
                 render = true;
@@ -173,10 +165,13 @@ public class Game implements Runnable {
 
     }
 
-    public void initGame(Campaign campaign) throws IOException {
+    public void initGame(LevelAndCampaign levelAndCampaign) throws IOException {
         init();
-        leveliterator = campaign.getLevels().iterator();
-        currentLevel = leveliterator.next();
+        leveliterator = levelAndCampaign.getCampaign().getLevels().iterator();
+        for (int i = 0; i <= levelAndCampaign.getLevelNumber()
+                && leveliterator.hasNext(); i++) {
+            currentLevel = leveliterator.next();
+        }
         refreshLevel();
     }
 
@@ -213,14 +208,27 @@ public class Game implements Runnable {
     private void refreshLevel() {
         shells.clear();
         enemies = new ArrayList<>(currentLevel.getUnits());
+        clearBonus();
+        timer.stop();
         time = 0;
+        timerTime = 0;
         playerUnit = UnitFactory.createPlayerUnit();
-        playerUnit.setLocation(currentLevel.getMap().getWidth() - CombatUnit.UNIT_SIZE - 1,
-                currentLevel.getMap().getHeight() - CombatUnit.UNIT_SIZE - 1);
+        int mapWidth = currentLevel.getMap().getWidth();
+        int mapHeight = currentLevel.getMap().getHeight();
+        playerUnit.setLocation(mapWidth - CombatUnit.UNIT_SIZE - 1,
+                mapHeight - CombatUnit.UNIT_SIZE - 1);
         bonuses.clear();
         for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
-            bonuses.add(new Bonus(random.nextInt(width), random.nextInt(heigth),
-                    Bonus.SIZE, BonusType.randomType(random)));
+            int x;
+            int y;
+            Material material;
+            do {
+                x = random.nextInt(mapWidth - Bonus.SIZE);
+                y = random.nextInt(mapHeight - Bonus.SIZE);
+                material = currentLevel.getMap().getTile(x, y);
+            } while (material == Material.METAL || material == Material.WATER);
+            BonusType type = BonusType.randomType(random);
+            bonuses.add(new Bonus(x, y, Bonus.SIZE, type));
         }
     }
 
@@ -233,15 +241,15 @@ public class Game implements Runnable {
     }
 
     private void displayWinLevel() {
-        JOptionPane.showMessageDialog(null, "Вы прошли уровень!");
+        drawText("Вы прошли уровень! Нажмите Enter для продолжения");
     }
 
     private void displayWinGame() {
-        JOptionPane.showMessageDialog(null, "Вы победили!");
+        drawText("Вы победили!");
     }
 
     private void displayLoseGame() {
-        JOptionPane.showMessageDialog(null, "Вы проиграли!");
+        drawText("Вы проиграли!");
     }
 
     private void checkKeys() {
@@ -297,12 +305,14 @@ public class Game implements Runnable {
             if (enemies.isEmpty()) {
                 if (leveliterator.hasNext()) {
                     displayWinLevel();
+                    gameMode = GameMode.PAUSE;
                     currentLevel = leveliterator.next();
                     notifyListeners(GameEvent.GAME_NEXT_LEVEL);
                     refreshLevel();
                 } else {
                     displayWinGame();
                     gameMode = GameMode.OFF;
+                    sleep(2000);
                     notifyListeners(GameEvent.GAME_WIN);
                     return;
                 }
@@ -310,6 +320,7 @@ public class Game implements Runnable {
             if (!playerUnit.isLive()) {
                 displayLoseGame();
                 gameMode = GameMode.OFF;
+                sleep(2000);
                 notifyListeners(GameEvent.GAME_LOSE);
                 return;
             }
@@ -351,33 +362,17 @@ public class Game implements Runnable {
         for (Iterator<Bonus> iterator = bonuses.iterator(); iterator.hasNext();) {
             Bonus bonus = iterator.next();
             if (bonus.intersectsWith(playerUnit)) {
-                if (bonus.getBonusType() == BonusType.REPAIR) {
-                    if (playerUnit.getCurrentHealth() < playerUnit.getMaxHealth()) {
-                        playerUnit.setCurrentHealth(playerUnit.getMaxHealth());
-                        iterator.remove();
-                    }
-                } else if (currentBonus == null) {
-                    currentBonus = bonus;
-                    timerTime = TIMER_MAX_TIME;
-                    timer.restart();
-                    switch (bonus.getBonusType()) {
-                        case POWER_UP:
-                            playerUnit.setRechargeTime(playerUnit.getRechargeTime() / 2);
-                            playerUnit.setBreakingStrength(BreakingStrength.BREAK_ARMOR);
-                            break;
-                        case STOP_ENEMIES:
-                            enemiesCanMove = false;
-                            break;
-                        case ARMOR_UP:
-                            playerUnit.setArmor(playerUnit.getArmor() * 2);
-                            break;
-                        case SWIM:
-                            playerUnit.getMoveAction().removeImpassible(Material.WATER);
-                            break;
+                if (bonus.isAllowed(playerUnit, enemiesCanMove, currentBonus)) {
+                    GameContext gameContext = bonus.applyTo(playerUnit, enemiesCanMove);
+                    playerUnit = gameContext.getPlayerUnit();
+                    enemiesCanMove = gameContext.isEmemiesCanMove();
+                    if (gameContext.isDurable()) {
+                        timerTime = TIMER_MAX_TIME;
+                        timer.restart();
+                        currentBonus = bonus;
                     }
                     iterator.remove();
                 }
-
             }
         }
 
@@ -483,8 +478,10 @@ public class Game implements Runnable {
     private void display() {
         if (gameMode == GameMode.RUN) {
             Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g.scale(xScale, yScale);
-            g.clearRect(0, 0, width, heigth);
+            g.clearRect(0, 0, currentLevel.getMap().getWidth(), currentLevel.getMap().getHeight());
             currentLevel.getMap().draw(g);
             drawBonuses(g);
             drawShells(g);
@@ -501,11 +498,13 @@ public class Game implements Runnable {
             g.setColor(Color.BLUE);
             int startX = currentLevel.getMap().getWidth() - 10 - TIMER_MAX_TIME * 3;
             g.fillRect(startX, 3, timerTime * 3, 4);
+            g.setColor(Color.BLACK);
+            g.drawRect(startX, 3, TIMER_MAX_TIME * 3, 4);
         }
 
     }
 
-    private void drawUnits(Graphics g) {
+    private void drawUnits(Graphics2D g) {
         playerUnit.draw(g);
         if (enemies != null && !enemies.isEmpty()) {
             enemies.stream().sequential().forEach((e) -> {
@@ -514,7 +513,7 @@ public class Game implements Runnable {
         }
     }
 
-    private synchronized void drawShells(Graphics g) {
+    private synchronized void drawShells(Graphics2D g) {
         shells.parallelStream().filter(Visibility::isVisible).
                 forEach((shell) -> {
                     ((Drawable) shell).draw(g);
@@ -538,17 +537,28 @@ public class Game implements Runnable {
         logger.info("Получил команду на остановку игры");
         timer.stop();
         gameMode = GameMode.PAUSE;
-        Graphics2D drawGraphics = (Graphics2D) bufferStrategy.getDrawGraphics();
-        drawGraphics.scale(xScale, yScale);
-        drawGraphics.clearRect(0, 0, width, heigth);
-        drawGraphics.drawString("Игра приостановлена. Нажмите Enter для "
-                + "продолжения или Esc для выхода", width / 3, heigth / 2);
-        bufferStrategy.show();
+        String text = "Игра приостановлена. Нажмите Enter для\n"
+                + " продолжения или Esc для выхода";
+        drawText(text);
         notifyListeners(GameEvent.GAME_PAUSE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
         }
+    }
+
+    private void drawText(String text) {
+        Graphics2D drawGraphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+        drawGraphics.scale(xScale, yScale);
+        drawGraphics.clearRect(0, 0, (int) Global.getMapWidth(), (int) Global.getMapHeight());
+        drawGraphics.setFont(MAIN_FONT);
+        FontMetrics metrics = drawGraphics.getFontMetrics(MAIN_FONT);
+        int y = 0;
+        for (String line : text.split("\n")) {
+            int x = (int) (Global.getMapWidth() - metrics.stringWidth(line) * xScale) / 2;
+            drawGraphics.drawString(line, x, y += metrics.getHeight());
+        }
+        bufferStrategy.show();
     }
 
     private void notifyListeners(GameEvent event) {
@@ -570,6 +580,14 @@ public class Game implements Runnable {
 
     public void addGameListener(GameListener gameListener) {
         this.listeners.add(gameListener);
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }

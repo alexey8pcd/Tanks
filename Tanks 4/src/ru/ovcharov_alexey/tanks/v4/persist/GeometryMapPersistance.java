@@ -5,10 +5,8 @@ import java.awt.HeadlessException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -17,10 +15,21 @@ import javax.swing.JOptionPane;
  */
 public class GeometryMapPersistance {
 
-    public static boolean saveMapToFile(File toSave, GeometryMap map) {
+    public static boolean saveMapToFile(GeometryMap map) {
         try {
-            try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(toSave))) {
-                map.save(outputStream);
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Сохранить карту");
+            chooser.setSelectedFile(new File("map.dat"));
+            chooser.setFileFilter(FILE_FILTER);
+            int result = chooser.showSaveDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = chooser.getSelectedFile();
+                try (DataOutputStream outputStream = 
+                        new DataOutputStream(new FileOutputStream(selectedFile))) {
+                    map.save(outputStream);
+                }
+                JOptionPane.showMessageDialog(null, "Карта сохранена успешно",
+                        "Информация", JOptionPane.INFORMATION_MESSAGE);
             }
             return true;
         } catch (Exception ex) {
@@ -47,17 +56,8 @@ public class GeometryMapPersistance {
         try {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Выбрать карту");
-            chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-                @Override
-                public boolean accept(File f) {
-                    return (f.getName().endsWith(".dat"));
-                }
 
-                @Override
-                public String getDescription() {
-                    return "Файлы карт(*.dat)";
-                }
-            });
+            chooser.setFileFilter(FILE_FILTER);
             int result = chooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
@@ -68,11 +68,23 @@ public class GeometryMapPersistance {
                     return new MapData(geometryMap, canonicalPath);
                 }
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             showLoadErrorMessage(ex);
         }
         return MapData.EMPTY;
     }
+    private static final javax.swing.filechooser.FileFilter FILE_FILTER
+            = new javax.swing.filechooser.FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return (f.getName().endsWith(".dat"));
+        }
+
+        @Override
+        public String getDescription() {
+            return "Файлы карт(*.dat)";
+        }
+    };
 
     public static class MapData {
 

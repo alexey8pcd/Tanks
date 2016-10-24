@@ -7,6 +7,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.RelocatingShape;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.EnumSet;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Breaking;
@@ -29,7 +30,7 @@ public class Shell extends RelocatingShape
     public static final int SHELL_SPEED = 1;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(
-            EnumSet.of(Material.ARMOR, Material.BRICK, Material.WOOD));
+            EnumSet.of(Material.METAL, Material.BRICKS, Material.FOREST));
 
     public Shell(float x, float y, int size, int speed, int damage,
             BreakingStrength breakingStrength, Direction direction) {
@@ -68,7 +69,7 @@ public class Shell extends RelocatingShape
     }
 
     @Override
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
         g.setColor(breakingStrength.getColor());
         g.fillOval((int)getX(), (int)getY(), SHELL_SIZE, SHELL_SIZE);
         g.setColor(Color.BLACK);
@@ -78,11 +79,6 @@ public class Shell extends RelocatingShape
     @Override
     public boolean isLive() {
         return alive;
-    }
-
-    @Override
-    public void setLive(boolean alive) {
-        this.alive = alive;
     }
 
     @Override
@@ -97,6 +93,16 @@ public class Shell extends RelocatingShape
 
     public void setDamage(int damage) {
         this.damage = damage;
+    }
+
+    @Override
+    public void kill() {
+        alive = false;
+    }
+
+    @Override
+    public void restore() {
+        alive = true;
     }
 
 }

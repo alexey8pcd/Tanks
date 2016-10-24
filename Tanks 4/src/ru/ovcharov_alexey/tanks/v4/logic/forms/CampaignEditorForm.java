@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.IOException;
 import javax.swing.AbstractListModel;
@@ -352,6 +353,10 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     }//GEN-LAST:event_bAddLevelActionPerformed
 
     private void bSaveCompanyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSaveCompanyActionPerformed
+        saveCampaign();
+    }//GEN-LAST:event_bSaveCompanyActionPerformed
+
+    private void saveCampaign() throws HeadlessException {
         if (!tfCompanyName.getText().isEmpty() && campaign.getLevels().size() > 0) {
             campaign.setName(tfCompanyName.getText());
             JFileChooser fileChooser = new JFileChooser();
@@ -365,10 +370,9 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(null, "Не удалось сохранить "
                             + "файл кампании, причина: " + ex.getMessage());
                 }
-
             }
         }
-    }//GEN-LAST:event_bSaveCompanyActionPerformed
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

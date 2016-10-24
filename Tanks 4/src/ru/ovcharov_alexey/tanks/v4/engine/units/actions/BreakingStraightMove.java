@@ -6,8 +6,8 @@ import java.util.EnumSet;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
-import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Liveable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Breaking;
+import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Killable;
 
 /**
  *
@@ -52,7 +52,7 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
                             if (impassable.contains(map.getTile(x2, y2))) {
                                 map.setTile(x2, y2, Material.TERRA);
                             }
-                            breaking.setLive(false);
+                            breaking.kill();
                         }
                         return false;
                     }
@@ -71,7 +71,7 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
             movable.setLocation(dLeftX, dTopY);
             return true;
         }
-        ((Liveable) movable).setLive(false);
+        ((Killable) movable).kill();
         return false;
     }
 

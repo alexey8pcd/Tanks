@@ -4,6 +4,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 
 /**
@@ -34,7 +35,7 @@ public class Tool implements Drawable {
     }
 
     @Override
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
         g.setColor(Color.BLACK);
         g.drawRect(x - 1, y - 1, width + 1, height + 1);
         g.setColor(material.getColor());

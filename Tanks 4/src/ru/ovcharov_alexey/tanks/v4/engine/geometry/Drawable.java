@@ -1,6 +1,6 @@
 package ru.ovcharov_alexey.tanks.v4.engine.geometry;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 /**
  *
@@ -8,6 +8,6 @@ import java.awt.Graphics;
  */
 public interface Drawable extends Visibility{
 
-    public void draw(Graphics g);
+    public void draw(Graphics2D g);
 
 }

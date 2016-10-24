@@ -40,12 +40,12 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
     }
 
     @Override
-    public boolean move(GeometryMap map, GeometryPoint point){
+    public boolean move(GeometryMap map, GeometryPoint point) {
         return moveAction.move(this, map, point);
     }
 
     @Override
-    public boolean canMove(GeometryMap map, GeometryPoint point){
+    public boolean canMove(GeometryMap map, GeometryPoint point) {
         return moveAction.canMove(this, map, point);
     }
 

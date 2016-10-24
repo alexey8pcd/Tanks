@@ -10,6 +10,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.actions.MoveAction;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.RelocatingShape;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.RelocatingShapeDrawer;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private RelocatingShapeDrawer drawer;
     private BreakingStrength breakingStrength;
     private boolean canAttack = true;
-    public static final int NOT_HEALTH = 0;
+    
     public static final int UNIT_SIZE = 24;
     public static final int MAX_ARMOR = 80;
     public static final int MAX_DAMAGE = 100;
@@ -94,18 +95,6 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         currentHealth = maxHealth;
     }
 
-    public void setCurrentHealth(int currentHealth) {
-        if (currentHealth < 1) {
-            currentHealth = NOT_HEALTH;
-        } else if (currentHealth > maxHealth) {
-            currentHealth = maxHealth;
-        }
-        this.currentHealth = currentHealth;
-        if (currentHealth < NO_DAMAGE_LIMIT && !damaged) {
-            damaged = true;
-            speed /= 2;
-        }
-    }
 
     @Override
     public void attack(Collection<DamageDealer> container, CombatUnit attackable) {
@@ -168,6 +157,9 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
 
     public void setRechargeTime(int rechargeTime) {
         this.rechargeTime = rechargeTime;
+        if (rechargeProgress > rechargeTime) {
+            rechargeProgress = rechargeTime;
+        }
     }
 
     public void setDrawer(RelocatingShapeDrawer drawer) {
@@ -216,7 +208,7 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     }
 
     @Override
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
         drawer.drawUnit(this, g);
         g.setColor(Color.ORANGE);
         double dv = (double) getWidth() / rechargeTime;
@@ -243,16 +235,12 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         return currentHealth > NOT_HEALTH;
     }
 
-    @Override
-    public void setLive(boolean alive) {
-        currentHealth = alive ? maxHealth : NOT_HEALTH;
-    }
-
     public void recharge() {
         if (!canAttack) {
-            ++rechargeProgress;
-            if (rechargeProgress == rechargeTime) {
+            if (rechargeProgress >= rechargeTime) {
                 canAttack = true;
+            } else {
+                ++rechargeProgress;
             }
         }
     }
@@ -264,7 +252,50 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
 
     public void decreaseHealth(int value) {
         value -= Math.max(1, value * armor / 100);
-        setCurrentHealth(currentHealth - value);
+        setHealth(currentHealth - value);
     }
+
+    @Override
+    public boolean isHealthy() {
+        return currentHealth == maxHealth;
+    }
+
+    @Override
+    public void kill() {
+        this.currentHealth = NOT_HEALTH;
+    }
+
+    @Override
+    public void restore() {
+        setHealth(maxHealth);
+    }
+
+    @Override
+    public int getHealth() {
+        return currentHealth;
+    }
+
+    @Override
+    public void setHealth(int currentHealth) {
+        if (currentHealth < 1) {
+            currentHealth = NOT_HEALTH;
+        } else if (currentHealth > maxHealth) {
+            currentHealth = maxHealth;
+        }
+        this.currentHealth = currentHealth;
+        updateDamaged();
+    }
+
+    private void updateDamaged() {
+        if (currentHealth < NO_DAMAGE_LIMIT && !damaged) {
+            damaged = true;
+            speed /= 2;
+        } else if (damaged && currentHealth >= NO_DAMAGE_LIMIT) {
+            damaged = false;
+            speed *= 2;
+        }
+    }
+
+
 
 }

@@ -1,26 +1,29 @@
 package ru.ovcharov_alexey.tanks.v4.engine;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.EnumMap;
 import javax.imageio.ImageIO;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
-import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Liveable;
+import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Killable;
 
 /**
  * @author Alexey
  */
-public class Explosion extends GeometryShape implements Drawable, Liveable {
+public class Explosion extends GeometryShape implements Drawable, Killable {
 
     public static final int SIZE = 15;
     private static final EnumMap<State, Image> images = new EnumMap<>(State.class);
 
     public static void init() throws IOException {
         for (State state : State.values()) {
-            String name = "/images/explosions/" + state.getImageName();
-            images.put(state, ImageIO.read(Explosion.class.getResourceAsStream(name)));
+            if (state != State.TERMINATE) {
+                String name = "/images/explosions/" + state.getImageName();
+                images.put(state, ImageIO.read(Explosion.class.getResourceAsStream(name)));
+            }
         }
     }
 
@@ -31,8 +34,8 @@ public class Explosion extends GeometryShape implements Drawable, Liveable {
     }
 
     @Override
-    public void draw(Graphics g) {
-        if (state != null) {
+    public void draw(Graphics2D g) {
+        if (state != null && state != State.TERMINATE) {
             g.drawImage(images.get(state), (int) getX(), (int) getY(),
                     getWidth(), getHeight(), null);
         }
@@ -45,18 +48,30 @@ public class Explosion extends GeometryShape implements Drawable, Liveable {
 
     @Override
     public boolean isLive() {
-        return state != null;
+        return state != State.TERMINATE;
     }
 
     @Override
-    public void setLive(boolean alive) {
+    public void kill() {
+        state = State.TERMINATE;
+    }
+
+    @Override
+    public boolean isDead() {
+        return state == State.TERMINATE;
+    }
+
+    @Override
+    public void restore() {
+        state = State.NEW;
     }
 
     private enum State {
         NEW("s0.png"),
         INCREASE("s1.png"),
         MAX("s2.png"),
-        DECREASE("s3.png");
+        DECREASE("s3.png"),
+        TERMINATE("");
 
         public String getImageName() {
             return imageName;
@@ -77,8 +92,9 @@ public class Explosion extends GeometryShape implements Drawable, Liveable {
                 case MAX:
                     return DECREASE;
                 case DECREASE:
+                    return TERMINATE;
             }
-            return null;
+            return TERMINATE;
         }
     }
 

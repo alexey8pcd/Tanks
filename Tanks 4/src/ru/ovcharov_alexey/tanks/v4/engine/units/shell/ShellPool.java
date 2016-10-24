@@ -31,7 +31,7 @@ public class ShellPool {
             return new Shell();
         } else {
             Shell shell = cash.poll();
-            shell.setLive(true);
+            shell.restore();
             return shell;
         }
     }

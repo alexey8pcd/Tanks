@@ -1,7 +1,5 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import ru.ovcharov_alexey.tanks.v4.logic.controllers.MapEditorController;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import javax.swing.JOptionPane;
@@ -19,10 +17,14 @@ public class MapEditorForm extends javax.swing.JDialog {
     public MapEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        init();
+        try {
+            init();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
     }
 
-    private void init() {
+    private void init() throws Exception {
         saveOnClose = true;
         mapEditorController = new MapEditorController(paneDraw.getWidth(),
                 paneDraw.getHeight(), paneDraw.getGraphics());
@@ -292,15 +294,15 @@ public class MapEditorForm extends javax.swing.JDialog {
     }//GEN-LAST:event_bExitActionPerformed
 
     private void bPlaceBricksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceBricksActionPerformed
-        mapEditorController.setToolMaterial(Material.BRICK);
+        mapEditorController.setToolMaterial(Material.BRICKS);
     }//GEN-LAST:event_bPlaceBricksActionPerformed
 
     private void bPlaceMetalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceMetalActionPerformed
-        mapEditorController.setToolMaterial(Material.ARMOR);
+        mapEditorController.setToolMaterial(Material.METAL);
     }//GEN-LAST:event_bPlaceMetalActionPerformed
 
     private void bPlaceForestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceForestActionPerformed
-        mapEditorController.setToolMaterial(Material.WOOD);
+        mapEditorController.setToolMaterial(Material.FOREST);
     }//GEN-LAST:event_bPlaceForestActionPerformed
 
     private void bPlaceWaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPlaceWaterActionPerformed

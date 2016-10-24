@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
 
 /**
  *
@@ -177,12 +178,12 @@ public class MainForm extends javax.swing.JFrame {
     private void bCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignActionPerformed
         CampaignChooseForm campaignChooseForm = new CampaignChooseForm(this, true);
         campaignChooseForm.setVisible(true);
-        Campaign campaign = campaignChooseForm.getChoosenCampaign();
-        if (campaign != null) {
+        LevelAndCampaign choosenCampaign = campaignChooseForm.getChoosenCampaign();
+        if (choosenCampaign != null) {
             GameForm gameForm;
             try {
                 gameForm = new GameForm(this, true);
-                gameForm.campaign(campaign);
+                gameForm.campaign(choosenCampaign);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }

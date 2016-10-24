@@ -19,7 +19,7 @@ public class UnitFactory {
         return new CombatUnitBuilder().setArmor(40).
                 setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                 setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
-                setBreakingStrength(BREAK_BRICKS).setMoveSpeed(SLOW).
+                setBreakingStrength(BREAK_BRICKS).setMoveSpeed(NORMAL).
                 setDrawer(DrawerFactory.getPlayerUnitDrawer()).
                 setDamage(50).setMaxHealth(100).setType(UnitType.TANK).createCombatUnit();
     }

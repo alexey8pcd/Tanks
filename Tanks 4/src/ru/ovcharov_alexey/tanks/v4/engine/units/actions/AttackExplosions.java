@@ -20,7 +20,7 @@ public class AttackExplosions implements AttackAction {
             }
             container.add(new InvisibleBomb((int) attacker.getX(), (int) attacker.getY(),
                     attackable.getWidth(), damage));
-            attacker.setCurrentHealth(CombatUnit.NOT_HEALTH);
+            attacker.setHealth(CombatUnit.NOT_HEALTH);
         }
     }
 

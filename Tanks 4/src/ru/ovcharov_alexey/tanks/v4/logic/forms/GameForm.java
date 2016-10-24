@@ -13,6 +13,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
 import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
 
 /**
@@ -37,7 +38,7 @@ public class GameForm extends javax.swing.JDialog {
         Canvas canvas = new Canvas();
         this.getContentPane().add(canvas);
         canvas.setSize(width - 1, height - 1);
-        engine = new Game(canvas, width, height);
+        engine = new Game(canvas);
         engine.addGameListener((GameEvent event) -> {
             if (null != event) {
                 switch (event) {
@@ -95,9 +96,9 @@ public class GameForm extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void campaign(Campaign campaign) {
+    public void campaign(LevelAndCampaign levelAndCampaign) {
         try {
-            engine.initGame(campaign);
+            engine.initGame(levelAndCampaign);
             engine.start();
             this.setVisible(true);
         } catch (IOException ex) {

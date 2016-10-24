@@ -1,13 +1,10 @@
 package ru.ovcharov_alexey.tanks.v4.logic.campaign;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;

@@ -13,12 +13,12 @@ public class MoveActionFactory {
 
     public static MoveAction createMoveAction(String className) {
         if (StraigthMove.class.getCanonicalName().equals(className)) {
-            return new StraigthMove(EnumSet.of(Material.ARMOR, Material.BRICK,
+            return new StraigthMove(EnumSet.of(Material.METAL, Material.BRICKS,
                     Material.WATER)
             );
         } else if (SimpleSearchMove.class.getCanonicalName().equals(className)) {
             return new SimpleSearchMove(
-                    EnumSet.of(Material.ARMOR, Material.BRICK, Material.WATER));
+                    EnumSet.of(Material.METAL, Material.BRICKS, Material.WATER));
         } else {
             throw new IllegalArgumentException("Класс с именем " + className + " не найден");
         }

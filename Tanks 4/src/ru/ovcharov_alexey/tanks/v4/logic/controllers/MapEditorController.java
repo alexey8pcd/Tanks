@@ -1,12 +1,12 @@
 package ru.ovcharov_alexey.tanks.v4.logic.controllers;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.logic.edit.Tool;
@@ -27,24 +27,24 @@ public class MapEditorController {
     private Deque<GeometryMap> history;
     private final int maxHistoryDepth = 20;
 
-    public MapEditorController(int mapWidth, int mapHeight, Graphics graphics) {
+    public MapEditorController(int mapWidth, int mapHeight, Graphics graphics) throws Exception {
         buffer = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_RGB);
         this.rootGraphics = graphics;
         currentMap = GeometryMap.newInstance();
         history = new ArrayDeque<>(maxHistoryDepth);
-        tool = new Tool(Material.BRICK, 0, 0);
+        tool = new Tool(Material.BRICKS, 0, 0);
         scale = 16;
         tool.setSize(scale);
     }
 
     public void draw() {
-        Graphics temp = buffer.getGraphics();
+        Graphics2D temp = (Graphics2D) buffer.getGraphics();
         temp.clearRect(0, 0, buffer.getWidth(), buffer.getHeight());
         drawObjects(temp);
         rootGraphics.drawImage(buffer, 0, 0, null);
     }
 
-    private void drawObjects(Graphics graphics) {
+    private void drawObjects(Graphics2D graphics) {
         currentMap.drawWithGrid(graphics);
         tool.draw(graphics);
     }
@@ -57,22 +57,14 @@ public class MapEditorController {
     }
 
     public void saveMap() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setSelectedFile(new File("map.dat"));
-        int result = chooser.showSaveDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = chooser.getSelectedFile();
-            boolean saved = GeometryMapPersistance.saveMapToFile(selectedFile,
-                    currentMap);
-            if (saved) {
-                JOptionPane.showMessageDialog(null, "Карта сохранена успешно",
-                        "Информация", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
+        GeometryMapPersistance.saveMapToFile(currentMap);
     }
 
     public void addTilesOnMap() {
-        saveToHistory();
+        try {
+            saveToHistory();
+        } catch (Exception ex) {
+        }
         int maxX = tool.getX() + tool.getWidth();
         int maxY = tool.getY() + tool.getHeight();
         for (int x = tool.getX(); x < maxX; x++) {
@@ -83,7 +75,7 @@ public class MapEditorController {
         draw();
     }
 
-    public void saveToHistory() {
+    public void saveToHistory() throws Exception {
         if (history.size() > maxHistoryDepth) {
             history.removeFirst();
         }
@@ -123,9 +115,13 @@ public class MapEditorController {
     }
 
     public void clearMap() {
-        saveToHistory();
-        this.currentMap.clear();
-        draw();
+        try {
+            saveToHistory();
+            this.currentMap.clear();
+            draw();
+        } catch (Exception ex) {
+        }
+
     }
 
     public void undo() {
