@@ -2,7 +2,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers;
 
 import ru.ovcharov_alexey.tanks.v4.engine.physics.RelocatingShape;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -21,9 +21,9 @@ public class RelocatingShapeDrawer {
     }
 
     public void drawUnit(RelocatingShape shape, Graphics g) {
-        Image image = images[shape.getDirection().getIndex()].getImage();
-        g.drawImage(image, (int) shape.getX(), (int) shape.getY(),
-                shape.getWidth(), shape.getHeight(), null);
+        BufferedImage image = images[shape.getDirection().getIndex()].getImage();
+        g.drawImage(image, Math.round(shape.getX() - 2), Math.round(shape.getY() - 2),
+                shape.getWidth() + 4, shape.getHeight() + 4, null);
     }
 
 }

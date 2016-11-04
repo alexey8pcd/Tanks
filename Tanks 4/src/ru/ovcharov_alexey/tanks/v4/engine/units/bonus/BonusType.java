@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.bonus;
 
 import java.util.Random;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.DrawerFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.BreakingStrength;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
@@ -75,6 +76,7 @@ public enum BonusType {
         public GameContext applyTo(GameContext gameContext) {
             CombatUnit playerUnit = gameContext.getPlayerUnit();
             playerUnit.setArmor(playerUnit.getArmor() * ARMOR_FACTOR);
+            playerUnit.setDrawer(DrawerFactory.getPlayerUnitArmoredDrawer());
             gameContext.setDurableBonus(true);
             return gameContext;
         }
@@ -83,6 +85,7 @@ public enum BonusType {
         public GameContext resetTo(GameContext gameContext) {
             CombatUnit playerUnit = gameContext.getPlayerUnit();
             playerUnit.setArmor(playerUnit.getArmor() / ARMOR_FACTOR);
+            playerUnit.setDrawer(DrawerFactory.getPlayerUnitDrawer());
             return gameContext;
         }
 

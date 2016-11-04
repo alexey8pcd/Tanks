@@ -1,9 +1,11 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
+import java.util.logging.Level;
 import ru.ovcharov_alexey.tanks.v4.logic.controllers.MapEditorController;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 
 /**
  *
@@ -17,10 +19,12 @@ public class MapEditorForm extends javax.swing.JDialog {
     public MapEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        Global.getLogger().info(() -> "Выбран режим редактирования карты");
         try {
             init();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.toString());
+            Global.logAndShowException(ex);
+            
         }
     }
 

@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -20,12 +19,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.DrawerFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
@@ -40,6 +43,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.shell.InvisibleBomb;
 import ru.ovcharov_alexey.tanks.v4.engine.units.shell.ShellPool;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Level;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
+import ru.ovcharov_alexey.tanks.v4.logic.forms.LoadGameForm;
 
 /**
  * @author Alexey
@@ -58,7 +62,6 @@ public class Game implements Runnable {
 
     private int time;
     private Collection<DamageDealer> enemiesShells;
-    private static final Logger logger = Logger.getLogger(Game.class.getName());
     private Thread thread;
     private BufferStrategy bufferStrategy;
     private Map<Integer, Boolean> keys = new HashMap<>();
@@ -67,20 +70,19 @@ public class Game implements Runnable {
     private double yScale;
     private double xScale;
 
-    static {
-        logger.setLevel(java.util.logging.Level.INFO);
-    }
     private float delay = 1000f / (10 + Global.getSpeed());
-//    private int playerMoveDelay = (int) (11 - Global.getSpeed() / 10);
-//    private int explosionDelay = (int) (11 - Global.getSpeed() / 10);
     private boolean enemiesCanMove;
     private Bonus currentBonus;
     private int timerTime;
     private GameMode gameMode;
     private List<GameListener> listeners = new ArrayList<>();
     private static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 20);
-    private int playerMoveDelay = 0;
     private int explosionDelay = 4;
+    private String framesString = "";
+    private BufferedImage pauseScreen;
+    private BufferedImage winScreen;
+    private BufferedImage loseScreen;
+    private BufferedImage nextLevel;
 
     public Game(Canvas canvas) throws IOException {
         gameMode = GameMode.OFF;
@@ -90,7 +92,6 @@ public class Game implements Runnable {
         bufferStrategy = canvas.getBufferStrategy();
         bufferedImage = new BufferedImage((int) Global.getMapWidth(),
                 (int) Global.getMapHeight(), BufferedImage.TYPE_INT_RGB);
-        GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         timer = new Timer(1000, (ActionEvent e) -> {
             if (timerTime-- <= 0) {
                 clearBonus();
@@ -112,7 +113,29 @@ public class Game implements Runnable {
 
     public synchronized void start() {
         if (gameMode == GameMode.OFF) {
-            logger.info("Начинаю игру");
+            Global.getLogger().info("Начинаю игру");
+            if (pauseScreen == null || winScreen == null
+                    || loseScreen == null || nextLevel == null) {
+                try {
+                    LoadGameForm.asyncAction(() -> {
+                        try {
+                            pauseScreen = ImageIO.read(Game.class.getResourceAsStream(
+                                    "/images/screens/pause.png"));
+                            winScreen = ImageIO.read(Game.class.getResourceAsStream(
+                                    "/images/screens/win.png"));
+                            loseScreen = ImageIO.read(Game.class.getResourceAsStream(
+                                    "/images/screens/lose.png"));
+                            nextLevel = ImageIO.read(Game.class.getResourceAsStream(
+                                    "/images/screens/next_level.png"));
+                        } catch (Exception e) {
+                            Global.getLogger().log(java.util.logging.Level.SEVERE,
+                                    e.getMessage(), e);
+                        }
+                    }).join();
+                } catch (InterruptedException ex) {
+                }
+                
+            }
             time = 0;
             thread = new Thread(this);
             thread.start();
@@ -124,7 +147,7 @@ public class Game implements Runnable {
 
     public synchronized void stop() {
         if (gameMode != GameMode.OFF) {
-            logger.info("Завершаю игру");
+            Global.getLogger().info("Завершаю игру");
             gameMode = GameMode.OFF;
             timer.stop();
             notifyListeners(GameEvent.GAME_BREAK);
@@ -137,13 +160,17 @@ public class Game implements Runnable {
     public void run() {
         float delta = 0;
         display();
+        int frames = 0;
         long lastTime = System.currentTimeMillis();
         while (gameMode != GameMode.OFF) {
-            if (++time == 100_000) {
-                time = 0;
-            }
             long now = System.currentTimeMillis();
             long elapsed = (now - lastTime);
+            time += elapsed;
+            if (time > 1000) {
+                time = 0;
+                framesString = String.valueOf(frames);
+                frames = 0;
+            }
             lastTime = now;
             delta += (elapsed / delay);
             boolean render = false;
@@ -155,6 +182,7 @@ public class Game implements Runnable {
             }
             if (render) {
                 display();
+                ++frames;
             } else {
                 try {
                     Thread.sleep(1L);
@@ -240,18 +268,6 @@ public class Game implements Runnable {
         keys.put(e.getKeyCode(), false);
     }
 
-    private void displayWinLevel() {
-        drawText("Вы прошли уровень! Нажмите Enter для продолжения");
-    }
-
-    private void displayWinGame() {
-        drawText("Вы победили!");
-    }
-
-    private void displayLoseGame() {
-        drawText("Вы проиграли!");
-    }
-
     private void checkKeys() {
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_ESCAPE))) {
             if (gameMode == GameMode.RUN) {
@@ -304,13 +320,13 @@ public class Game implements Runnable {
         if (gameMode == GameMode.RUN) {
             if (enemies.isEmpty()) {
                 if (leveliterator.hasNext()) {
-                    displayWinLevel();
+                    drawImage(nextLevel);
                     gameMode = GameMode.PAUSE;
                     currentLevel = leveliterator.next();
                     notifyListeners(GameEvent.GAME_NEXT_LEVEL);
                     refreshLevel();
                 } else {
-                    displayWinGame();
+                    drawImage(winScreen);
                     gameMode = GameMode.OFF;
                     sleep(2000);
                     notifyListeners(GameEvent.GAME_WIN);
@@ -318,7 +334,7 @@ public class Game implements Runnable {
                 }
             }
             if (!playerUnit.isLive()) {
-                displayLoseGame();
+                drawImage(loseScreen);
                 gameMode = GameMode.OFF;
                 sleep(2000);
                 notifyListeners(GameEvent.GAME_LOSE);
@@ -487,6 +503,8 @@ public class Game implements Runnable {
             drawShells(g);
             drawUnits(g);
             drawExplosions(g);
+            g.setColor(Color.RED);
+            g.drawString(framesString, 10, 10);
             bufferStrategy.getDrawGraphics().drawImage(bufferedImage, 0, 0, null);
             bufferStrategy.show();
         }
@@ -534,12 +552,10 @@ public class Game implements Runnable {
 //</editor-fold>
 
     private void pause() {
-        logger.info("Получил команду на остановку игры");
+        Global.getLogger().info("Получил команду на остановку игры");
         timer.stop();
         gameMode = GameMode.PAUSE;
-        String text = "Игра приостановлена. Нажмите Enter для\n"
-                + " продолжения или Esc для выхода";
-        drawText(text);
+        drawImage(pauseScreen);
         notifyListeners(GameEvent.GAME_PAUSE);
         try {
             Thread.sleep(500);
@@ -562,13 +578,11 @@ public class Game implements Runnable {
     }
 
     private void notifyListeners(GameEvent event) {
-        logger.info(() -> "Оповещаю слушателей о событии " + event);
         listeners.stream().forEach((GameListener l) -> l.actionPerformed(event));
-        logger.info("Оповестил слушателей");
     }
 
     private void resume() {
-        logger.info("Получил команду на продолжение игры");
+        Global.getLogger().info("Получил команду на продолжение игры");
         timer.start();
         gameMode = GameMode.RUN;
         notifyListeners(GameEvent.GAME_RESUME);
@@ -588,6 +602,13 @@ public class Game implements Runnable {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private void drawImage(BufferedImage bufferedImage) {
+        Graphics2D drawGraphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+        drawGraphics.drawImage(bufferedImage, 0, 0, (int) Global.getMapWidth(),
+                (int) Global.getMapHeight(), null);
+        bufferStrategy.show();
     }
 
 }

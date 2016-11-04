@@ -38,6 +38,7 @@ public class StatisticsForm extends javax.swing.JDialog {
         bResetStats = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Статистика");
 
         jLabel1.setText("Игр начато:");
 

@@ -24,4 +24,9 @@ public class AttackExplosions implements AttackAction {
         }
     }
 
+    @Override
+    public boolean isRepeated() {
+        return false;
+    }
+
 }

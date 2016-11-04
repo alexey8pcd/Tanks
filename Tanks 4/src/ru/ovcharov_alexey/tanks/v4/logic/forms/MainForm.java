@@ -1,11 +1,11 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
-import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
 
 /**
@@ -13,6 +13,11 @@ import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
  * @author Алексей
  */
 public class MainForm extends javax.swing.JFrame {
+
+    private static final String HELP_MESSAGE = "<html>Для перемещения танка игрока используйте<br>"
+            + "клавиши курсора, для выстрела - пробел.<br> Для приостановки игры - клавишу Esc<br>"
+            + "Автор: Алексей Овчаров, 2016. <br>Сведения об ошибках и недочетах<br>"
+            + "отправлять на почту: alexey8rus@mail.ru";
 
     public MainForm() throws IOException {
         initComponents();
@@ -22,6 +27,7 @@ public class MainForm extends javax.swing.JFrame {
     private void init() {
         setLocationRelativeTo(null);
         Global.load();
+        Global.getLogger().info("Игра запущена");
     }
 
     @SuppressWarnings("unchecked")
@@ -35,6 +41,7 @@ public class MainForm extends javax.swing.JFrame {
         bStats = new javax.swing.JButton();
         bSettings = new javax.swing.JButton();
         bExit = new javax.swing.JButton();
+        bHelp = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -102,6 +109,15 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        bHelp.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        bHelp.setText("Помощь");
+        bHelp.setPreferredSize(new java.awt.Dimension(460, 80));
+        bHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bHelpActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,7 +131,8 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(bMapEditor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bStats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bSinglePlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(bSinglePlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bHelp, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -132,6 +149,8 @@ public class MainForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bSettings, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bStats, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bExit, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -147,6 +166,7 @@ public class MainForm extends javax.swing.JFrame {
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
         Global.save();
+        Global.getLogger().info("Завершаю игру");
         dispose();
         System.exit(0);
     }//GEN-LAST:event_bExitActionPerformed
@@ -161,10 +181,8 @@ public class MainForm extends javax.swing.JFrame {
             gameForm = new GameForm(this, true);
             gameForm.singlePlayGame();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            Global.logAndShowException(ex);
         }
-
-
     }//GEN-LAST:event_bSinglePlayerActionPerformed
 
     private void bSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSettingsActionPerformed
@@ -176,6 +194,10 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bStatsActionPerformed
 
     private void bCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignActionPerformed
+        startCampaignAction();
+    }//GEN-LAST:event_bCampaignActionPerformed
+
+    private void startCampaignAction() throws HeadlessException {
         CampaignChooseForm campaignChooseForm = new CampaignChooseForm(this, true);
         campaignChooseForm.setVisible(true);
         LevelAndCampaign choosenCampaign = campaignChooseForm.getChoosenCampaign();
@@ -188,8 +210,12 @@ public class MainForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }
+    }
 
-    }//GEN-LAST:event_bCampaignActionPerformed
+    private void bHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bHelpActionPerformed
+        JOptionPane.showMessageDialog(null, HELP_MESSAGE,
+                "Об игре", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_bHelpActionPerformed
 
     /**
      * @param args the command line arguments
@@ -232,6 +258,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton bCampaign;
     private javax.swing.JButton bCampaignEditor;
     private javax.swing.JButton bExit;
+    private javax.swing.JButton bHelp;
     private javax.swing.JButton bMapEditor;
     private javax.swing.JButton bSettings;
     private javax.swing.JButton bSinglePlayer;

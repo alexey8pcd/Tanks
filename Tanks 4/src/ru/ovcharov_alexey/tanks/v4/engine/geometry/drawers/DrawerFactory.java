@@ -17,13 +17,27 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 public class DrawerFactory {
 
     private static RelocatingShapeDrawer playerUnitDrawer;
+    private static RelocatingShapeDrawer playerUnitArmoredDrawer;
     private static final Map<UnitType, RelocatingShapeDrawer> DRAWERS;
     private static final int DIRECTIONS_COUNT = 4;
+    private static final String[] PLAYER_UNIT_BASE_IMAGE_NAMES = {
+        "/images/PLAYER/at_left.png",
+        "/images/PLAYER/at_up.png",
+        "/images/PLAYER/at_right.png",
+        "/images/PLAYER/at_down.png"
+    };
+    private static final String[] PLAYER_UNIT_ARMORED_IMAGE_NAMES = {
+        "/images/PLAYER/at_left_armored.png",
+        "/images/PLAYER/at_up_armored.png",
+        "/images/PLAYER/at_right_armored.png",
+        "/images/PLAYER/at_down_armored.png"
+    };
 
     static {
         DRAWERS = new HashMap<>();
         try {
-            playerUnitDrawer = createPlayerUnitDrawer();
+            playerUnitDrawer = createPlayerUnitDrawer(PLAYER_UNIT_BASE_IMAGE_NAMES);
+            playerUnitArmoredDrawer = createPlayerUnitDrawer(PLAYER_UNIT_ARMORED_IMAGE_NAMES);
             for (UnitType type : UnitType.values()) {
                 DRAWERS.put(type, createDrawer(type));
             }
@@ -44,30 +58,31 @@ public class DrawerFactory {
         return new RelocatingShapeDrawer(directionImages);
     }
 
-    private static RelocatingShapeDrawer createPlayerUnitDrawer() throws IOException {
-        String[] playerImageNames = new String[]{
-            "/images/PLAYER/at_left.png",
-            "/images/PLAYER/at_up.png",
-            "/images/PLAYER/at_right.png",
-            "/images/PLAYER/at_down.png"
-        };
+    private static RelocatingShapeDrawer createPlayerUnitDrawer(String[] imageNames) throws IOException {
+        NamedImage[] directionImages = loadImages(imageNames);
+        return new RelocatingShapeDrawer(directionImages);
+    }
+
+    private static NamedImage[] loadImages(String[] playerImageNames) throws IOException {
         NamedImage[] directionImages = new NamedImage[DIRECTIONS_COUNT];
         for (int i = 0; i < DIRECTIONS_COUNT; i++) {
-            InputStream resource 
+            InputStream resource
                     = DrawerFactory.class.getResourceAsStream(playerImageNames[i]);
             BufferedImage image = ImageIO.read(resource);
             directionImages[i] = new NamedImage(image, playerImageNames[i]);
         }
-        return new RelocatingShapeDrawer(directionImages);
+        return directionImages;
     }
-    
 
     public static RelocatingShapeDrawer getPlayerUnitDrawer() {
         return playerUnitDrawer;
     }
 
+    public static RelocatingShapeDrawer getPlayerUnitArmoredDrawer() {
+        return playerUnitArmoredDrawer;
+    }
+    
     public static RelocatingShapeDrawer getDrawer(UnitType unitType) {
         return DRAWERS.get(unitType);
     }
-
 }

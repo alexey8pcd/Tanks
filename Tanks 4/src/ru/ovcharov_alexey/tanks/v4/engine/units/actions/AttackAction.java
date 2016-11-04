@@ -12,4 +12,5 @@ public interface AttackAction {
 
     void attack(CombatUnit attacker, Collection<DamageDealer> container, CombatUnit attackable);
 
+    boolean isRepeated();
 }

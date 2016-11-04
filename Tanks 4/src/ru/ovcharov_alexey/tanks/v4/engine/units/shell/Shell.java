@@ -73,7 +73,7 @@ public class Shell extends RelocatingShape
         g.setColor(breakingStrength.getColor());
         g.fillOval((int)getX(), (int)getY(), SHELL_SIZE, SHELL_SIZE);
         g.setColor(Color.BLACK);
-        g.drawRect((int)getX(), (int)getY(), getWidth(), getHeight());
+        g.drawOval((int)getX(), (int)getY(), SHELL_SIZE, SHELL_SIZE);
     }
 
     @Override

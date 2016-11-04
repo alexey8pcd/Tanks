@@ -9,7 +9,6 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.actions.AttackAction;
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.MoveAction;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.RelocatingShape;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.RelocatingShapeDrawer;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,7 +39,7 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private RelocatingShapeDrawer drawer;
     private BreakingStrength breakingStrength;
     private boolean canAttack = true;
-    
+
     public static final int UNIT_SIZE = 24;
     public static final int MAX_ARMOR = 80;
     public static final int MAX_DAMAGE = 100;
@@ -94,7 +93,6 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         setArmor(armor);
         currentHealth = maxHealth;
     }
-
 
     @Override
     public void attack(Collection<DamageDealer> container, CombatUnit attackable) {
@@ -210,6 +208,13 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     @Override
     public void draw(Graphics2D g) {
         drawer.drawUnit(this, g);
+        if (attackAction.isRepeated()) {
+            drawRecharge(g);
+        }
+        drawHealth(g);
+    }
+
+    private void drawRecharge(Graphics2D g) {
         g.setColor(Color.ORANGE);
         double dv = (double) getWidth() / rechargeTime;
         if (getY() > 1) {
@@ -219,6 +224,9 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
             g.fillRect((int) getX(), (int) getY() + getHeight() + 1,
                     (int) (rechargeProgress * dv), 2);
         }
+    }
+
+    private void drawHealth(Graphics2D g) {
         double dh = (double) getWidth() / maxHealth;
         g.setColor(Color.GREEN);
         if (getY() > 3) {
@@ -295,7 +303,5 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
             speed *= 2;
         }
     }
-
-
 
 }

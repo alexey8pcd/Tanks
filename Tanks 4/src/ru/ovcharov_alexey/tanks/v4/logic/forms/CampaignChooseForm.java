@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.logic.forms;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
@@ -154,18 +155,25 @@ public class CampaignChooseForm extends javax.swing.JDialog {
     private void loadCampaigns() {
         setLocationRelativeTo(null);
         try {
-            File dir = new File(Global.getPathToCompaniesFolder());
-            if (dir.exists() && dir.isDirectory()) {
-                String[] campaignFiles = dir.list((File dir1, String s)
-                        -> s.endsWith(".campaign"));
-                for (String name : campaignFiles) {
-                    Campaign c = Campaign.loadFromFile(dir + File.separator + name);
-                    campaigns.add(c);
+            LoadGameForm.asyncAction(() -> {
+                try {
+                    File dir = new File(Global.getPathToCompaniesFolder());
+                    if (dir.exists() && dir.isDirectory()) {
+                        String[] campaignFiles = dir.list((File dir1, String s)
+                                -> s.endsWith(".campaign"));
+                        for (String name : campaignFiles) {
+                            Campaign c = Campaign.loadFromFile(dir + File.separator + name);
+                            campaigns.add(c);
+                        }
+                        listCampaign.updateUI();
+                    }
+                } catch (Exception ex) {
+                    Global.logAndShowException(ex);
                 }
-                listCampaign.updateUI();
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.toString());
+            }).join();
+        } catch (InterruptedException ex) {
+            
         }
+
     }
 }

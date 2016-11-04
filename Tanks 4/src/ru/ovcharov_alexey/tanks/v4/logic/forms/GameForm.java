@@ -30,46 +30,50 @@ public class GameForm extends javax.swing.JDialog {
         initGame();
     }
 
-    private void initGame() throws IOException {
-        int width = (int) Global.getMapWidth();
-        int height = (int) Global.getMapHeight();
-        this.setSize(width + 1, height + 1);
-        this.setLocationRelativeTo(null);
-        Canvas canvas = new Canvas();
-        this.getContentPane().add(canvas);
-        canvas.setSize(width - 1, height - 1);
-        engine = new Game(canvas);
-        engine.addGameListener((GameEvent event) -> {
-            if (null != event) {
-                switch (event) {
-                    case GAME_WIN:
-                        Global.getStatistics().addWinGame();
-                    case GAME_LOSE:
-                    case GAME_BREAK:
-                        dispose();
-                        break;
-                    case GAME_START:
-                        Global.getStatistics().addStartedGame();
-                        break;
-                    case ENEMY_KILL:
-                        Global.getStatistics().addEnemyKill();
+    private void initGame() {
+        try {
+            int width = (int) Global.getMapWidth();
+            int height = (int) Global.getMapHeight();
+            this.setSize(width + 1, height + 1);
+            this.setLocationRelativeTo(null);
+            Canvas canvas = new Canvas();
+            this.getContentPane().add(canvas);
+            canvas.setSize(width - 1, height - 1);
+            engine = new Game(canvas);
+            engine.addGameListener((GameEvent event) -> {
+                if (null != event) {
+                    switch (event) {
+                        case GAME_WIN:
+                            Global.getStatistics().addWinGame();
+                        case GAME_LOSE:
+                        case GAME_BREAK:
+                            dispose();
+                            break;
+                        case GAME_START:
+                            Global.getStatistics().addStartedGame();
+                            break;
+                        case ENEMY_KILL:
+                            Global.getStatistics().addEnemyKill();
+                    }
                 }
-            }
-        });
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-                engine.pressKey(e);
-            }
+            });
+            this.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    super.keyPressed(e);
+                    engine.pressKey(e);
+                }
 
-            @Override
-            public void keyReleased(KeyEvent e) {
-                super.keyReleased(e);
-                engine.releaseKey(e);
-            }
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    super.keyReleased(e);
+                    engine.releaseKey(e);
+                }
 
-        });
+            });
+        } catch (Exception e) {
+            Global.logAndShowException(e);
+        }
     }
 
     public void singlePlayGame() {

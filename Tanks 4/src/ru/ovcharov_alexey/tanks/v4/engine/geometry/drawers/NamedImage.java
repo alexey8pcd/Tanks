@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -9,10 +10,10 @@ import java.io.IOException;
 */
 public class NamedImage {
     
-    private Image image;
+    private BufferedImage image;
     private String name;
 
-    public NamedImage(Image image, String name) {
+    public NamedImage(BufferedImage image, String name) {
         this.image = image;
         this.name = name;
     }
@@ -20,11 +21,11 @@ public class NamedImage {
     public NamedImage() {
     }
 
-    public Image getImage() {
+    public BufferedImage getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(BufferedImage image) {
         this.image = image;
     }
 

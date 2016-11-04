@@ -6,11 +6,11 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.abstraction;
  */
 public enum UnitSpeed {
 
-    VERY_SLOW(0.4f),
-    SLOW(0.8f),
-    NORMAL(1.2f),
-    FAST(1.6f),
-    VERY_FAST(2f);
+    VERY_SLOW(0.5f),
+    SLOW(0.75f),
+    NORMAL(1f),
+    FAST(1.25f),
+    VERY_FAST(1.5f);
 
     public static UnitSpeed typeOf(float speed) {
         for (UnitSpeed unitSpeed : values()) {

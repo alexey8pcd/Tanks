@@ -5,6 +5,12 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import javax.swing.JOptionPane;
 
 /**
  * @author Alexey
@@ -14,6 +20,22 @@ public class Global {
     private static int mapSizeIndex;
     private static Statistics statistics = Statistics.empty();
     private static String pathToCompaniesFolder = ".";
+    private static final Logger LOGGER = Logger.getLogger("Tanks 4");
+
+    static {
+        LOGGER.setLevel(java.util.logging.Level.INFO);
+        try {
+            FileHandler fileHandler = new FileHandler("game.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            LOGGER.addHandler(fileHandler);
+        } catch (IOException | SecurityException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static Logger getLogger() {
+        return LOGGER;
+    }
 
     public static Statistics getStatistics() {
         return statistics;
@@ -21,6 +43,10 @@ public class Global {
 
     public static int getMapSizeIndex() {
         return mapSizeIndex;
+    }
+
+    public static void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, "Ошибка", JOptionPane.ERROR);
     }
 
     public static String getPathToCompaniesFolder() {
@@ -44,9 +70,11 @@ public class Global {
                     dataOutputStream.writeInt(speed);
                     statistics.save(dataOutputStream);
                     dataOutputStream.writeUTF(pathToCompaniesFolder);
+                    dataOutputStream.writeInt(LOGGER.getLevel().intValue());
                 }
             }
         } catch (Exception ex) {
+            Global.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
         }
 
     }
@@ -60,13 +88,40 @@ public class Global {
                 Global.setSpeed(dataInputStream.readInt());
                 Global.statistics = Statistics.load(dataInputStream);
                 Global.pathToCompaniesFolder = dataInputStream.readUTF();
+                Global.LOGGER.setLevel(Level.parse(String.valueOf(dataInputStream.readInt())));
             }
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
         }
     }
 
     public static void clearStatistics() {
         Global.statistics = Statistics.empty();
+    }
+
+    public static void logAndShowException(Exception ex) {
+        Global.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
+        showErrorMessage("В игре произошла ошибка, подробная информация в файле журнала");
+    }
+
+    public static void disableLogger() {
+        LOGGER.setLevel(Level.OFF);
+    }
+
+    public static void enableLogErrors() {
+        LOGGER.setLevel(Level.SEVERE);
+    }
+
+    public static void enableLogAllMessages() {
+        LOGGER.setLevel(Level.INFO);
+    }
+    
+    public static boolean isLoggerEnabled(){
+        return LOGGER.getLevel() != Level.OFF;
+    }
+    
+    public static boolean isLoggingOnlyErrors(){
+        return LOGGER.getLevel() == Level.SEVERE;
     }
 
     public static class Size {
@@ -111,7 +166,6 @@ public class Global {
             Global.mapWidth = size.getWidth();
             Global.mapHeight = size.getHeigth();
         }
-
     }
 
     public static double getMapHeight() {
