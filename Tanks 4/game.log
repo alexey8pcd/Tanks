@@ -1,0 +1,35 @@
+ноя 04, 2016 10:49:55 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm init
+INFO: Игра запущена
+ноя 04, 2016 10:50:16 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MapEditorForm <init>
+INFO: Выбран режим редактирования карты
+ноя 04, 2016 10:51:36 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm bExitActionPerformed
+INFO: Завершаю игру
+ноя 04, 2016 11:06:51 AM ru.ovcharov_alexey.tanks.v4.engine.Global load
+SEVERE: null
+java.io.EOFException
+	at java.io.DataInputStream.readInt(DataInputStream.java:392)
+	at ru.ovcharov_alexey.tanks.v4.engine.Global.load(Global.java:91)
+	at ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm.init(MainForm.java:29)
+	at ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm.<init>(MainForm.java:24)
+	at ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm.lambda$main$12(MainForm.java:250)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:76)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+
+ноя 04, 2016 11:06:51 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm init
+INFO: Игра запущена
+ноя 04, 2016 11:06:58 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm bExitActionPerformed
+INFO: Завершаю игру
+ноя 04, 2016 11:07:02 AM ru.ovcharov_alexey.tanks.v4.logic.forms.MainForm init
+INFO: Игра запущена
