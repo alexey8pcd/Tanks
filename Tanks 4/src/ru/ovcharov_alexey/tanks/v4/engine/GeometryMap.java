@@ -28,7 +28,7 @@ public class GeometryMap extends GeometryShape implements Drawable {
     private final int tileSize;
     private final BufferedImage offset;
 
-    private GeometryMap(int width, int height, int tileSize) throws Exception {
+    private GeometryMap(int width, int height, int tileSize) {
         super(0, 0, width, height);
         this.tileSize = tileSize;
         Material.init(tileSize);
@@ -39,6 +39,21 @@ public class GeometryMap extends GeometryShape implements Drawable {
         for (int i = 0; i < rowsCount; ++i) {
             for (int j = 0; j < columnsCount; ++j) {
                 tiles[i * columnsCount + j] = Material.TERRA;
+            }
+        }
+    }
+
+    public GeometryMap(GeometryMap toCopy) {
+        super(0, 0, toCopy.getWidth(), toCopy.getHeight());
+        this.tileSize = toCopy.tileSize;
+        this.offset = toCopy.offset;
+        this.rowsCount = toCopy.rowsCount;
+        this.columnsCount = toCopy.columnsCount;
+        tiles = new Material[rowsCount * columnsCount];
+        for (int row = 0; row < rowsCount; row++) {
+            for (int column = 0; column < columnsCount; column++) {
+                tiles[row * columnsCount + column]
+                        = toCopy.tiles[row * columnsCount + column];
             }
         }
     }
@@ -84,25 +99,8 @@ public class GeometryMap extends GeometryShape implements Drawable {
         return true;
     }
 
-    /**
-     * Создает новую карту 768*512 пикселей с ячейками в 1 пиксель.
-     *
-     * @return
-     * @throws java.lang.Exception
-     */
     public static GeometryMap newInstance() throws Exception {
         return new GeometryMap(MAX_WIDTH, MAX_HEIGTH, DEFAUL_TILE_SIZE);
-    }
-
-    public static GeometryMap copyMap(GeometryMap toCopy) throws Exception {
-        GeometryMap map = new GeometryMap(toCopy.getWidth(), toCopy.getHeight(),
-                toCopy.getTileSize());
-        for (int row = 0; row < map.rowsCount; row++) {
-            for (int column = 0; column < map.columnsCount; column++) {
-                map.setTileAt(row, column, toCopy.getTileAt(row, column));
-            }
-        }
-        return map;
     }
 
     public static GeometryMap newInstance(int tileSize, int rows, int columns) throws Exception {

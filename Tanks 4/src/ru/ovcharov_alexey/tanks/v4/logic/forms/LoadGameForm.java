@@ -13,18 +13,29 @@ import ru.ovcharov_alexey.tanks.v4.engine.Global;
  */
 public class LoadGameForm extends javax.swing.JDialog {
 
+    private static final LoadGameForm LOAD_FORM;
+
+    static {
+        LOAD_FORM = new LoadGameForm(null, true);
+        LOAD_FORM.setLocationRelativeTo(null);
+    }
+
+    public static void releaseResources() {
+        if (LOAD_FORM != null) {
+            LOAD_FORM.dispose();
+        }
+    }
+
     public static Thread asyncAction(Runnable runnable) {
-        LoadGameForm loadGameForm = new LoadGameForm(null, true);
-        loadGameForm.setLocationRelativeTo(null);
         Thread thread = new Thread(() -> {
             try {
                 runnable.run();
             } finally {
-                loadGameForm.dispose();
+                LOAD_FORM.setVisible(false);
             }
         });
         thread.start();
-        loadGameForm.setVisible(true);
+        LOAD_FORM.setVisible(true);
         return thread;
     }
 

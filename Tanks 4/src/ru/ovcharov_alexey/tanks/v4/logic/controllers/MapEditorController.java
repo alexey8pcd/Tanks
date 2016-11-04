@@ -3,14 +3,14 @@ package ru.ovcharov_alexey.tanks.v4.logic.controllers;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.logic.edit.Tool;
-import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
+import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 
 /**
  * @author Alexey
@@ -24,14 +24,15 @@ public class MapEditorController {
     private int scale;
     private final int minScale = 4;
     private final int maxScale = 128;
-    private Deque<GeometryMap> history;
+    private List<GeometryMap> history;
     private final int maxHistoryDepth = 20;
+    private int currentHistoryIndex;
 
     public MapEditorController(int mapWidth, int mapHeight, Graphics graphics) throws Exception {
         buffer = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_RGB);
         this.rootGraphics = graphics;
         currentMap = GeometryMap.newInstance();
-        history = new ArrayDeque<>(maxHistoryDepth);
+        history = new ArrayList<>();
         tool = new Tool(Material.BRICKS, 0, 0);
         scale = 16;
         tool.setSize(scale);
@@ -54,6 +55,10 @@ public class MapEditorController {
     }
 
     public void redo() {
+        if (currentHistoryIndex < history.size() - 1) {
+            currentMap = history.get(++currentHistoryIndex);
+            draw();
+        }
     }
 
     public void saveMap() {
@@ -61,10 +66,7 @@ public class MapEditorController {
     }
 
     public void addTilesOnMap() {
-        try {
-            saveToHistory();
-        } catch (Exception ex) {
-        }
+        saveToHistory();
         int maxX = tool.getX() + tool.getWidth();
         int maxY = tool.getY() + tool.getHeight();
         for (int x = tool.getX(); x < maxX; x++) {
@@ -75,11 +77,26 @@ public class MapEditorController {
         draw();
     }
 
-    public void saveToHistory() throws Exception {
-        if (history.size() > maxHistoryDepth) {
-            history.removeFirst();
+    private void saveToHistory() {
+        if (history.size() >= maxHistoryDepth) {
+            history.remove(0);
+            if (currentHistoryIndex > 0) {
+                --currentHistoryIndex;
+            }
         }
-        history.add(GeometryMap.copyMap(currentMap));
+        if (history.isEmpty()) {
+            history.add(currentMap);
+            currentHistoryIndex = 0;
+        } else if (currentHistoryIndex == history.size() - 1) {
+            history.add(currentMap);
+            ++currentHistoryIndex;
+        } else {
+            history.set(currentHistoryIndex, currentMap);
+            for (int i = currentHistoryIndex + 1; i < history.size();) {
+                history.remove(i);
+            }
+        }
+        currentMap = new GeometryMap(currentMap);
     }
 
     public void changeScale(int wheelRotation, int x, int y) {
@@ -120,20 +137,17 @@ public class MapEditorController {
             this.currentMap.clear();
             draw();
         } catch (Exception ex) {
+            Global.logAndShowException(ex);
         }
-
     }
 
     public void undo() {
-        if (history.isEmpty()) {
+        if (history.isEmpty() || currentHistoryIndex < 0) {
             return;
         }
-
-        if (history.size()
-                == 1) {
-            currentMap = history.peek();
-        } else {
-            currentMap = history.removeLast();
+        currentMap = history.get(currentHistoryIndex);
+        if (currentHistoryIndex > 0) {
+            --currentHistoryIndex;
         }
         draw();
     }

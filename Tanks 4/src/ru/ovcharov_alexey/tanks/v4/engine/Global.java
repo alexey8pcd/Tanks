@@ -21,7 +21,10 @@ public class Global {
     private static Statistics statistics = Statistics.empty();
     private static String pathToCompaniesFolder = ".";
     private static final Logger LOGGER = Logger.getLogger("Tanks 4");
-
+    private static int mapWidth = GeometryMap.MAX_WIDTH;
+    private static int mapHeight = GeometryMap.MAX_HEIGTH;
+    private static int speed = 50;
+    
     static {
         LOGGER.setLevel(java.util.logging.Level.INFO);
         try {
@@ -151,9 +154,7 @@ public class Global {
         new Size(1600, 1200),
         new Size(1920, 1080)
     };
-    private static int mapWidth = GeometryMap.MAX_WIDTH;
-    private static int mapHeight = GeometryMap.MAX_HEIGTH;
-    private static int speed = 50;
+    
 
     public static double getMapWidth() {
         return mapWidth;

@@ -4,17 +4,12 @@ import java.awt.Canvas;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Game;
-import ru.ovcharov_alexey.tanks.v4.engine.GameMode;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
-import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
-import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
-import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
+import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 
 /**
  *

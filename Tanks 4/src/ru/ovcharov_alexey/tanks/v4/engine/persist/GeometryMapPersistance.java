@@ -1,4 +1,4 @@
-package ru.ovcharov_alexey.tanks.v4.persist;
+package ru.ovcharov_alexey.tanks.v4.engine.persist;
 
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import java.awt.HeadlessException;

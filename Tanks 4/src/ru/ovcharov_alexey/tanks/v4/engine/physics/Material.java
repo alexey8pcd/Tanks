@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.physics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.ImageUtils;
 
 /**
@@ -28,13 +29,17 @@ public enum Material {
     private static final int MIN_CODE = 0;
     private static final int MAX_CODE = 5;
 
-    public static void init(int tileSize) throws Exception {
-        for (Material value : Material.values()) {
-            String name = "/images/button_images/" + value.name().toLowerCase() + ".png";
-            BufferedImage image = ImageIO.read(Material.class.getResourceAsStream(name));
-            BufferedImage scaledImage = ImageUtils.scale(image, tileSize, tileSize);
-            int[] buff = new int[tileSize * tileSize];
-            value.setImageBuffer(scaledImage.getRGB(0, 0, tileSize, tileSize, buff, 0, tileSize));
+    public static void init(int tileSize) {
+        try {
+            for (Material value : Material.values()) {
+                String name = "/images/button_images/" + value.name().toLowerCase() + ".png";
+                BufferedImage image = ImageIO.read(Material.class.getResourceAsStream(name));
+                BufferedImage scaledImage = ImageUtils.scale(image, tileSize, tileSize);
+                int[] buff = new int[tileSize * tileSize];
+                value.setImageBuffer(scaledImage.getRGB(0, 0, tileSize, tileSize, buff, 0, tileSize));
+            }
+        } catch (Exception e) {
+            Global.logAndShowException(e);
         }
     }
 

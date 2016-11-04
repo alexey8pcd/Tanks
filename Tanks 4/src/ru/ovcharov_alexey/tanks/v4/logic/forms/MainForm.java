@@ -165,11 +165,20 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bMapEditorActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
-        Global.save();
-        Global.getLogger().info("Завершаю игру");
-        dispose();
-        System.exit(0);
+        exit();
     }//GEN-LAST:event_bExitActionPerformed
+
+    private void exit() {
+        try {
+            Global.save();
+            Global.getLogger().info("Завершаю игру");
+        } finally {
+            LoadGameForm.releaseResources();
+            dispose();
+            System.exit(0);
+        }
+
+    }
 
     private void bCampaignEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignEditorActionPerformed
         new CampaignEditorForm(this, true).setVisible(true);

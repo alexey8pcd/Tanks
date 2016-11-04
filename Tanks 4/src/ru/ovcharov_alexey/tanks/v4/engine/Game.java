@@ -19,16 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
-import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.DrawerFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
@@ -57,7 +53,6 @@ public class Game implements Runnable {
     private Level currentLevel;
     private Iterator<Level> leveliterator;
     private BufferedImage bufferedImage;
-    private static final int TIMER_MAX_TIME = 20;
     private Timer timer;
 
     private int time;
@@ -70,6 +65,7 @@ public class Game implements Runnable {
     private double yScale;
     private double xScale;
 
+    private static int maxBonusTime;
     private float delay = 1000f / (10 + Global.getSpeed());
     private boolean enemiesCanMove;
     private Bonus currentBonus;
@@ -112,6 +108,7 @@ public class Game implements Runnable {
     }
 
     public synchronized void start() {
+        maxBonusTime = getMaxBonusTime();
         if (gameMode == GameMode.OFF) {
             Global.getLogger().info("Начинаю игру");
             if (pauseScreen == null || winScreen == null
@@ -134,7 +131,7 @@ public class Game implements Runnable {
                     }).join();
                 } catch (InterruptedException ex) {
                 }
-                
+
             }
             time = 0;
             thread = new Thread(this);
@@ -383,7 +380,7 @@ public class Game implements Runnable {
                     playerUnit = gameContext.getPlayerUnit();
                     enemiesCanMove = gameContext.isEmemiesCanMove();
                     if (gameContext.isDurable()) {
-                        timerTime = TIMER_MAX_TIME;
+                        timerTime = maxBonusTime;
                         timer.restart();
                         currentBonus = bonus;
                     }
@@ -514,10 +511,10 @@ public class Game implements Runnable {
         bonuses.stream().forEach((bonus) -> bonus.draw(g));
         if (currentBonus != null) {
             g.setColor(Color.BLUE);
-            int startX = currentLevel.getMap().getWidth() - 10 - TIMER_MAX_TIME * 3;
+            int startX = currentLevel.getMap().getWidth() - 10 - maxBonusTime * 3;
             g.fillRect(startX, 3, timerTime * 3, 4);
             g.setColor(Color.BLACK);
-            g.drawRect(startX, 3, TIMER_MAX_TIME * 3, 4);
+            g.drawRect(startX, 3, maxBonusTime * 3, 4);
         }
 
     }
@@ -609,6 +606,15 @@ public class Game implements Runnable {
         drawGraphics.drawImage(bufferedImage, 0, 0, (int) Global.getMapWidth(),
                 (int) Global.getMapHeight(), null);
         bufferStrategy.show();
+    }
+
+    private static int getMaxBonusTime() {
+        float speed = Global.getSpeed();
+        if (speed >= 50) {
+            return Math.round(30 - speed / 5);
+        } else {
+            return Math.round(40 - 2 * speed / 5);
+        }
     }
 
 }

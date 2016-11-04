@@ -10,7 +10,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import ru.ovcharov_alexey.tanks.v4.engine.units.factory.UnitFactory;
 import ru.ovcharov_alexey.tanks.v4.logic.forms.MapEditorForm;
-import ru.ovcharov_alexey.tanks.v4.persist.GeometryMapPersistance;
+import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 
 /**
  * @author Alexey
