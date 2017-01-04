@@ -91,9 +91,18 @@ public class GameForm extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                formFocusLost(evt);
+            }
+        });
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusLost
+        this.toFront();
+    }//GEN-LAST:event_formFocusLost
 
     public void campaign(LevelAndCampaign levelAndCampaign) {
         try {
