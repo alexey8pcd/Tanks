@@ -21,7 +21,7 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
 
     @Override
     public boolean move(Movable movable, GeometryMap map, GeometryPoint point) {
-        calculateDesirePosition(movable, movable.getSpeed());
+        calculateDesirePosition(movable);
         float dRightX = dLeftX + movable.getWidth();
         float dDownY = dTopY + movable.getHeight();
         if (intoMap((int) dRightX, (int) dDownY, map)) {
@@ -34,8 +34,9 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
                         if (breaking.getBreakingStrength().isBreak(material)) {
                             map.setTile((int) x, (int) y, Material.TERRA);
                             int x1, x2, y1, y2;
-                            if (movable.getDirection() == Direction.LEFT
-                                    || movable.getDirection() == Direction.RIGHT) {
+                            Direction direction = Direction.approximate(movable.getDirection());
+                            if (direction == Direction.LEFT
+                                    || direction == Direction.RIGHT) {
                                 x1 = (int) x;
                                 x2 = (int) x;
                                 y1 = (int) (y + map.getTileSize());

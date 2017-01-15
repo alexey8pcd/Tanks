@@ -3,8 +3,8 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import java.util.EnumSet;
 import java.util.Random;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
-import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 
@@ -15,7 +15,7 @@ public class SimpleSearchMove extends AbstractMoveActionWithCollision {
 
     private Random random = new Random();
     private static final int CHANCE_CHANGE_DIRECTION = 12;
-    
+
     public SimpleSearchMove(EnumSet<Material> impassable) {
         super(impassable);
     }
@@ -43,18 +43,33 @@ public class SimpleSearchMove extends AbstractMoveActionWithCollision {
         if (random.nextInt(100) < CHANCE_CHANGE_DIRECTION) {
             float dx = target.getX() - movable.getX();
             float dy = target.getY() - movable.getY();
+            boolean nextBoolean = random.nextBoolean();
+            float speed = movable.getSpeed();
             if (dx >= 0 && dy >= 0) {
-                movable.setDirection(random.nextBoolean() ? Direction.RIGHT : Direction.DOWN);
+                if (nextBoolean) {
+                    movable.setDirection(new Vector2D(speed, 0));
+                } else {
+                    movable.setDirection(new Vector2D(0, -speed));
+                }
             } else if (dx >= 0 && dy < 0) {
-                movable.setDirection(random.nextBoolean() ? Direction.RIGHT : Direction.UP);
+                if (nextBoolean) {
+                    movable.setDirection(new Vector2D(speed, 0));
+                } else {
+                    movable.setDirection(new Vector2D(0, speed));
+                }
             } else if (dx < 0 && dy > 0) {
-                movable.setDirection(random.nextBoolean() ? Direction.LEFT : Direction.DOWN);
+                if (nextBoolean) {
+                    movable.setDirection(new Vector2D(-speed, 0));
+                } else {
+                    movable.setDirection(new Vector2D(0, speed));
+                }
+            } else if (nextBoolean) {
+                movable.setDirection(new Vector2D(-speed, 0));
             } else {
-                movable.setDirection(random.nextBoolean() ? Direction.LEFT : Direction.UP);
+                movable.setDirection(new Vector2D(0, -speed));
             }
         }
 
     }
-    
 
 }

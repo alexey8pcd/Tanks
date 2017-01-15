@@ -38,8 +38,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
 
     @Override
     public boolean canMove(Movable movable, GeometryMap map, GeometryPoint target) {
-        float speed = movable.getSpeed();
-        calculateDesirePosition(movable, speed);
+        calculateDesirePosition(movable);
         float dRightX = dLeftX + movable.getWidth();
         float dDownY = dTopY + movable.getHeight();
         if (!intoMap(Math.round(dRightX), Math.round(dDownY), map)) {
@@ -52,25 +51,12 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      * Вычислить желаемую позицию. Результат сохраняется в полях dLeftX и dTopY
      *
      * @param movable
-     * @param speed
      */
-    protected void calculateDesirePosition(Movable movable, float speed) {
+    protected void calculateDesirePosition(Movable movable) {
         dLeftX = movable.getX();
         dTopY = movable.getY();
-        switch (movable.getDirection()) {
-            case LEFT:
-                dLeftX -= speed;
-                break;
-            case RIGHT:
-                dLeftX += speed;
-                break;
-            case UP:
-                dTopY -= speed;
-                break;
-            case DOWN:
-                dTopY += speed;
-                break;
-        }
+        dLeftX += movable.getDirection().getI();
+        dTopY -= movable.getDirection().getJ();
     }
 
     /**

@@ -48,7 +48,7 @@ public class GameContext {
         this.ememiesCanMove = ememiesCanMove;
     }
 
-    boolean bonusNotActive() {
+    public boolean bonusNotActive() {
         return currentBonus == null;
     }
 

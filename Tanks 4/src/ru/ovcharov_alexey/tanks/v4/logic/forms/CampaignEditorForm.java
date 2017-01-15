@@ -1,8 +1,6 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
-import java.awt.Dimension;
 import java.awt.HeadlessException;
-import java.awt.Toolkit;
 import java.io.IOException;
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
@@ -22,13 +20,15 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     public CampaignEditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        init();
+        setLocationOnCenter();
+        paneTop.setVisible(false);
     }
 
-    private void init() {
+    private void setLocationOnCenter() {
         setLocationRelativeTo(null);
-        campaign = new Campaign();
-        levelCreator = new LevelCreator();
+    }
+
+    private void setModel() {
         listLevels.setModel(new AbstractListModel<String>() {
             @Override
             public int getSize() {
@@ -57,58 +57,57 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        tfCompanyName = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        paneTop = new javax.swing.JPanel();
+        lCampaignName = new javax.swing.JLabel();
+        lLevels = new javax.swing.JLabel();
+        spLevels = new javax.swing.JScrollPane();
         listLevels = new javax.swing.JList<>();
-        jLabel2 = new javax.swing.JLabel();
-        bSaveCompany = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        tfCompanyName = new javax.swing.JTextField();
+        paneEditLevel = new javax.swing.JPanel();
+        lLevelName = new javax.swing.JLabel();
         tfLevelName = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
+        lMapDescription = new javax.swing.JLabel();
         bCreateMap = new javax.swing.JButton();
         bLoadMap = new javax.swing.JButton();
         lMapName = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        lBonusesCount = new javax.swing.JLabel();
         spinnerBonusesCount = new javax.swing.JSpinner();
-        jLabel7 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        lEnemyUnits = new javax.swing.JLabel();
+        spEnemyUnits = new javax.swing.JScrollPane();
         listUnits = new javax.swing.JList<>();
         bAddUnits = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
+        lTypeUnit = new javax.swing.JLabel();
         cbUnitsType = new javax.swing.JComboBox<>();
         bAddLevel = new javax.swing.JButton();
         bRemoveLevel = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
+        lUnitCount = new javax.swing.JLabel();
         spinnerUnitsCountAdd = new javax.swing.JSpinner();
         bRemoveUnits = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        cbMoveType = new javax.swing.JComboBox<>();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        miNewCampaign = new javax.swing.JMenuItem();
+        miLoadCampaign = new javax.swing.JMenuItem();
+        miSaveCampaign = new javax.swing.JMenuItem();
+        miExit = new javax.swing.JMenuItem();
+        miExitNow = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Редактор кампаний");
         setResizable(false);
 
-        jLabel1.setText("Название кампании");
+        lCampaignName.setText("Название кампании");
+
+        lLevels.setText("Уровни");
+
+        spLevels.setViewportView(listLevels);
 
         tfCompanyName.setText("Новая кампания");
 
-        jScrollPane1.setViewportView(listLevels);
+        paneEditLevel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Редактирование уровня"));
 
-        jLabel2.setText("Уровни");
+        lLevelName.setText("Название уровня");
 
-        bSaveCompany.setText("Сохранить кампанию");
-        bSaveCompany.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bSaveCompanyActionPerformed(evt);
-            }
-        });
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Редактирование уровня"));
-
-        jLabel3.setText("Название уровня");
-
-        jLabel4.setText("Карта");
+        lMapDescription.setText("Карта");
 
         bCreateMap.setText("Создать карту");
         bCreateMap.addActionListener(new java.awt.event.ActionListener() {
@@ -126,13 +125,13 @@ public class CampaignEditorForm extends javax.swing.JDialog {
 
         lMapName.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel6.setText("Количество бонусов");
+        lBonusesCount.setText("Количество бонусов");
 
         spinnerBonusesCount.setModel(new javax.swing.SpinnerNumberModel(3, 0, 10, 1));
 
-        jLabel7.setText("Боевые единицы");
+        lEnemyUnits.setText("Боевые единицы");
 
-        jScrollPane2.setViewportView(listUnits);
+        spEnemyUnits.setViewportView(listUnits);
 
         bAddUnits.setText("Добавить боевые единицы");
         bAddUnits.addActionListener(new java.awt.event.ActionListener() {
@@ -141,7 +140,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
             }
         });
 
-        jLabel8.setText("Тип");
+        lTypeUnit.setText("Тип");
 
         cbUnitsType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Легкая боевая машина", "Средняя боевая машина", "Тяжелая боевая машина", "Танк", "Фугас", "Двухорудийная машина" }));
 
@@ -154,7 +153,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
 
         bRemoveLevel.setText("Удалить уровень");
 
-        jLabel5.setText("Количество");
+        lUnitCount.setText("Количество");
 
         spinnerUnitsCountAdd.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
 
@@ -165,160 +164,182 @@ public class CampaignEditorForm extends javax.swing.JDialog {
             }
         });
 
-        jLabel9.setText("Способ движения");
-
-        cbMoveType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Случайный", "Улучшенный", "Поиск цели" }));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout paneEditLevelLayout = new javax.swing.GroupLayout(paneEditLevel);
+        paneEditLevel.setLayout(paneEditLevelLayout);
+        paneEditLevelLayout.setHorizontalGroup(
+            paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(paneEditLevelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bAddLevel)
-                .addGap(323, 323, 323))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(bRemoveLevel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(paneEditLevelLayout.createSequentialGroup()
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(paneEditLevelLayout.createSequentialGroup()
                         .addGap(15, 15, 15)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tfLevelName, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                        .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, paneEditLevelLayout.createSequentialGroup()
+                                .addComponent(lMapDescription)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(lMapName, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(paneEditLevelLayout.createSequentialGroup()
+                                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(paneEditLevelLayout.createSequentialGroup()
+                                        .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(bCreateMap)
-                                            .addComponent(jLabel6))
+                                            .addComponent(lBonusesCount))
                                         .addGap(65, 65, 65)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(bLoadMap)
                                             .addComponent(spinnerBonusesCount, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(174, 174, 174)
-                                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lEnemyUnits)
+                                    .addGroup(paneEditLevelLayout.createSequentialGroup()
+                                        .addComponent(lLevelName)
                                         .addGap(18, 18, 18)
-                                        .addComponent(cbUnitsType, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(tfLevelName, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(145, 145, 145)
-                                .addComponent(bRemoveLevel))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(spinnerUnitsCountAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(bAddUnits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(bRemoveUnits, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel9)
-                                    .addComponent(cbMoveType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                    .addGroup(paneEditLevelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(spEnemyUnits, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(bAddUnits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(paneEditLevelLayout.createSequentialGroup()
+                                .addComponent(lUnitCount)
+                                .addGap(36, 36, 36)
+                                .addComponent(spinnerUnitsCountAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(bRemoveUnits, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lTypeUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbUnitsType, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        paneEditLevelLayout.setVerticalGroup(
+            paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(paneEditLevelLayout.createSequentialGroup()
                 .addGap(4, 4, 4)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lLevelName)
                     .addComponent(tfLevelName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(14, 14, 14)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(lMapName, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(lMapDescription))
                 .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bLoadMap)
                     .addComponent(bCreateMap))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(paneEditLevelLayout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(spinnerBonusesCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(paneEditLevelLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel6)))
+                        .addComponent(lBonusesCount)))
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel7))
-                    .addComponent(cbUnitsType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(spinnerUnitsCountAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbMoveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(bAddUnits)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(bRemoveUnits)))
+                .addComponent(lEnemyUnits)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(spEnemyUnits, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(paneEditLevelLayout.createSequentialGroup()
+                        .addComponent(bAddUnits)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(spinnerUnitsCountAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lUnitCount))
+                        .addGap(18, 18, 18)
+                        .addComponent(lTypeUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbUnitsType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bRemoveUnits)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paneEditLevelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bAddLevel)
                     .addComponent(bRemoveLevel))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        javax.swing.GroupLayout paneTopLayout = new javax.swing.GroupLayout(paneTop);
+        paneTop.setLayout(paneTopLayout);
+        paneTopLayout.setHorizontalGroup(
+            paneTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(paneTopLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(tfCompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(bSaveCompany))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(lCampaignName)
+                .addGap(29, 29, 29)
+                .addComponent(tfCompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, paneTopLayout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addGroup(paneTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lLevels)
+                    .addComponent(spLevels, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(paneEditLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        paneTopLayout.setVerticalGroup(
+            paneTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(paneTopLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                .addGroup(paneTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lCampaignName)
                     .addComponent(tfCompanyName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                .addGroup(paneTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(paneEditLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(paneTopLayout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(lLevels)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1)
-                        .addGap(18, 18, 18)
-                        .addComponent(bSaveCompany))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(spLevels, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        getContentPane().add(paneTop, java.awt.BorderLayout.CENTER);
+
+        jMenu1.setText("Кампания");
+
+        miNewCampaign.setText("Новая кампания");
+        miNewCampaign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miNewCampaignActionPerformed(evt);
+            }
+        });
+        jMenu1.add(miNewCampaign);
+
+        miLoadCampaign.setText("Загрузить кампанию...");
+        jMenu1.add(miLoadCampaign);
+
+        miSaveCampaign.setText("Сохранить кампанию...");
+        miSaveCampaign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveCampaignActionPerformed(evt);
+            }
+        });
+        jMenu1.add(miSaveCampaign);
+
+        miExit.setText("Сохранить и выйти");
+        miExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miExitActionPerformed(evt);
+            }
+        });
+        jMenu1.add(miExit);
+
+        miExitNow.setText("Выйти без сохранения");
+        miExitNow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miExitNowActionPerformed(evt);
+            }
+        });
+        jMenu1.add(miExitNow);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -352,25 +373,51 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_bAddLevelActionPerformed
 
-    private void bSaveCompanyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSaveCompanyActionPerformed
+    private void miSaveCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveCampaignActionPerformed
         saveCampaign();
-    }//GEN-LAST:event_bSaveCompanyActionPerformed
+    }//GEN-LAST:event_miSaveCampaignActionPerformed
+
+    private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
+        saveCampaign();
+        dispose();
+    }//GEN-LAST:event_miExitActionPerformed
+
+    private void miExitNowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitNowActionPerformed
+        dispose();
+    }//GEN-LAST:event_miExitNowActionPerformed
+
+    private void miNewCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miNewCampaignActionPerformed
+        campaign = new Campaign();
+        levelCreator = new LevelCreator();
+        setModel();
+        paneTop.setVisible(true);
+    }//GEN-LAST:event_miNewCampaignActionPerformed
 
     private void saveCampaign() throws HeadlessException {
-        if (!tfCompanyName.getText().isEmpty() && campaign.getLevels().size() > 0) {
-            campaign.setName(tfCompanyName.getText());
-            JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showSaveDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                try {
-                    String fileName = fileChooser.getSelectedFile().getCanonicalPath();
-                    campaign.save(fileName + ".campaign");
-                    JOptionPane.showMessageDialog(null, "Кампания сохранена");
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Не удалось сохранить "
-                            + "файл кампании, причина: " + ex.getMessage());
+        if (campaign != null) {
+            String name = tfCompanyName.getText();
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Не задано название кампании!", 
+                        "Ошибка сохранения", JOptionPane.ERROR_MESSAGE);
+            } else if (campaign.getLevels().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Не создано ни одного уровня!", 
+                        "Ошибка сохранения", JOptionPane.ERROR_MESSAGE);
+            } else {
+                campaign.setName(name);
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showSaveDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        String fileName = fileChooser.getSelectedFile().getCanonicalPath();
+                        campaign.save(fileName + ".campaign");
+                        JOptionPane.showMessageDialog(null, "Кампания сохранена");
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Не удалось сохранить "
+                                + "файл кампании, причина: " + ex.getMessage());
+                    }
                 }
             }
+
         }
     }
 
@@ -382,24 +429,29 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private javax.swing.JButton bLoadMap;
     private javax.swing.JButton bRemoveLevel;
     private javax.swing.JButton bRemoveUnits;
-    private javax.swing.JButton bSaveCompany;
-    private javax.swing.JComboBox<String> cbMoveType;
     private javax.swing.JComboBox<String> cbUnitsType;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JLabel lBonusesCount;
+    private javax.swing.JLabel lCampaignName;
+    private javax.swing.JLabel lEnemyUnits;
+    private javax.swing.JLabel lLevelName;
+    private javax.swing.JLabel lLevels;
+    private javax.swing.JLabel lMapDescription;
     private javax.swing.JLabel lMapName;
+    private javax.swing.JLabel lTypeUnit;
+    private javax.swing.JLabel lUnitCount;
     private javax.swing.JList<String> listLevels;
     private javax.swing.JList<String> listUnits;
+    private javax.swing.JMenuItem miExit;
+    private javax.swing.JMenuItem miExitNow;
+    private javax.swing.JMenuItem miLoadCampaign;
+    private javax.swing.JMenuItem miNewCampaign;
+    private javax.swing.JMenuItem miSaveCampaign;
+    private javax.swing.JPanel paneEditLevel;
+    private javax.swing.JPanel paneTop;
+    private javax.swing.JScrollPane spEnemyUnits;
+    private javax.swing.JScrollPane spLevels;
     private javax.swing.JSpinner spinnerBonusesCount;
     private javax.swing.JSpinner spinnerUnitsCountAdd;
     private javax.swing.JTextField tfCompanyName;

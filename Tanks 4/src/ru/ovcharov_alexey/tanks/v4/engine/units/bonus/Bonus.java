@@ -2,7 +2,6 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.bonus;
 
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;

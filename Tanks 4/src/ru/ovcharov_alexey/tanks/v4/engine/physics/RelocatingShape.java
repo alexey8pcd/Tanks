@@ -5,6 +5,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 
 /**
  *
@@ -13,14 +14,14 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
 public abstract class RelocatingShape extends GeometryShape implements Movable {
 
     protected float speed;
-    private Direction direction;
+    private Vector2D direction;
     protected MoveAction moveAction;
 
     public RelocatingShape(float speed, float x, float y,
             int width, int height, Direction direction, MoveAction moveAction) {
         super(x, y, width, height);
         this.speed = speed;
-        this.direction = direction;
+        this.direction = Vector2D.create(direction, speed);
         this.moveAction = moveAction;
     }
 
@@ -28,14 +29,14 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
             Direction direction, MoveAction moveAction) {
         super(x, y, size);
         this.speed = speed;
-        this.direction = direction;
+        this.direction = Vector2D.create(direction, speed);
         this.moveAction = moveAction;
     }
 
     public RelocatingShape(float speed, MoveAction moveAction, int size) {
         super(size);
         this.speed = speed;
-        this.direction = Direction.RIGHT;
+        this.direction = Vector2D.NULL;
         this.moveAction = moveAction;
     }
 
@@ -70,12 +71,12 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
     }
 
     @Override
-    public Direction getDirection() {
+    public Vector2D getDirection() {
         return direction;
     }
 
     @Override
-    public void setDirection(Direction direction) {
+    public void setDirection(Vector2D direction) {
         this.direction = direction;
     }
 

@@ -5,6 +5,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.DrawerFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.BreakingStrength;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
+import ru.ovcharov_alexey.tanks.v4.engine.units.factory.AttackActionFactory;
 
 /**
  * @author Alexey
@@ -13,7 +14,11 @@ public enum BonusType {
 
     /**
      * увеличение скорости стрельбы и пробивание брони
-     **/
+     *
+     *//**
+     * увеличение скорости стрельбы и пробивание брони
+     *
+     */
     POWER_UP(1, 18) {
 
         public static final int RECHARGE_TIME_FACTOR = 4;
@@ -43,8 +48,9 @@ public enum BonusType {
     },
     /**
      * остановка вражеских юнитов
-     **/
-    STOP_ENEMIES(2, 24) {
+     *
+     */
+    STOP_ENEMIES(2, 18) {
 
         @Override
         public GameContext applyTo(GameContext gameContext) {
@@ -118,8 +124,8 @@ public enum BonusType {
         }
 
     },
-    SWIM(5, 16) {
-        
+    SWIM(5, 10) {
+
         @Override
         public GameContext applyTo(GameContext gameContext) {
             gameContext.getPlayerUnit().getMoveAction().removeImpassible(Material.WATER);
@@ -138,9 +144,33 @@ public enum BonusType {
             return gameContext.bonusNotActive();
         }
 
+    },
+    /**
+     * Выстрел 3-мя снарядами
+     */
+    MULTISHOT(6, 12) {
+        @Override
+        public GameContext applyTo(GameContext gameContext) {
+            gameContext.getPlayerUnit().setAttackAction(
+                    AttackActionFactory.UNIT_ATTACK_ACTION_MILTISHELLS);
+            gameContext.setDurableBonus(true);
+            return gameContext;
+        }
+
+        @Override
+        public GameContext resetTo(GameContext gameContext) {
+            gameContext.getPlayerUnit().setAttackAction(
+                    AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS);
+            return gameContext;
+        }
+
+        @Override
+        public boolean isAllowed(GameContext gameContext) {
+            return gameContext.bonusNotActive();
+        }
+
     };
 
-    //усиление брони
     private final int value;
     private final int chance;
 
@@ -174,7 +204,7 @@ public enum BonusType {
     public abstract GameContext applyTo(GameContext gameContext);
 
     public abstract GameContext resetTo(GameContext gameContext);
-    
+
     public abstract boolean isAllowed(GameContext gameContext);
 
 }

@@ -24,6 +24,7 @@ import javax.swing.Timer;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
@@ -282,37 +283,34 @@ public class Game implements Runnable {
             playerUnit.attack(shells, null);
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_RIGHT))) {
-            if (playerUnit.getDirection() == Direction.RIGHT) {
+            if (Direction.approximate(playerUnit.getDirection()) == Direction.RIGHT) {
                 playerUnit.move(currentLevel.getMap(), null);
             } else {
-                playerUnit.setDirection(Direction.RIGHT);
+                playerUnit.setDirection(new Vector2D(playerUnit.getSpeed(), 0));
             }
-        }
-        if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_LEFT))) {
-            if (playerUnit.getDirection() == Direction.LEFT) {
+        } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_LEFT))) {
+            if (Direction.approximate(playerUnit.getDirection()) == Direction.LEFT) {
                 playerUnit.move(currentLevel.getMap(), null);
             } else {
-                playerUnit.setDirection(Direction.LEFT);
+                playerUnit.setDirection(new Vector2D(-playerUnit.getSpeed(), 0));
             }
-        }
-        if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_UP))) {
-            if (playerUnit.getDirection() == Direction.UP) {
+        } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_UP))) {
+            if (Direction.approximate(playerUnit.getDirection()) == Direction.UP) {
                 playerUnit.move(currentLevel.getMap(), null);
             } else {
-                playerUnit.setDirection(Direction.UP);
+                playerUnit.setDirection(new Vector2D(0, playerUnit.getSpeed()));
             }
-        }
-        if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_DOWN))) {
-            if (playerUnit.getDirection() == Direction.DOWN) {
+        } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_DOWN))) {
+            if (Direction.approximate(playerUnit.getDirection()) == Direction.DOWN) {
                 playerUnit.move(currentLevel.getMap(), null);
             } else {
-                playerUnit.setDirection(Direction.DOWN);
+                playerUnit.setDirection(new Vector2D(0, -playerUnit.getSpeed()));
             }
         }
 
     }
 
-    //<editor-fold defaultstate="collapsed" desc="update">
+//<editor-fold defaultstate="collapsed" desc="update">
     private void update() {
         if (gameMode == GameMode.RUN) {
             if (enemies.isEmpty()) {
@@ -474,7 +472,9 @@ public class Game implements Runnable {
     private void changeDirectionOfUnitIfCanNotMove(CombatUnit unit) {
         final int restriction = Direction.values().length;
         if (!unit.move(currentLevel.getMap(), playerUnit.getPoint())) {
-            unit.setDirection(Direction.values()[random.nextInt(restriction)]);
+            Vector2D vector2D = Vector2D.create(
+                    Direction.values()[random.nextInt(restriction)], unit.getSpeed());
+            unit.setDirection(vector2D);
         }
     }
 
@@ -482,7 +482,9 @@ public class Game implements Runnable {
         final int chanceDirection = 3;
         final int restriction = Direction.values().length;
         if (random.nextInt(100) < chanceDirection) {
-            unit.setDirection(Direction.values()[random.nextInt(restriction)]);
+            Vector2D vector2D = Vector2D.create(
+                    Direction.values()[random.nextInt(restriction)], unit.getSpeed());
+            unit.setDirection(vector2D);
         }
     }
 //</editor-fold>

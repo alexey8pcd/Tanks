@@ -1,9 +1,9 @@
 package ru.ovcharov_alexey.tanks.v4.engine.physics;
 
-import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 
 /**
  *
@@ -21,7 +21,7 @@ public interface Movable extends Shape {
 
     void setLocation(float x, float y);
 
-    Direction getDirection();
+    Vector2D getDirection();
 
-    void setDirection(Direction direction);
+    void setDirection(Vector2D direction);
 }

@@ -1,6 +1,5 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
-import java.awt.Canvas;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 public class GameForm extends javax.swing.JDialog {
 
     private Game engine;
+    private KeyAdapter keyAdapter;
 
     public GameForm(java.awt.Frame parent, boolean modal) throws IOException {
         super(parent, modal);
@@ -31,9 +31,6 @@ public class GameForm extends javax.swing.JDialog {
             int height = (int) Global.getMapHeight();
             this.setSize(width + 1, height + 1);
             this.setLocationRelativeTo(null);
-            Canvas canvas = new Canvas();
-            this.getContentPane().add(canvas);
-            canvas.setSize(width - 1, height - 1);
             engine = new Game(canvas);
             engine.addGameListener((GameEvent event) -> {
                 if (null != event) {
@@ -52,7 +49,7 @@ public class GameForm extends javax.swing.JDialog {
                     }
                 }
             });
-            this.addKeyListener(new KeyAdapter() {
+            keyAdapter = new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
                     super.keyPressed(e);
@@ -64,8 +61,10 @@ public class GameForm extends javax.swing.JDialog {
                     super.keyReleased(e);
                     engine.releaseKey(e);
                 }
-
-            });
+                
+            };
+            this.addKeyListener(keyAdapter);
+            canvas.addKeyListener(keyAdapter);
         } catch (Exception e) {
             Global.logAndShowException(e);
         }
@@ -88,21 +87,15 @@ public class GameForm extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        canvas = new java.awt.Canvas();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
-        addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                formFocusLost(evt);
-            }
-        });
+        getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusLost
-        this.toFront();
-    }//GEN-LAST:event_formFocusLost
 
     public void campaign(LevelAndCampaign levelAndCampaign) {
         try {
@@ -116,5 +109,6 @@ public class GameForm extends javax.swing.JDialog {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.Canvas canvas;
     // End of variables declaration//GEN-END:variables
 }
