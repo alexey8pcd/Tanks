@@ -40,11 +40,11 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private BreakingStrength breakingStrength;
     private boolean canAttack = true;
 
-    public static final int UNIT_SIZE = 24;
+    private static final int UNIT_SIZE = 22;
     public static final int MAX_ARMOR = 80;
     public static final int MAX_DAMAGE = 100;
-    private int DEFAULT_RECHARGE_TIME = 50;
-    private int NO_DAMAGE_LIMIT = 30;
+    private static final int DEFAULT_RECHARGE_TIME = 50;
+    private static final int NO_DAMAGE_LIMIT = 30;
     private int rechargeTime = DEFAULT_RECHARGE_TIME;
     private int rechargeProgress = rechargeTime;
     private boolean damaged;

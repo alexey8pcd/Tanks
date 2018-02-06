@@ -241,8 +241,8 @@ public class Game implements Runnable {
         playerUnit = UnitFactory.createPlayerUnit();
         int mapWidth = currentLevel.getMap().getWidth();
         int mapHeight = currentLevel.getMap().getHeight();
-        playerUnit.setLocation(mapWidth - CombatUnit.UNIT_SIZE - 1,
-                mapHeight - CombatUnit.UNIT_SIZE - 1);
+        playerUnit.setLocation(mapWidth - playerUnit.getWidth() - 1,
+                mapHeight - playerUnit.getHealth() - 1);
         bonuses.clear();
         for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
             int x;
