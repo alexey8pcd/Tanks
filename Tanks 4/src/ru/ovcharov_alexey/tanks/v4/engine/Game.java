@@ -48,33 +48,33 @@ import ru.ovcharov_alexey.tanks.v4.logic.forms.LoadGameForm;
 public class Game implements Runnable {
 
     private CombatUnit playerUnit;
-    private List<DamageDealer> shells;
+    private final List<DamageDealer> shells;
     private List<CombatUnit> enemies;
-    private Random random = new Random();
+    private static final Random RANDOM = new Random();
     private Level currentLevel;
     private Iterator<Level> leveliterator;
-    private BufferedImage bufferedImage;
+    private final BufferedImage bufferedImage;
     private Timer timer;
 
     private int time;
-    private Collection<DamageDealer> enemiesShells;
+    private final Collection<DamageDealer> enemiesShells;
     private Thread thread;
-    private BufferStrategy bufferStrategy;
-    private Map<Integer, Boolean> keys = new HashMap<>();
+    private final BufferStrategy bufferStrategy;
+    private final Map<Integer, Boolean> keys = new HashMap<>();
     private final List<Bonus> bonuses = new ArrayList<>();
     private final List<Explosion> explosions = new ArrayList<>();
     private double yScale;
     private double xScale;
 
     private static int maxBonusTime;
-    private float delay = 1000f / (10 + Global.getSpeed());
+    private final float delay = 1000f / (10 + Global.getSpeed());
     private boolean enemiesCanMove;
     private Bonus currentBonus;
     private int timerTime;
     private GameMode gameMode;
-    private List<GameListener> listeners = new ArrayList<>();
+    private final List<GameListener> listeners = new ArrayList<>();
     private static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 20);
-    private int explosionDelay = 4;
+    private final int explosionDelay = 4;
     private String framesString = "";
     private BufferedImage pauseScreen;
     private BufferedImage winScreen;
@@ -214,7 +214,7 @@ public class Game implements Runnable {
         currentLevel.setMap(map);
         for (int i = 0; i < 5; i++) {
             currentLevel.addUnit(
-                    UnitFactory.createEnemyUnit(UnitType.randomType(random)));
+                    UnitFactory.createEnemyUnit(UnitType.randomType(RANDOM)));
         }
         currentLevel.setBonusesCount(4);
         leveliterator = new Iterator<Level>() {
@@ -249,11 +249,11 @@ public class Game implements Runnable {
             int y;
             Material material;
             do {
-                x = random.nextInt(mapWidth - Bonus.SIZE);
-                y = random.nextInt(mapHeight - Bonus.SIZE);
+                x = RANDOM.nextInt(mapWidth - Bonus.SIZE);
+                y = RANDOM.nextInt(mapHeight - Bonus.SIZE);
                 material = currentLevel.getMap().getTile(x, y);
             } while (material == Material.METAL || material == Material.WATER);
-            BonusType type = BonusType.randomType(random);
+            BonusType type = BonusType.randomType(RANDOM);
             bonuses.add(new Bonus(x, y, Bonus.SIZE, type));
         }
     }
@@ -473,7 +473,7 @@ public class Game implements Runnable {
         final int restriction = Direction.values().length;
         if (!unit.move(currentLevel.getMap(), playerUnit.getPoint())) {
             Vector2D vector2D = Vector2D.create(
-                    Direction.values()[random.nextInt(restriction)], unit.getSpeed());
+                    Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
             unit.setDirection(vector2D);
         }
     }
@@ -481,9 +481,9 @@ public class Game implements Runnable {
     private void changeDirectionOfUnitWithChance(CombatUnit unit) {
         final int chanceDirection = 3;
         final int restriction = Direction.values().length;
-        if (random.nextInt(100) < chanceDirection) {
+        if (RANDOM.nextInt(100) < chanceDirection) {
             Vector2D vector2D = Vector2D.create(
-                    Direction.values()[random.nextInt(restriction)], unit.getSpeed());
+                    Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
             unit.setDirection(vector2D);
         }
     }

@@ -69,7 +69,7 @@ public class GeometryMap extends GeometryShape implements Drawable {
         }
     }
 
-    public static GeometryMap load(DataInputStream inputStream) throws Exception {
+    public static GeometryMap load(DataInputStream inputStream) throws IOException {
         int tileSize = inputStream.readInt();
         int rowCount = inputStream.readInt();
         int columnCount = inputStream.readInt();
@@ -103,7 +103,7 @@ public class GeometryMap extends GeometryShape implements Drawable {
         return new GeometryMap(MAX_WIDTH, MAX_HEIGTH, DEFAUL_TILE_SIZE);
     }
 
-    public static GeometryMap newInstance(int tileSize, int rows, int columns) throws Exception {
+    public static GeometryMap newInstance(int tileSize, int rows, int columns) {
         if (tileSize < MIN_TILE_SIZE || tileSize > MAX_TILE_SIZE) {
             throw new IllegalArgumentException("Размер ячейки карты задан неверно");
         }

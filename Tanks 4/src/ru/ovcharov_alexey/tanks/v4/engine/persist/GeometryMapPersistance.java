@@ -20,7 +20,7 @@ public class GeometryMapPersistance {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Сохранить карту");
             chooser.setSelectedFile(new File("map.dat"));
-            chooser.setFileFilter(FILE_FILTER);
+            chooser.setFileFilter(DAT_FILE_FILTER);
             int result = chooser.showSaveDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
@@ -57,7 +57,7 @@ public class GeometryMapPersistance {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Выбрать карту");
 
-            chooser.setFileFilter(FILE_FILTER);
+            chooser.setFileFilter(DAT_FILE_FILTER);
             int result = chooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = chooser.getSelectedFile();
@@ -73,7 +73,7 @@ public class GeometryMapPersistance {
         }
         return MapData.EMPTY;
     }
-    private static final javax.swing.filechooser.FileFilter FILE_FILTER
+    private static final javax.swing.filechooser.FileFilter DAT_FILE_FILTER
             = new javax.swing.filechooser.FileFilter() {
         @Override
         public boolean accept(File f) {

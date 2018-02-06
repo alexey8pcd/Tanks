@@ -21,6 +21,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x417;&#x430;&#x433;&#x440;&#x443;&#x437;&#x438;&#x442;&#x44c; &#x43a;&#x430;&#x43c;&#x43f;&#x430;&#x43d;&#x438;&#x44e;..."/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miLoadCampaignActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="miSaveCampaign">
               <Properties>
@@ -414,6 +417,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x423;&#x434;&#x430;&#x43b;&#x438;&#x442;&#x44c; &#x443;&#x440;&#x43e;&#x432;&#x435;&#x43d;&#x44c;"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bRemoveLevelActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lUnitCount">
               <Properties>

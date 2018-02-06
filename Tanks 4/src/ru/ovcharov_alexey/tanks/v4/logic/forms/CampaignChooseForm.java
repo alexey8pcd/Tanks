@@ -125,9 +125,13 @@ public class CampaignChooseForm extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bChooseActionPerformed
-        if (listCampaign.getSelectedIndex() >= 0) {
-            choosen = new LevelAndCampaign(listStartLevel.getSelectedIndex(),
-                    campaigns.get(listCampaign.getSelectedIndex()));
+        int selectedIndex = listCampaign.getSelectedIndex();
+        int lvlIdx = listStartLevel.getSelectedIndex();
+        if (selectedIndex >= 0 && listStartLevel.getModel().getSize() > 0) {
+            if (lvlIdx < 0) {
+                lvlIdx = 0;
+            }
+            choosen = new LevelAndCampaign(lvlIdx, campaigns.get(selectedIndex));
             dispose();
         }
     }//GEN-LAST:event_bChooseActionPerformed
@@ -172,7 +176,7 @@ public class CampaignChooseForm extends javax.swing.JDialog {
                 }
             }).join();
         } catch (InterruptedException ex) {
-            
+
         }
 
     }

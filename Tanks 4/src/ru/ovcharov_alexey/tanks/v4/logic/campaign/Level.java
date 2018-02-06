@@ -51,7 +51,7 @@ public class Level {
         this.bonusesCount = bonusesCount;
     }
 
-    static Level loadLevel(DataInputStream dis) throws Exception {
+    static Level loadLevel(DataInputStream dis) throws IOException  {
         String name = dis.readUTF();
         GeometryMap gm = GeometryMap.load(dis);
         Level level = new Level(name);

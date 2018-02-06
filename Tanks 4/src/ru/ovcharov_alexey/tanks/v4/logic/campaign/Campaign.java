@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Campaign {
 
-    private List<Level> levels;
+    private final List<Level> levels;
     private String name;
 
     public Campaign(String name) {
@@ -57,7 +57,7 @@ public class Campaign {
         }
     }
 
-    public static Campaign loadFromFile(String fileName) throws Exception {
+    public static Campaign loadFromFile(String fileName) throws IOException {
         File file = new File(fileName);
         try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
             String name = dis.readUTF();

@@ -129,7 +129,7 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
 
     }
 
-    public static CombatUnit load(DataInputStream dis) throws Exception {
+    public static CombatUnit load(DataInputStream dis) throws IOException {
         UnitType type = UnitType.typeOf(dis.readInt());
         UnitSpeed speed = UnitSpeed.typeOf(dis.readInt());
         int health = dis.readInt();

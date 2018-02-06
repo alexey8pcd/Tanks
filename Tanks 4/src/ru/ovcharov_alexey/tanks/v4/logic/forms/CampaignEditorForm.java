@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.logic.forms;
 
 import java.awt.HeadlessException;
+import java.io.File;
 import java.io.IOException;
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
@@ -152,6 +153,11 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         });
 
         bRemoveLevel.setText("Удалить уровень");
+        bRemoveLevel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bRemoveLevelActionPerformed(evt);
+            }
+        });
 
         lUnitCount.setText("Количество");
 
@@ -311,6 +317,11 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         jMenu1.add(miNewCampaign);
 
         miLoadCampaign.setText("Загрузить кампанию...");
+        miLoadCampaign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miLoadCampaignActionPerformed(evt);
+            }
+        });
         jMenu1.add(miLoadCampaign);
 
         miSaveCampaign.setText("Сохранить кампанию...");
@@ -393,19 +404,58 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         paneTop.setVisible(true);
     }//GEN-LAST:event_miNewCampaignActionPerformed
 
+    private void miLoadCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miLoadCampaignActionPerformed
+        loadCampaign();
+    }//GEN-LAST:event_miLoadCampaignActionPerformed
+
+    private void bRemoveLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRemoveLevelActionPerformed
+        removeLevel();
+    }//GEN-LAST:event_bRemoveLevelActionPerformed
+
+    private static final javax.swing.filechooser.FileFilter CAMPAIGN_FILE_FILTER
+            = new javax.swing.filechooser.FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return (f.getName().endsWith(".campaign"));
+        }
+
+        @Override
+        public String getDescription() {
+            return "Файлы кампаний(*.campaign)";
+        }
+    };
+
+    private void loadCampaign() throws HeadlessException {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(CAMPAIGN_FILE_FILTER);
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                String fileName = fileChooser.getSelectedFile().getCanonicalPath();
+                campaign = Campaign.loadFromFile(fileName);
+                levelCreator = new LevelCreator();
+                setModel();
+                paneTop.setVisible(true);
+            } catch (IOException | RuntimeException ex) {
+                JOptionPane.showMessageDialog(null, "Не удалось загрузить "
+                        + "файл кампании, причина: " + ex.getMessage());
+            }
+        }
+    }
+
     private void saveCampaign() throws HeadlessException {
         if (campaign != null) {
             String name = tfCompanyName.getText();
             if (name.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Не задано название кампании!", 
+                JOptionPane.showMessageDialog(null, "Не задано название кампании!",
                         "Ошибка сохранения", JOptionPane.ERROR_MESSAGE);
             } else if (campaign.getLevels().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Не создано ни одного уровня!", 
+                JOptionPane.showMessageDialog(null, "Не создано ни одного уровня!",
                         "Ошибка сохранения", JOptionPane.ERROR_MESSAGE);
             } else {
                 campaign.setName(name);
                 JFileChooser fileChooser = new JFileChooser();
-                int result = fileChooser.showSaveDialog(null);
+                int result = fileChooser.showSaveDialog(this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     try {
                         String fileName = fileChooser.getSelectedFile().getCanonicalPath();
@@ -457,5 +507,14 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private javax.swing.JTextField tfCompanyName;
     private javax.swing.JTextField tfLevelName;
     // End of variables declaration//GEN-END:variables
+
+    private void removeLevel() {
+        int selectedIndex = listLevels.getSelectedIndex();
+        if (selectedIndex != -1) {
+            
+            campaign.getLevels().remove(selectedIndex);
+            listLevels.updateUI();
+        }
+    }
 
 }
