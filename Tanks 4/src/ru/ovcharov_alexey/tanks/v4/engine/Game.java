@@ -185,6 +185,7 @@ public class Game implements Runnable {
                 try {
                     Thread.sleep(1L);
                 } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -242,7 +243,7 @@ public class Game implements Runnable {
         int mapWidth = currentLevel.getMap().getWidth();
         int mapHeight = currentLevel.getMap().getHeight();
         playerUnit.setLocation(mapWidth - playerUnit.getWidth() - 1,
-                mapHeight - playerUnit.getHealth() - 1);
+                mapHeight - playerUnit.getHeight()- 1);
         bonuses.clear();
         for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
             int x;
