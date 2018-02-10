@@ -3,6 +3,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import java.util.EnumSet;
 import java.util.Random;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
+import static ru.ovcharov_alexey.tanks.v4.engine.Global.RANDOM;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
@@ -13,8 +14,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
  */
 public class SimpleSearchMove extends AbstractMoveActionWithCollision {
 
-    private Random random = new Random();
-    private static final int CHANCE_CHANGE_DIRECTION = 12;
+    private static final int CHANCE_CHANGE_DIRECTION = 5;
 
     public SimpleSearchMove(EnumSet<Material> impassable) {
         super(impassable);
@@ -34,16 +34,17 @@ public class SimpleSearchMove extends AbstractMoveActionWithCollision {
             }
             updateDirection(target, movable);
             return true;
+        } else {
+            updateDirection(target, movable);
+            return false;
         }
-        updateDirection(target, movable);
-        return false;
     }
 
     private void updateDirection(GeometryPoint target, Movable movable) {
-        if (random.nextInt(100) < CHANCE_CHANGE_DIRECTION) {
+        if (RANDOM.nextInt(100) < CHANCE_CHANGE_DIRECTION) {
             float dx = target.getX() - movable.getX();
             float dy = target.getY() - movable.getY();
-            boolean nextBoolean = random.nextBoolean();
+            boolean nextBoolean = RANDOM.nextBoolean();
             float speed = movable.getSpeed();
             if (dx >= 0 && dy >= 0) {
                 if (nextBoolean) {
@@ -69,7 +70,6 @@ public class SimpleSearchMove extends AbstractMoveActionWithCollision {
                 movable.setDirection(new Vector2D(0, -speed));
             }
         }
-
     }
 
 }

@@ -2,8 +2,6 @@ package ru.ovcharov_alexey.tanks.v4.engine;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -18,12 +16,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
+import static ru.ovcharov_alexey.tanks.v4.engine.Global.RANDOM;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
@@ -47,12 +46,22 @@ import ru.ovcharov_alexey.tanks.v4.logic.forms.LoadGameForm;
  */
 public class Game implements Runnable {
 
+    private static int maxBonusTime;
+
+    private static int getMaxBonusTime() {
+        float speed = Global.getSpeed();
+        if (speed >= 50) {
+            return Math.round(30 - speed / 5);
+        } else {
+            return Math.round(40 - 2 * speed / 5);
+        }
+    }
+
     private CombatUnit playerUnit;
     private final List<DamageDealer> shells;
     private List<CombatUnit> enemies;
-    private static final Random RANDOM = new Random();
     private Level currentLevel;
-    private Iterator<Level> leveliterator;
+    private Iterator<Level> levelIterator;
     private final BufferedImage bufferedImage;
     private Timer timer;
 
@@ -66,20 +75,23 @@ public class Game implements Runnable {
     private double yScale;
     private double xScale;
 
-    private static int maxBonusTime;
     private final float delay = 1000f / (10 + Global.getSpeed());
     private boolean enemiesCanMove;
     private Bonus currentBonus;
     private int timerTime;
     private GameMode gameMode;
     private final List<GameListener> listeners = new ArrayList<>();
-    private static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 20);
     private final int explosionDelay = 4;
     private String framesString = "";
     private BufferedImage pauseScreen;
     private BufferedImage winScreen;
     private BufferedImage loseScreen;
     private BufferedImage nextLevel;
+    private int currentExperience;
+    private int experienceForNextSkill;
+    private int playerSkill;
+    private final List<DamageText> damageTextList = new ArrayList<>();
+    private int secondsWithoutMove;
 
     public Game(Canvas canvas) throws IOException {
         gameMode = GameMode.OFF;
@@ -166,6 +178,9 @@ public class Game implements Runnable {
             time += elapsed;
             if (time > 1000) {
                 time = 0;
+                if (gameMode == GameMode.RUN) {
+                    ++secondsWithoutMove;
+                }
                 framesString = String.valueOf(frames);
                 frames = 0;
             }
@@ -175,18 +190,14 @@ public class Game implements Runnable {
             while (delta > 1 && gameMode != GameMode.OFF) {
                 checkKeys();
                 update();
-                delta--;
+                --delta;
                 render = true;
             }
             if (render) {
                 display();
                 ++frames;
             } else {
-                try {
-                    Thread.sleep(1L);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
+                sleep(1L);
             }
         }
 
@@ -194,10 +205,10 @@ public class Game implements Runnable {
 
     public void initGame(LevelAndCampaign levelAndCampaign) throws IOException {
         init();
-        leveliterator = levelAndCampaign.getCampaign().getLevels().iterator();
+        levelIterator = levelAndCampaign.getCampaign().getLevels().iterator();
         for (int i = 0; i <= levelAndCampaign.getLevelNumber()
-                && leveliterator.hasNext(); i++) {
-            currentLevel = leveliterator.next();
+                && levelIterator.hasNext(); i++) {
+            currentLevel = levelIterator.next();
         }
         refreshLevel();
     }
@@ -207,6 +218,9 @@ public class Game implements Runnable {
         Bonus.init();
         xScale = Global.getMapWidth() / GeometryMap.MAX_WIDTH;
         yScale = Global.getMapHeight() / GeometryMap.MAX_HEIGTH;
+        currentExperience = 0;
+        experienceForNextSkill = Global.BASE_EXPERIENCE_FOR_NEXT_SKILL;
+        playerSkill = 1;
     }
 
     public void initRandomGame(GeometryMap map) throws IOException {
@@ -218,7 +232,7 @@ public class Game implements Runnable {
                     UnitFactory.createEnemyUnit(UnitType.randomType(RANDOM)));
         }
         currentLevel.setBonusesCount(4);
-        leveliterator = new Iterator<Level>() {
+        levelIterator = new Iterator<Level>() {
             @Override
             public boolean hasNext() {
                 return false;
@@ -234,16 +248,18 @@ public class Game implements Runnable {
 
     private void refreshLevel() {
         shells.clear();
+        secondsWithoutMove = 0;
+        damageTextList.clear();
         enemies = new ArrayList<>(currentLevel.getUnits());
         clearBonus();
         timer.stop();
         time = 0;
         timerTime = 0;
-        playerUnit = UnitFactory.createPlayerUnit();
+        playerUnit = UnitFactory.createPlayerUnit(playerSkill);
         int mapWidth = currentLevel.getMap().getWidth();
         int mapHeight = currentLevel.getMap().getHeight();
         playerUnit.setLocation(mapWidth - playerUnit.getWidth() - 1,
-                mapHeight - playerUnit.getHeight()- 1);
+                mapHeight - playerUnit.getHeight() - 1);
         bonuses.clear();
         for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
             int x;
@@ -285,25 +301,37 @@ public class Game implements Runnable {
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_RIGHT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.RIGHT) {
-                playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                if (move) {
+                    secondsWithoutMove = 0;
+                }
             } else {
                 playerUnit.setDirection(new Vector2D(playerUnit.getSpeed(), 0));
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_LEFT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.LEFT) {
-                playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                if (move) {
+                    secondsWithoutMove = 0;
+                }
             } else {
                 playerUnit.setDirection(new Vector2D(-playerUnit.getSpeed(), 0));
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_UP))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.UP) {
-                playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                if (move) {
+                    secondsWithoutMove = 0;
+                }
             } else {
                 playerUnit.setDirection(new Vector2D(0, playerUnit.getSpeed()));
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_DOWN))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.DOWN) {
-                playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                if (move) {
+                    secondsWithoutMove = 0;
+                }
             } else {
                 playerUnit.setDirection(new Vector2D(0, -playerUnit.getSpeed()));
             }
@@ -315,10 +343,10 @@ public class Game implements Runnable {
     private void update() {
         if (gameMode == GameMode.RUN) {
             if (enemies.isEmpty()) {
-                if (leveliterator.hasNext()) {
+                if (levelIterator.hasNext()) {
                     drawImage(nextLevel);
                     gameMode = GameMode.PAUSE;
-                    currentLevel = leveliterator.next();
+                    currentLevel = levelIterator.next();
                     notifyListeners(GameEvent.GAME_NEXT_LEVEL);
                     refreshLevel();
                 } else {
@@ -329,7 +357,7 @@ public class Game implements Runnable {
                     return;
                 }
             }
-            if (!playerUnit.isLive()) {
+            if (secondsWithoutMove > 90 || !playerUnit.isLive()) {
                 drawImage(loseScreen);
                 gameMode = GameMode.OFF;
                 sleep(2000);
@@ -347,6 +375,7 @@ public class Game implements Runnable {
             if (time % explosionDelay == 0) {
                 updateExplosions();
             }
+            updateDamageText();
         }
     }
 
@@ -366,6 +395,8 @@ public class Game implements Runnable {
             if (!unit.isLive()) {
                 iterator.remove();
                 notifyListeners(GameEvent.ENEMY_KILL);
+                addExperience((int) (Global.BASE_EXPERIENCE_PER_ENEMY
+                        * unit.getUnitType().getExperienceFactor()));
             }
         }
     }
@@ -421,7 +452,14 @@ public class Game implements Runnable {
             } else {
                 Shell s = (Shell) dd;
                 if (s.intersectsWith(playerUnit)) {
-                    playerUnit.decreaseHealth(s.getDamage());
+                    int damage = s.getDamage();
+                    if (s.isCritical()) {
+                        damage *= Global.CRITICAL_DAMAGE_FACTOR;
+                    }
+                    playerUnit.decreaseHealth(damage);
+
+                    int realDamage = playerUnit.calculateRealDamage(damage);
+                    showDamage(-realDamage, s.getPoint(), s.isCritical());
                     ShellPool.getInstance().put(s);
                     iterator.remove();
                     explosions.add(new Explosion(s));
@@ -443,7 +481,15 @@ public class Game implements Runnable {
             Shell s = (Shell) iterator.next();
             for (CombatUnit enemy : enemies) {
                 if (s.intersectsWith(enemy)) {
-                    enemy.decreaseHealth(s.getDamage());
+                    int damage = s.getDamage();
+                    if (s.isCritical()) {
+                        damage *= Global.CRITICAL_DAMAGE_FACTOR;
+                    }
+                    enemy.decreaseHealth(damage);
+
+                    int realDamage = enemy.calculateRealDamage(damage);
+                    showDamage(realDamage, s.getPoint(), s.isCritical());
+                    enemy.setDirectionOfFire(s.getDirection());
                     ShellPool.getInstance().put(s);
                     explosions.add(new Explosion(s));
                     iterator.remove();
@@ -480,12 +526,20 @@ public class Game implements Runnable {
     }
 
     private void changeDirectionOfUnitWithChance(CombatUnit unit) {
-        final int chanceDirection = 3;
-        final int restriction = Direction.values().length;
-        if (RANDOM.nextInt(100) < chanceDirection) {
-            Vector2D vector2D = Vector2D.create(
-                    Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
-            unit.setDirection(vector2D);
+        Vector2D directionOfFire = unit.getDirectionOfFire();
+        if (directionOfFire != null) {
+            Direction approximate = Direction.approximate(directionOfFire);
+            Direction orto = approximate.getOrto();
+            unit.setDirection(Vector2D.create(orto, unit.getSpeed()));
+            unit.decreaseFireDetectTime();
+        } else {
+            final int chanceDirection = 7;
+            final int restriction = Direction.values().length;
+            if (RANDOM.nextInt(1000) < chanceDirection) {
+                Vector2D vector2D = Vector2D.create(
+                        Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
+                unit.setDirection(vector2D);
+            }
         }
     }
 //</editor-fold>
@@ -503,8 +557,11 @@ public class Game implements Runnable {
             drawShells(g);
             drawUnits(g);
             drawExplosions(g);
+            drawDamageText(g);
             g.setColor(Color.RED);
             g.drawString(framesString, 10, 10);
+            g.drawString("EXP: " + currentExperience + "/" + experienceForNextSkill, 30, 10);
+            g.drawString("SKILL: " + playerSkill, 140, 10);
             bufferStrategy.getDrawGraphics().drawImage(bufferedImage, 0, 0, null);
             bufferStrategy.show();
         }
@@ -563,20 +620,6 @@ public class Game implements Runnable {
         }
     }
 
-    private void drawText(String text) {
-        Graphics2D drawGraphics = (Graphics2D) bufferStrategy.getDrawGraphics();
-        drawGraphics.scale(xScale, yScale);
-        drawGraphics.clearRect(0, 0, (int) Global.getMapWidth(), (int) Global.getMapHeight());
-        drawGraphics.setFont(MAIN_FONT);
-        FontMetrics metrics = drawGraphics.getFontMetrics(MAIN_FONT);
-        int y = 0;
-        for (String line : text.split("\n")) {
-            int x = (int) (Global.getMapWidth() - metrics.stringWidth(line) * xScale) / 2;
-            drawGraphics.drawString(line, x, y += metrics.getHeight());
-        }
-        bufferStrategy.show();
-    }
-
     private void notifyListeners(GameEvent event) {
         listeners.stream().forEach((GameListener l) -> l.actionPerformed(event));
     }
@@ -611,13 +654,42 @@ public class Game implements Runnable {
         bufferStrategy.show();
     }
 
-    private static int getMaxBonusTime() {
-        float speed = Global.getSpeed();
-        if (speed >= 50) {
-            return Math.round(30 - speed / 5);
-        } else {
-            return Math.round(40 - 2 * speed / 5);
+    private void addExperience(int extraExperience) {
+        currentExperience += extraExperience;
+        if (currentExperience >= experienceForNextSkill) {
+            currentExperience -= experienceForNextSkill;
+            increasePlayerSkill();
+            experienceForNextSkill = (int) (experienceForNextSkill * Global.EXPERIENCE_GROW);
         }
+    }
+
+    private void increasePlayerSkill() {
+        ++playerSkill;
+        if (playerUnit != null && playerUnit.isLive()) {
+            playerUnit.setDamage(playerUnit.getDamage() + Global.EXTRA_DAMAGE_PER_LEVEL);
+            playerUnit.setMaxHealth(playerUnit.getMaxHealth() + Global.EXTRA_HP_PER_LEVEL);
+            playerUnit.setCriticalDamageChance(playerUnit.getCriticalDamageChance() + 1);
+        }
+    }
+
+    private void showDamage(int damage, GeometryPoint point, boolean critical) {
+        damageTextList.add(new DamageText(damage, critical, point));
+    }
+
+    private void updateDamageText() {
+        long systemTime = System.nanoTime();
+        for (Iterator<DamageText> iterator = damageTextList.iterator(); iterator.hasNext();) {
+            DamageText damageText = iterator.next();
+            if (systemTime - damageText.getStartTime() > Global.MAX_SHOW_DAMAGE_TIME) {
+                iterator.remove();
+            } else {
+                damageText.relocate();
+            }
+        }
+    }
+
+    private void drawDamageText(Graphics2D g) {
+        damageTextList.stream().forEach((dt) -> dt.draw(g));
     }
 
 }

@@ -8,15 +8,16 @@ import java.util.Random;
  */
 public enum UnitType {
 
-    LIGHT_COMBAT_VEHICLE(1, "Легкая боевая машина"),
-    MIDDLE_COMBAT_VEHICLE(2, "Средняя боевая машина"),
-    HEAVY_COMBAT_VEHICLE(3, "Тяжелая боевая машина"),
-    TANK(4, "Танк"),
-    FOCUSED_BLASTING(5, "Фугас"),
-    DOUBLE_WEAPON_VEHICLE(6, "Двухорудийная машина");
+    LIGHT_COMBAT_VEHICLE(1, "Легкая боевая машина", 1.f),
+    MIDDLE_COMBAT_VEHICLE(2, "Средняя боевая машина", 1.5f),
+    HEAVY_COMBAT_VEHICLE(3, "Тяжелая боевая машина", 2.f),
+    TANK(4, "Танк", 3.f),
+    FOCUSED_BLASTING(5, "Фугас", 2.5f),
+    DOUBLE_WEAPON_VEHICLE(6, "Двухорудийная машина", 2.2f);
 
     private final int type;
     private final String name;
+    private final float experienceFactor;
 
     public static UnitType typeOf(int type) {
         for (UnitType value : values()) {
@@ -36,9 +37,14 @@ public enum UnitType {
         throw new IllegalArgumentException("Тип с названием " + name + " не существует");
     }
 
-    private UnitType(int type, String name) {
+    private UnitType(int type, String name, float experienceFactor) {
         this.type = type;
         this.name = name;
+        this.experienceFactor = experienceFactor;
+    }
+
+    public float getExperienceFactor() {
+        return experienceFactor;
     }
 
     public int getType() {

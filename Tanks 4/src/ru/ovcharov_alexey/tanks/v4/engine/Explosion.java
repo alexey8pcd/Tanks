@@ -1,6 +1,5 @@
 package ru.ovcharov_alexey.tanks.v4.engine;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
@@ -16,13 +15,13 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Killable;
 public class Explosion extends GeometryShape implements Drawable, Killable {
 
     public static final int SIZE = 15;
-    private static final EnumMap<State, Image> images = new EnumMap<>(State.class);
+    private static final EnumMap<State, Image> IMAGES = new EnumMap<>(State.class);
 
     public static void init() throws IOException {
         for (State state : State.values()) {
             if (state != State.TERMINATE) {
                 String name = "/images/explosions/" + state.getImageName();
-                images.put(state, ImageIO.read(Explosion.class.getResourceAsStream(name)));
+                IMAGES.put(state, ImageIO.read(Explosion.class.getResourceAsStream(name)));
             }
         }
     }
@@ -36,7 +35,7 @@ public class Explosion extends GeometryShape implements Drawable, Killable {
     @Override
     public void draw(Graphics2D g) {
         if (state != null && state != State.TERMINATE) {
-            g.drawImage(images.get(state), (int) getX(), (int) getY(),
+            g.drawImage(IMAGES.get(state), (int) getX(), (int) getY(),
                     getWidth(), getHeight(), null);
         }
     }
@@ -72,13 +71,12 @@ public class Explosion extends GeometryShape implements Drawable, Killable {
         MAX("s2.png"),
         DECREASE("s3.png"),
         TERMINATE("");
+        
+        private final String imageName;
 
         public String getImageName() {
             return imageName;
         }
-
-        private String imageName;
-
         private State(String name) {
             this.imageName = name;
         }

@@ -14,7 +14,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.drawers.DrawerFactory;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitSpeed;
 import ru.ovcharov_alexey.tanks.v4.engine.units.factory.AttackActionFactory;
@@ -30,11 +32,7 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private int armor;//броня в процентах
     private int currentHealth;
     private final UnitType unitType;
-    private final int maxHealth;
-
-    public int getMaxHealth() {
-        return maxHealth;
-    }
+    private int maxHealth;
     private AttackAction attackAction;
     private RelocatingShapeDrawer drawer;
     private BreakingStrength breakingStrength;
@@ -48,6 +46,22 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private int rechargeTime = DEFAULT_RECHARGE_TIME;
     private int rechargeProgress = rechargeTime;
     private boolean damaged;
+    private Vector2D directionOfFire;
+    private int fireDetect;
+    private int criticalDamageChance = Global.BASE_CHANCE_TO_CRITICAL_DAMAGE;
+
+    public Vector2D getDirectionOfFire() {
+        return directionOfFire;
+    }
+
+    public void setCriticalDamageChance(int criticalDamageChance) {
+        this.criticalDamageChance = Math.min(75, Math.max(criticalDamageChance, 
+                Global.BASE_CHANCE_TO_CRITICAL_DAMAGE));
+    }
+
+    public int getCriticalDamageChance() {
+        return criticalDamageChance;
+    }
 
     public CombatUnit(UnitSpeed unitSpeed, UnitType type, int maxHealth,
             int armor, int damage,
@@ -92,6 +106,14 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         this.maxHealth = maxHealth;
         setArmor(armor);
         currentHealth = maxHealth;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
     }
 
     @Override
@@ -259,8 +281,11 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     }
 
     public void decreaseHealth(int value) {
-        value -= Math.max(1, value * armor / 100);
-        setHealth(currentHealth - value);
+        setHealth(currentHealth - calculateRealDamage(value));
+    }
+
+    public final int calculateRealDamage(int damage) {
+        return Math.max(1, damage - damage * armor / 100);
     }
 
     @Override
@@ -301,6 +326,18 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
         } else if (damaged && currentHealth >= NO_DAMAGE_LIMIT) {
             damaged = false;
             speed *= 2;
+        }
+    }
+
+    public void setDirectionOfFire(Vector2D direction) {
+        this.directionOfFire = direction;
+        fireDetect = 200;
+    }
+
+    public void decreaseFireDetectTime() {
+        fireDetect = Math.max(0, fireDetect - 1);
+        if (fireDetect == 0) {
+            directionOfFire = null;
         }
     }
 

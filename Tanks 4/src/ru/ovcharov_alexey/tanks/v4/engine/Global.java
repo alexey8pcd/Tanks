@@ -1,11 +1,14 @@
 package ru.ovcharov_alexey.tanks.v4.engine;
 
+import java.awt.Font;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +20,7 @@ import javax.swing.JOptionPane;
  */
 public class Global {
 
+    public static final Random RANDOM = new Random();
     private static int mapSizeIndex;
     private static Statistics statistics = Statistics.empty();
     private static String pathToCompaniesFolder = ".";
@@ -24,7 +28,17 @@ public class Global {
     private static int mapWidth = GeometryMap.MAX_WIDTH;
     private static int mapHeight = GeometryMap.MAX_HEIGTH;
     private static int speed = 50;
-    
+    public static final int EXTRA_DAMAGE_PER_LEVEL = 5;
+    public static final int BASE_EXPERIENCE_PER_ENEMY = 10;
+    public static final int EXTRA_HP_PER_LEVEL = 10;
+    public static final double EXPERIENCE_GROW = 1.6;
+    public static final int BASE_EXPERIENCE_FOR_NEXT_SKILL = 100;
+    public static final int BASE_CHANCE_TO_CRITICAL_DAMAGE = 5;
+    public static final double CRITICAL_DAMAGE_FACTOR = 2.25;
+    public static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 14);
+    public static final Font LARGE_FONT = new Font("Arial", Font.BOLD, 26);
+    public static long MAX_SHOW_DAMAGE_TIME = TimeUnit.SECONDS.toNanos(3);
+
     static {
         LOGGER.setLevel(java.util.logging.Level.INFO);
         try {
@@ -118,12 +132,12 @@ public class Global {
     public static void enableLogAllMessages() {
         LOGGER.setLevel(Level.INFO);
     }
-    
-    public static boolean isLoggerEnabled(){
+
+    public static boolean isLoggerEnabled() {
         return LOGGER.getLevel() != Level.OFF;
     }
-    
-    public static boolean isLoggingOnlyErrors(){
+
+    public static boolean isLoggingOnlyErrors() {
         return LOGGER.getLevel() == Level.SEVERE;
     }
 
@@ -154,7 +168,6 @@ public class Global {
         new Size(1600, 1200),
         new Size(1920, 1080)
     };
-    
 
     public static double getMapWidth() {
         return mapWidth;

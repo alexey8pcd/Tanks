@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 
 import java.util.Collection;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
@@ -38,7 +39,10 @@ public class AttackShells implements AttackAction {
         shell.setLocation(attacker.getX() + dx, attacker.getY() + dy);
         shell.setBreakingStrength(attacker.getBreakingStrength());
         shell.setDirection(Vector2D.create(approximate, Shell.SHELL_SPEED));
-        shell.setDamage(attacker.getDamage());
+        int damage = attacker.getDamage();
+        boolean isCrit = Global.RANDOM.nextInt(100) < attacker.getCriticalDamageChance();
+        shell.setCritical(isCrit);
+        shell.setDamage(damage);
         container.add(shell);
     }
 

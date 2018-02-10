@@ -15,6 +15,11 @@ public class GeometryPoint {
         this.y = y;
     }
 
+    public GeometryPoint(GeometryPoint point) {
+        this.x = point.x;
+        this.y = point.y;
+    }
+
     public float getX() {
         return x;
     }
