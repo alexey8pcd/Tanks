@@ -2,6 +2,7 @@ package ru.ovcharov_alexey.tanks.v4.engine;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import static ru.ovcharov_alexey.tanks.v4.engine.Global.RANDOM;
@@ -46,6 +48,12 @@ import ru.ovcharov_alexey.tanks.v4.logic.forms.LoadGameForm;
  */
 public class Game implements Runnable {
 
+    private static final int TIME_LIMIT_WITHOUT_MOVE = 90;
+
+    private static final int TWO_SECONDS = 2000;
+
+    private static final int ONE_SECOND = 1000;
+
     private static int maxBonusTime;
 
     private static int getMaxBonusTime() {
@@ -56,6 +64,7 @@ public class Game implements Runnable {
             return Math.round(40 - 2 * speed / 5);
         }
     }
+    private boolean fastGame;
 
     private CombatUnit playerUnit;
     private final List<DamageDealer> shells;
@@ -63,7 +72,8 @@ public class Game implements Runnable {
     private Level currentLevel;
     private Iterator<Level> levelIterator;
     private final BufferedImage bufferedImage;
-    private Timer timer;
+    private Timer bonusTimer;
+    private Timer fastGameTimer;
 
     private int time;
     private final Collection<DamageDealer> enemiesShells;
@@ -75,10 +85,10 @@ public class Game implements Runnable {
     private double yScale;
     private double xScale;
 
-    private final float delay = 1000f / (10 + Global.getSpeed());
+    private final float delay = 1000f / Global.getScaledSpeed();
     private boolean enemiesCanMove;
     private Bonus currentBonus;
-    private int timerTime;
+    private int bonusTimerTime;
     private GameMode gameMode;
     private final List<GameListener> listeners = new ArrayList<>();
     private final int explosionDelay = 4;
@@ -92,6 +102,7 @@ public class Game implements Runnable {
     private int playerSkill;
     private final List<DamageText> damageTextList = new ArrayList<>();
     private int secondsWithoutMove;
+    private static final Logger LOGGER = Global.getLogger();
 
     public Game(Canvas canvas) throws IOException {
         gameMode = GameMode.OFF;
@@ -101,13 +112,44 @@ public class Game implements Runnable {
         bufferStrategy = canvas.getBufferStrategy();
         bufferedImage = new BufferedImage((int) Global.getMapWidth(),
                 (int) Global.getMapHeight(), BufferedImage.TYPE_INT_RGB);
-        timer = new Timer(1000, (ActionEvent e) -> {
-            if (timerTime-- <= 0) {
+        int timeToFastGame = (int) (5 * delay * ONE_SECOND);
+        fastGameTimer = new Timer(timeToFastGame, (ActionEvent e) -> {
+            fastGameTimer.stop();
+            if (!Global.hasAcheivement(Global.ACHEIVEMENT_FAST_GAME)) {
+                LOGGER.info("Достижение " + Global.ACHEIVEMENT_FAST_GAME + " провалено");
+            }
+            fastGame = false;
+        });
+        fastGameTimer.setRepeats(true);
+        bonusTimer = new Timer(ONE_SECOND, (ActionEvent e) -> {
+            if (bonusTimerTime-- <= 0) {
                 clearBonus();
-                timer.stop();
+                bonusTimer.stop();
             }
         });
-        timer.setRepeats(true);
+        bonusTimer.setRepeats(true);
+    }
+
+    private void drawTextCenter(String text) {
+        Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g.scale(xScale, yScale);
+        g.clearRect(0, 0, (int) Global.getMapWidth(), (int) Global.getMapHeight());
+        Font font = g.getFont();
+        g.setFont(Global.LARGE_FONT);
+        g.drawString(text, (int) Global.getMapWidth() / 4, (int) Global.getMapHeight() / 4);
+        g.setFont(font);
+        bufferStrategy.show();
+    }
+
+    private void relocateShellsSmoothly() {
+        /*
+           для плавного перемещения вызываем несколько раз перемещение с небольшим шагом
+         */
+        for (int i = 0; i < 10; i++) {
+            relocateShells();
+        }
     }
 
     private void clearBonus() {
@@ -116,6 +158,7 @@ public class Game implements Runnable {
                     = currentBonus.resetTo(playerUnit, enemiesCanMove);
             enemiesCanMove = gameContext.isEmemiesCanMove();
             playerUnit = gameContext.getPlayerUnit();
+            LOGGER.info("Время действия бонуса истекло");
             currentBonus = null;
         }
     }
@@ -123,7 +166,7 @@ public class Game implements Runnable {
     public synchronized void start() {
         maxBonusTime = getMaxBonusTime();
         if (gameMode == GameMode.OFF) {
-            Global.getLogger().info("Начинаю игру");
+            LOGGER.info("Начинаю игру");
             if (pauseScreen == null || winScreen == null
                     || loseScreen == null || nextLevel == null) {
                 try {
@@ -137,9 +180,8 @@ public class Game implements Runnable {
                                     "/images/screens/lose.png"));
                             nextLevel = ImageIO.read(Game.class.getResourceAsStream(
                                     "/images/screens/next_level.png"));
-                        } catch (Exception e) {
-                            Global.getLogger().log(java.util.logging.Level.SEVERE,
-                                    e.getMessage(), e);
+                        } catch (IOException e) {
+                            LOGGER.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
                         }
                     }).join();
                 } catch (InterruptedException ex) {
@@ -157,9 +199,9 @@ public class Game implements Runnable {
 
     public synchronized void stop() {
         if (gameMode != GameMode.OFF) {
-            Global.getLogger().info("Завершаю игру");
+            LOGGER.info("Завершаю игру");
             gameMode = GameMode.OFF;
-            timer.stop();
+            bonusTimer.stop();
             notifyListeners(GameEvent.GAME_BREAK);
             thread.interrupt();
             Thread.currentThread().interrupt();
@@ -176,7 +218,7 @@ public class Game implements Runnable {
             long now = System.currentTimeMillis();
             long elapsed = (now - lastTime);
             time += elapsed;
-            if (time > 1000) {
+            if (time > ONE_SECOND) {
                 time = 0;
                 if (gameMode == GameMode.RUN) {
                     ++secondsWithoutMove;
@@ -252,9 +294,9 @@ public class Game implements Runnable {
         damageTextList.clear();
         enemies = new ArrayList<>(currentLevel.getUnits());
         clearBonus();
-        timer.stop();
+        bonusTimer.stop();
         time = 0;
-        timerTime = 0;
+        bonusTimerTime = 0;
         playerUnit = UnitFactory.createPlayerUnit(playerSkill);
         int mapWidth = currentLevel.getMap().getWidth();
         int mapHeight = currentLevel.getMap().getHeight();
@@ -273,6 +315,8 @@ public class Game implements Runnable {
             BonusType type = BonusType.randomType(RANDOM);
             bonuses.add(new Bonus(x, y, Bonus.SIZE, type));
         }
+        fastGameTimer.start();
+        fastGame = true;
     }
 
     public void pressKey(KeyEvent e) {
@@ -343,6 +387,11 @@ public class Game implements Runnable {
     private void update() {
         if (gameMode == GameMode.RUN) {
             if (enemies.isEmpty()) {
+                if (fastGame) {
+                    Global.addAcheivement(Global.ACHEIVEMENT_FAST_GAME, Global.ACHEIVEMENT_FAST_GAME_DESCRIPTION);
+                    drawTextCenter(Global.ACHEIVEMENT_FAST_GAME);
+                    sleep(TWO_SECONDS);
+                }
                 if (levelIterator.hasNext()) {
                     drawImage(nextLevel);
                     gameMode = GameMode.PAUSE;
@@ -352,24 +401,31 @@ public class Game implements Runnable {
                 } else {
                     drawImage(winScreen);
                     gameMode = GameMode.OFF;
-                    sleep(2000);
+                    sleep(TWO_SECONDS);
                     notifyListeners(GameEvent.GAME_WIN);
                     return;
                 }
             }
-            if (secondsWithoutMove > 90 || !playerUnit.isLive()) {
+            boolean timeWithoutMoveElapsed = secondsWithoutMove > TIME_LIMIT_WITHOUT_MOVE;
+            boolean playerKilled = !playerUnit.isLive();
+            if (timeWithoutMoveElapsed || playerKilled) {
+                if (playerKilled) {
+                    LOGGER.info("Машина игрока уничтожена врагом, игра проиграна");
+                } else {
+                    LOGGER.info("Машина игрока более " + TIME_LIMIT_WITHOUT_MOVE
+                            + " секунд находится без движения и отозвана "
+                            + "командиром, игра проиграна");
+                }
                 drawImage(loseScreen);
                 gameMode = GameMode.OFF;
-                sleep(2000);
+                sleep(TWO_SECONDS);
                 notifyListeners(GameEvent.GAME_LOSE);
                 return;
             }
             updateAttack();
             attackEnemies();
             relocateEnemiesUnits();
-            for (int i = 0; i < 10; i++) {
-                relocateShells();
-            }
+            relocateShellsSmoothly();
             removeDeadUnits();
             checkBonuses();
             if (time % explosionDelay == 0) {
@@ -394,6 +450,7 @@ public class Game implements Runnable {
             CombatUnit unit = iterator.next();
             if (!unit.isLive()) {
                 iterator.remove();
+                LOGGER.info("Игрок уничтожил вражескую машину: " + unit.getUnitType());
                 notifyListeners(GameEvent.ENEMY_KILL);
                 addExperience((int) (Global.BASE_EXPERIENCE_PER_ENEMY
                         * unit.getUnitType().getExperienceFactor()));
@@ -410,11 +467,12 @@ public class Game implements Runnable {
                     playerUnit = gameContext.getPlayerUnit();
                     enemiesCanMove = gameContext.isEmemiesCanMove();
                     if (gameContext.isDurable()) {
-                        timerTime = maxBonusTime;
-                        timer.restart();
+                        bonusTimerTime = maxBonusTime;
+                        bonusTimer.restart();
                         currentBonus = bonus;
                     }
                     iterator.remove();
+                    LOGGER.info("Игрок получает бонус " + bonus.getBonusType());
                 }
             }
         }
@@ -445,7 +503,11 @@ public class Game implements Runnable {
             if (dd.isFixedPosition()) {
                 InvisibleBomb bomb = (InvisibleBomb) dd;
                 if (bomb.intersectsWith(playerUnit)) {
-                    playerUnit.decreaseHealth(bomb.getDamage());
+                    int damage = bomb.getDamage();
+                    playerUnit.decreaseHealth(damage);
+                    int realDamage = playerUnit.calculateRealDamage(damage);
+                    LOGGER.info("Машина игрока получает " + realDamage + " урона от взрыва фугаса");
+                    showDamage(-realDamage, bomb.getPoint(), false);
                     explosions.add(new Explosion(bomb));
                     iterator.remove();
                 }
@@ -457,8 +519,8 @@ public class Game implements Runnable {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;
                     }
                     playerUnit.decreaseHealth(damage);
-
                     int realDamage = playerUnit.calculateRealDamage(damage);
+                    LOGGER.info("Машина игрока получает " + realDamage + " урона от взрыва снаряда ");
                     showDamage(-realDamage, s.getPoint(), s.isCritical());
                     ShellPool.getInstance().put(s);
                     iterator.remove();
@@ -486,7 +548,9 @@ public class Game implements Runnable {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;
                     }
                     enemy.decreaseHealth(damage);
-
+                    LOGGER.info("Снаряд игрока наносит " + damage + " урона "
+                            + (s.isCritical() ? "(критический эффект" : "")
+                            + " вражеской машине: " + enemy.getUnitType());
                     int realDamage = enemy.calculateRealDamage(damage);
                     showDamage(realDamage, s.getPoint(), s.isCritical());
                     enemy.setDirectionOfFire(s.getDirection());
@@ -551,7 +615,7 @@ public class Game implements Runnable {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g.scale(xScale, yScale);
-            g.clearRect(0, 0, currentLevel.getMap().getWidth(), currentLevel.getMap().getHeight());
+            g.clearRect(0, 0, (int) Global.getMapWidth(), (int) Global.getMapHeight());
             currentLevel.getMap().draw(g);
             drawBonuses(g);
             drawShells(g);
@@ -572,7 +636,7 @@ public class Game implements Runnable {
         if (currentBonus != null) {
             g.setColor(Color.BLUE);
             int startX = currentLevel.getMap().getWidth() - 10 - maxBonusTime * 3;
-            g.fillRect(startX, 3, timerTime * 3, 4);
+            g.fillRect(startX, 3, bonusTimerTime * 3, 4);
             g.setColor(Color.BLACK);
             g.drawRect(startX, 3, maxBonusTime * 3, 4);
         }
@@ -609,8 +673,8 @@ public class Game implements Runnable {
 //</editor-fold>
 
     private void pause() {
-        Global.getLogger().info("Получил команду на остановку игры");
-        timer.stop();
+        LOGGER.info("Получил команду на остановку игры");
+        bonusTimer.stop();
         gameMode = GameMode.PAUSE;
         drawImage(pauseScreen);
         notifyListeners(GameEvent.GAME_PAUSE);
@@ -625,8 +689,8 @@ public class Game implements Runnable {
     }
 
     private void resume() {
-        Global.getLogger().info("Получил команду на продолжение игры");
-        timer.start();
+        LOGGER.info("Получил команду на продолжение игры");
+        bonusTimer.start();
         gameMode = GameMode.RUN;
         notifyListeners(GameEvent.GAME_RESUME);
     }

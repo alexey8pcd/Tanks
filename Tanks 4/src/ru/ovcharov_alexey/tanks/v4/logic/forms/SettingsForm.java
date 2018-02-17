@@ -24,12 +24,12 @@ public class SettingsForm extends javax.swing.JDialog {
         tfCampaignFolderPath.setText(Global.getPathToCompaniesFolder());
         if (Global.isLoggerEnabled()) {
             if (Global.isLoggingOnlyErrors()) {
-                rbLogOnlyCriticalErrors.setEnabled(true);
+                rbLogOnlyCriticalErrors.setSelected(true);
             } else {
-                rbLogAllMessages.setEnabled(true);
+                rbLogAllMessages.setSelected(true);
             }
         } else {
-            rbNoLog.setEnabled(true);
+            rbNoLog.setSelected(true);
         }
     }
 

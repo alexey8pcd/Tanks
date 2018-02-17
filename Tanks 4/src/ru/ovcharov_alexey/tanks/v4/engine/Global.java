@@ -5,20 +5,31 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
+import ru.ovcharov_alexey.tanks.v4.util.NonNull;
 
 /**
  * @author Alexey
  */
 public class Global {
+
+    public static final String ACHEIVEMENT_FAST_GAME = "Быстрая победа";
+    public static final String ACHEIVEMENT_FAST_GAME_DESCRIPTION = ""
+            + "Пройдите уровень за 80 секунд или быстрее(с учетом скорости игры)";
+
+    private static final int BASE_SPEED = 50;
 
     public static final Random RANDOM = new Random();
     private static int mapSizeIndex;
@@ -27,7 +38,7 @@ public class Global {
     private static final Logger LOGGER = Logger.getLogger("Tanks 4");
     private static int mapWidth = GeometryMap.MAX_WIDTH;
     private static int mapHeight = GeometryMap.MAX_HEIGTH;
-    private static int speed = 50;
+    private static int speed = BASE_SPEED;
     public static final int EXTRA_DAMAGE_PER_LEVEL = 5;
     public static final int BASE_EXPERIENCE_PER_ENEMY = 10;
     public static final int EXTRA_HP_PER_LEVEL = 10;
@@ -38,6 +49,7 @@ public class Global {
     public static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 14);
     public static final Font LARGE_FONT = new Font("Arial", Font.BOLD, 26);
     public static long MAX_SHOW_DAMAGE_TIME = TimeUnit.SECONDS.toNanos(3);
+    private static final Map<String, String> ACHIEVEMENTS = new ConcurrentHashMap<>();
 
     static {
         LOGGER.setLevel(java.util.logging.Level.INFO);
@@ -48,6 +60,23 @@ public class Global {
         } catch (IOException | SecurityException ex) {
             ex.printStackTrace(System.err);
         }
+    }
+
+    public static boolean hasAcheivement(String name) {
+        return getAcheivementByName(name) != null;
+    }
+
+    public static void addAcheivement(String name, String description) {
+        ACHIEVEMENTS.put(name, description);
+    }
+
+    public static String getAcheivementByName(String name) {
+        return ACHIEVEMENTS.get(name);
+    }
+
+    @NonNull
+    public static Map<String, String> getAchievements() {
+        return ACHIEVEMENTS;
     }
 
     public static Logger getLogger() {
@@ -88,9 +117,16 @@ public class Global {
                     statistics.save(dataOutputStream);
                     dataOutputStream.writeUTF(pathToCompaniesFolder);
                     dataOutputStream.writeInt(LOGGER.getLevel().intValue());
+                    dataOutputStream.writeInt(ACHIEVEMENTS.size());
+                    for (Map.Entry<String, String> entry : ACHIEVEMENTS.entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        dataOutputStream.writeUTF(key);
+                        dataOutputStream.writeUTF(value);
+                    }
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Global.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
         }
 
@@ -99,15 +135,25 @@ public class Global {
     public static void load() {
         try {
             File settings = new File("settings.dat");
-            try (DataInputStream dataInputStream
-                    = new DataInputStream(new FileInputStream(settings))) {
-                Global.setMapSizeIndex(dataInputStream.readInt());
-                Global.setSpeed(dataInputStream.readInt());
-                Global.statistics = Statistics.load(dataInputStream);
-                Global.pathToCompaniesFolder = dataInputStream.readUTF();
-                Global.LOGGER.setLevel(Level.parse(String.valueOf(dataInputStream.readInt())));
-            }
-        } catch (Exception ex) {
+            if (settings.exists()) {
+                try (DataInputStream dataInputStream
+                        = new DataInputStream(new FileInputStream(settings))) {
+                    Global.setMapSizeIndex(dataInputStream.readInt());
+                    Global.setSpeed(dataInputStream.readInt());
+                    Global.statistics = Statistics.load(dataInputStream);
+                    Global.pathToCompaniesFolder = dataInputStream.readUTF();
+                    Global.LOGGER.setLevel(Level.parse(String.valueOf(dataInputStream.readInt())));
+                    if (dataInputStream.available() > 0) {
+                        int achievementsCount = dataInputStream.readInt();
+                        for (int i = 0; i < achievementsCount; i++) {
+                            String key = dataInputStream.readUTF();
+                            String value = dataInputStream.readUTF();
+                            ACHIEVEMENTS.put(key, value);
+                        }
+                    }
+                }
+            } 
+        } catch (IOException | IllegalArgumentException | SecurityException ex) {
             ex.printStackTrace(System.err);
         }
     }
@@ -143,8 +189,8 @@ public class Global {
 
     public static class Size {
 
-        private int width;
-        private int heigth;
+        private final int width;
+        private final int heigth;
 
         public Size(int width, int heigth) {
             this.width = width;
@@ -188,6 +234,10 @@ public class Global {
 
     public static float getSpeed() {
         return speed;
+    }
+
+    public static float getScaledSpeed() {
+        return 10 + BASE_SPEED + (speed - BASE_SPEED) / 3;
     }
 
     public static void setSpeed(int speed) {

@@ -36,15 +36,20 @@ public class MainForm extends javax.swing.JFrame {
 
         bSinglePlayer = new javax.swing.JButton();
         bCampaign = new javax.swing.JButton();
-        bMapEditor = new javax.swing.JButton();
+        bAchievements = new javax.swing.JButton();
         bCampaignEditor = new javax.swing.JButton();
         bStats = new javax.swing.JButton();
         bSettings = new javax.swing.JButton();
         bExit = new javax.swing.JButton();
         bHelp = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         bSinglePlayer.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         bSinglePlayer.setText("Одиночная игра");
@@ -64,17 +69,17 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        bMapEditor.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        bMapEditor.setText("Редактор карт");
-        bMapEditor.setPreferredSize(new java.awt.Dimension(460, 80));
-        bMapEditor.addActionListener(new java.awt.event.ActionListener() {
+        bAchievements.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        bAchievements.setText("Достижения");
+        bAchievements.setPreferredSize(new java.awt.Dimension(460, 80));
+        bAchievements.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bMapEditorActionPerformed(evt);
+                bAchievementsActionPerformed(evt);
             }
         });
 
         bCampaignEditor.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        bCampaignEditor.setText("Редактор кампаний");
+        bCampaignEditor.setText("Редактор");
         bCampaignEditor.setPreferredSize(new java.awt.Dimension(460, 80));
         bCampaignEditor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,7 +133,7 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(bCampaign, javax.swing.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
                     .addComponent(bCampaignEditor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bMapEditor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bAchievements, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bStats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bSinglePlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -143,7 +148,7 @@ public class MainForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCampaign, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bMapEditor, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(bAchievements, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCampaignEditor, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -160,9 +165,9 @@ public class MainForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void bMapEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bMapEditorActionPerformed
-        new MapEditorForm(this, true).setVisible(true);
-    }//GEN-LAST:event_bMapEditorActionPerformed
+    private void bAchievementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAchievementsActionPerformed
+        new AchievementsForm(this, true).setVisible(true);
+    }//GEN-LAST:event_bAchievementsActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
         exit();
@@ -181,7 +186,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     private void bCampaignEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignEditorActionPerformed
-        new CampaignEditorForm(this, true).setVisible(true);
+        new EditorForm(this, true).setVisible(true);
     }//GEN-LAST:event_bCampaignEditorActionPerformed
 
     private void bSinglePlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSinglePlayerActionPerformed
@@ -226,6 +231,10 @@ public class MainForm extends javax.swing.JFrame {
                 "Об игре", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_bHelpActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        exit();
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */
@@ -264,11 +273,11 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bAchievements;
     private javax.swing.JButton bCampaign;
     private javax.swing.JButton bCampaignEditor;
     private javax.swing.JButton bExit;
     private javax.swing.JButton bHelp;
-    private javax.swing.JButton bMapEditor;
     private javax.swing.JButton bSettings;
     private javax.swing.JButton bSinglePlayer;
     private javax.swing.JButton bStats;

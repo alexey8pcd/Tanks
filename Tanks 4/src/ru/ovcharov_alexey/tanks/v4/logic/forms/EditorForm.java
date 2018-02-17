@@ -13,12 +13,12 @@ import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelCreator;
  *
  * @author Алексей
  */
-public class CampaignEditorForm extends javax.swing.JDialog {
+public class EditorForm extends javax.swing.JDialog {
 
     private LevelCreator levelCreator;
     private Campaign campaign;
 
-    public CampaignEditorForm(java.awt.Frame parent, boolean modal) {
+    public EditorForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationOnCenter();
@@ -84,16 +84,18 @@ public class CampaignEditorForm extends javax.swing.JDialog {
         lUnitCount = new javax.swing.JLabel();
         spinnerUnitsCountAdd = new javax.swing.JSpinner();
         bRemoveUnits = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        mbMain = new javax.swing.JMenuBar();
+        menuCampaignEditor = new javax.swing.JMenu();
         miNewCampaign = new javax.swing.JMenuItem();
         miLoadCampaign = new javax.swing.JMenuItem();
         miSaveCampaign = new javax.swing.JMenuItem();
         miExit = new javax.swing.JMenuItem();
         miExitNow = new javax.swing.JMenuItem();
+        menuMapEditor = new javax.swing.JMenu();
+        mEditMap = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Редактор кампаний");
+        setTitle("Редактор");
         setResizable(false);
 
         lCampaignName.setText("Название кампании");
@@ -306,7 +308,8 @@ public class CampaignEditorForm extends javax.swing.JDialog {
 
         getContentPane().add(paneTop, java.awt.BorderLayout.CENTER);
 
-        jMenu1.setText("Кампания");
+        menuCampaignEditor.setText("Кампания");
+        menuCampaignEditor.setActionCommand("Кампания");
 
         miNewCampaign.setText("Новая кампания");
         miNewCampaign.addActionListener(new java.awt.event.ActionListener() {
@@ -314,7 +317,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                 miNewCampaignActionPerformed(evt);
             }
         });
-        jMenu1.add(miNewCampaign);
+        menuCampaignEditor.add(miNewCampaign);
 
         miLoadCampaign.setText("Загрузить кампанию...");
         miLoadCampaign.addActionListener(new java.awt.event.ActionListener() {
@@ -322,7 +325,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                 miLoadCampaignActionPerformed(evt);
             }
         });
-        jMenu1.add(miLoadCampaign);
+        menuCampaignEditor.add(miLoadCampaign);
 
         miSaveCampaign.setText("Сохранить кампанию...");
         miSaveCampaign.addActionListener(new java.awt.event.ActionListener() {
@@ -330,7 +333,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                 miSaveCampaignActionPerformed(evt);
             }
         });
-        jMenu1.add(miSaveCampaign);
+        menuCampaignEditor.add(miSaveCampaign);
 
         miExit.setText("Сохранить и выйти");
         miExit.addActionListener(new java.awt.event.ActionListener() {
@@ -338,7 +341,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                 miExitActionPerformed(evt);
             }
         });
-        jMenu1.add(miExit);
+        menuCampaignEditor.add(miExit);
 
         miExitNow.setText("Выйти без сохранения");
         miExitNow.addActionListener(new java.awt.event.ActionListener() {
@@ -346,11 +349,23 @@ public class CampaignEditorForm extends javax.swing.JDialog {
                 miExitNowActionPerformed(evt);
             }
         });
-        jMenu1.add(miExitNow);
+        menuCampaignEditor.add(miExitNow);
 
-        jMenuBar1.add(jMenu1);
+        mbMain.add(menuCampaignEditor);
 
-        setJMenuBar(jMenuBar1);
+        menuMapEditor.setText("Карта");
+
+        mEditMap.setText("Редактировать карту");
+        mEditMap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mEditMapActionPerformed(evt);
+            }
+        });
+        menuMapEditor.add(mEditMap);
+
+        mbMain.add(menuMapEditor);
+
+        setJMenuBar(mbMain);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -411,6 +426,10 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private void bRemoveLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRemoveLevelActionPerformed
         removeLevel();
     }//GEN-LAST:event_bRemoveLevelActionPerformed
+
+    private void mEditMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mEditMapActionPerformed
+        new MapEditorForm(null, true).setVisible(true);
+    }//GEN-LAST:event_mEditMapActionPerformed
 
     private static final javax.swing.filechooser.FileFilter CAMPAIGN_FILE_FILTER
             = new javax.swing.filechooser.FileFilter() {
@@ -480,8 +499,6 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private javax.swing.JButton bRemoveLevel;
     private javax.swing.JButton bRemoveUnits;
     private javax.swing.JComboBox<String> cbUnitsType;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JLabel lBonusesCount;
     private javax.swing.JLabel lCampaignName;
     private javax.swing.JLabel lEnemyUnits;
@@ -493,6 +510,10 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private javax.swing.JLabel lUnitCount;
     private javax.swing.JList<String> listLevels;
     private javax.swing.JList<String> listUnits;
+    private javax.swing.JMenuItem mEditMap;
+    private javax.swing.JMenuBar mbMain;
+    private javax.swing.JMenu menuCampaignEditor;
+    private javax.swing.JMenu menuMapEditor;
     private javax.swing.JMenuItem miExit;
     private javax.swing.JMenuItem miExitNow;
     private javax.swing.JMenuItem miLoadCampaign;
@@ -511,7 +532,7 @@ public class CampaignEditorForm extends javax.swing.JDialog {
     private void removeLevel() {
         int selectedIndex = listLevels.getSelectedIndex();
         if (selectedIndex != -1) {
-            
+
             campaign.getLevels().remove(selectedIndex);
             listLevels.updateUI();
         }

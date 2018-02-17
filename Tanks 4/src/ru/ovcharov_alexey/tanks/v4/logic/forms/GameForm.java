@@ -90,6 +90,7 @@ public class GameForm extends javax.swing.JDialog {
         canvas = new java.awt.Canvas();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setUndecorated(true);
         setResizable(false);
         getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
