@@ -45,7 +45,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.shell.InvisibleBomb;
 import ru.ovcharov_alexey.tanks.v4.engine.units.shell.ShellPool;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Level;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
-import ru.ovcharov_alexey.tanks.v4.logic.forms.LoadGameForm;
+import ru.ovcharov_alexey.tanks.v4.ui.forms.LoadGameForm;
 
 /**
  * @author Alexey
@@ -347,6 +347,7 @@ public class Game implements Runnable {
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_SPACE))) {
             playerUnit.attack(shells, null);
+            notifyListeners(GameEvent.PLAYER_SHOT);
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_RIGHT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.RIGHT) {
@@ -482,7 +483,10 @@ public class Game implements Runnable {
 
     private void attackEnemies() {
         enemies.stream().sequential().filter(Liveable::isLive).
-                forEach((CombatUnit c) -> c.attack(enemiesShells, playerUnit));
+                forEach((CombatUnit c) -> {
+                    c.attack(enemiesShells, playerUnit);
+                    notifyListeners(GameEvent.ENEMY_SHOT);
+                });
     }
 
     private void updateAttack() {
@@ -713,6 +717,7 @@ public class Game implements Runnable {
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 

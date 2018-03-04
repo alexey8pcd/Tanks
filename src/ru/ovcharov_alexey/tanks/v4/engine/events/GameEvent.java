@@ -11,5 +11,7 @@ public enum GameEvent {
     GAME_WIN,
     GAME_LOSE, 
     GAME_NEXT_LEVEL, 
-    ENEMY_KILL;
+    ENEMY_KILL, 
+    PLAYER_SHOT, 
+    ENEMY_SHOT;
 }

@@ -198,4 +198,8 @@ public class Global {
         return getAcheivementByName(name) != null;
     }
 
+    public static boolean audioEnabled() {
+        return true;
+    }
+
 }
