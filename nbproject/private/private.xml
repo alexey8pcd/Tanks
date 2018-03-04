@@ -3,14 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/MainForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/GameForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/CampaignChooseForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/engine/Global.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/SettingsForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/engine/Game.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/LoadGameForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/Tanks%204/src/ru/ovcharov_alexey/tanks/v4/logic/forms/MapEditorForm.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/units/factory/MoveActionFactory.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/</file>
         </group>
     </open-files>
 </project-private>
