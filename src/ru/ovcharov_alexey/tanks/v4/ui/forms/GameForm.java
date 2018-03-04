@@ -20,7 +20,7 @@ public class GameForm extends javax.swing.JDialog {
 
     private Game engine;
     private KeyAdapter keyAdapter;
-    private GameListener gameListener = (GameEvent event) -> {
+    private final GameListener gameListener = (GameEvent event) -> {
         if (null != event) {
             switch (event) {
                 case GAME_WIN:
@@ -33,12 +33,14 @@ public class GameForm extends javax.swing.JDialog {
                     Global.getStatistics().addStartedGame();
                     break;
                 case ENEMY_KILL:
-                    Audio.playSound("/sounds/explosion.wav");
+                    Audio.getInstance().playSound("flame.wav");
                     Global.getStatistics().addEnemyKill();
                     break;
                 case PLAYER_SHOT:
-                case ENEMY_SHOT:
-                    Audio.playSound("/sounds/shot.wav");
+                    Audio.getInstance().playSound("ricochet.wav");
+                    break;
+                case PLAYER_HIT_ENEMY:
+                    Audio.getInstance().playSound("shot.wav");
                     break;
             }
         }

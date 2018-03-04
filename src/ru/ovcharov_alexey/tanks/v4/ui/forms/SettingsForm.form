@@ -169,6 +169,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbFullScreen">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="&#x41f;&#x43e;&#x43b;&#x43d;&#x44b;&#x439; &#x44d;&#x43a;&#x440;&#x430;&#x43d;"/>
       </Properties>
       <Events>

@@ -13,5 +13,6 @@ public enum GameEvent {
     GAME_NEXT_LEVEL, 
     ENEMY_KILL, 
     PLAYER_SHOT, 
-    ENEMY_SHOT;
+    ENEMY_SHOT, 
+    PLAYER_HIT_ENEMY;
 }

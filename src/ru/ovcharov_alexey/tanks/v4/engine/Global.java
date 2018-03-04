@@ -24,7 +24,7 @@ import ru.ovcharov_alexey.tanks.v4.util.NonNull;
  */
 public class Global {
 
-    private static boolean fullScreen;
+    private static boolean fullScreen = true;
 
     public static final Random RANDOM = new Random();
     public static final Font LARGE_FONT = new Font("Arial", Font.BOLD, 26);

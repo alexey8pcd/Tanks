@@ -346,8 +346,10 @@ public class Game implements Runnable {
             }
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_SPACE))) {
+            if (playerUnit.isCanAttack()) {
+                notifyListeners(GameEvent.PLAYER_SHOT);
+            }
             playerUnit.attack(shells, null);
-            notifyListeners(GameEvent.PLAYER_SHOT);
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_RIGHT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.RIGHT) {
@@ -484,8 +486,10 @@ public class Game implements Runnable {
     private void attackEnemies() {
         enemies.stream().sequential().filter(Liveable::isLive).
                 forEach((CombatUnit c) -> {
+                    if (c.isCanAttack()) {
+                        notifyListeners(GameEvent.ENEMY_SHOT);
+                    }
                     c.attack(enemiesShells, playerUnit);
-                    notifyListeners(GameEvent.ENEMY_SHOT);
                 });
     }
 
@@ -548,6 +552,7 @@ public class Game implements Runnable {
             Shell s = (Shell) iterator.next();
             for (CombatUnit enemy : enemies) {
                 if (s.intersectsWith(enemy)) {
+                    notifyListeners(GameEvent.PLAYER_HIT_ENEMY);
                     int damage = s.getDamage();
                     if (s.isCritical()) {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;

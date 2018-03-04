@@ -97,6 +97,7 @@ public class SettingsForm extends javax.swing.JDialog {
             }
         });
 
+        cbFullScreen.setSelected(true);
         cbFullScreen.setText("Полный экран");
         cbFullScreen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -50,6 +50,10 @@ public class CombatUnit extends RelocatingShape implements BattleUnit {
     private int fireDetect;
     private int criticalDamageChance = Global.BASE_CHANCE_TO_CRITICAL_DAMAGE;
 
+    public boolean isCanAttack() {
+        return canAttack;
+    }
+
     public Vector2D getDirectionOfFire() {
         return directionOfFire;
     }
