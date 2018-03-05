@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.ovcharov_alexey.tanks.v4.ui.forms;
 
 import java.util.ArrayList;
@@ -15,7 +10,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.Global;
  *
  * @author Admin
  */
-public class AchievementsForm extends javax.swing.JDialog {
+public class AcheivementsForm extends javax.swing.JDialog {
 
     /**
      * Creates new form AchievementsForm
@@ -23,7 +18,7 @@ public class AchievementsForm extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public AchievementsForm(java.awt.Frame parent, boolean modal) {
+    public AcheivementsForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationCenter();

@@ -18,6 +18,8 @@ import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
  */
 public class GameForm extends javax.swing.JDialog {
 
+    private static final Audio AUDIO = Audio.getInstance();
+
     private Game engine;
     private KeyAdapter keyAdapter;
     private final GameListener gameListener = (GameEvent event) -> {
@@ -33,14 +35,17 @@ public class GameForm extends javax.swing.JDialog {
                     Global.getStatistics().addStartedGame();
                     break;
                 case ENEMY_KILL:
-                    Audio.getInstance().playSound("flame.wav");
+                    AUDIO.playSound("flame.wav");
                     Global.getStatistics().addEnemyKill();
                     break;
                 case PLAYER_SHOT:
-                    Audio.getInstance().playSound("ricochet.wav");
+                    AUDIO.playSound("explosion.wav");
                     break;
                 case PLAYER_HIT_ENEMY:
-                    Audio.getInstance().playSound("shot.wav");
+                    AUDIO.playSound("shot.wav");
+                    break;
+                case ACHEIVEMENT:
+                    AUDIO.playSound("achievement.wav");
                     break;
             }
         }

@@ -397,6 +397,7 @@ public class Game implements Runnable {
             if (enemies.isEmpty()) {
                 if (fastGame) {
                     Global.addAcheivement(Acheivements.FAST_GAME, Acheivements.FAST_GAME_DESCRIPTION);
+                    notifyListeners(GameEvent.ACHEIVEMENT);
                     achievementsToDraw.put(Acheivements.FAST_GAME, System.nanoTime());
                 }
                 if (levelIterator.hasNext()) {
@@ -557,7 +558,16 @@ public class Game implements Runnable {
                     if (s.isCritical()) {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;
                     }
+                    boolean fullHealth = enemy.getHealth() == enemy.getMaxHealth();
                     enemy.decreaseHealth(damage);
+                    if (enemy.isDead() && fullHealth) {
+                        if (!Global.hasAcheivement(Acheivements.PERFECT_HIT)) {
+                            Global.addAcheivement(Acheivements.PERFECT_HIT, Acheivements.PERFECT_HIT_DESCRIPTION);
+                            achievementsToDraw.put(Acheivements.PERFECT_HIT, System.nanoTime());
+                            notifyListeners(GameEvent.ACHEIVEMENT);
+                        }
+
+                    }
                     LOGGER.info("Снаряд игрока наносит " + damage + " урона "
                             + (s.isCritical() ? "(критический эффект" : "")
                             + " вражеской машине: " + enemy.getUnitType());

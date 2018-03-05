@@ -14,5 +14,6 @@ public enum GameEvent {
     ENEMY_KILL, 
     PLAYER_SHOT, 
     ENEMY_SHOT, 
-    PLAYER_HIT_ENEMY;
+    PLAYER_HIT_ENEMY, 
+    ACHEIVEMENT;
 }

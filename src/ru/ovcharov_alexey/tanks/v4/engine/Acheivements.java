@@ -12,4 +12,7 @@ public final class Acheivements {
             + "секунд или быстрее(с учетом скорости игры)";
     public static final String FAST_GAME = "Быстрая победа";
 
+    public static final String PERFECT_HIT = "Точное попадание";
+    public static final String PERFECT_HIT_DESCRIPTION = "Уничтожте вражескую машину с одного выстрела";
+
 }

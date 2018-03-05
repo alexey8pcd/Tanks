@@ -299,7 +299,7 @@ public class MainForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bAchievementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAchievementsActionPerformed
-        new AchievementsForm(this, true).setVisible(true);
+        new AcheivementsForm(this, true).setVisible(true);
     }//GEN-LAST:event_bAchievementsActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed

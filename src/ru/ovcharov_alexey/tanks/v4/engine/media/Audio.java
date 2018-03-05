@@ -24,7 +24,8 @@ public class Audio {
         "explosion.wav",
         "shot.wav",
         "ricochet.wav",
-        "flame.wav"
+        "flame.wav",
+        "acheivement.wav"
     };
 
     static {

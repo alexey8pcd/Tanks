@@ -30,7 +30,7 @@ public class Global {
     public static final Font LARGE_FONT = new Font("Arial", Font.BOLD, 26);
     public static final Font MAIN_FONT = new Font("Arial", Font.BOLD, 14);
     public static final double CRITICAL_DAMAGE_FACTOR = 2.25;
-    public static final int BASE_CHANCE_TO_CRITICAL_DAMAGE = 5;
+    public static final int BASE_CHANCE_TO_CRITICAL_DAMAGE = 10;
     public static final int BASE_EXPERIENCE_FOR_NEXT_SKILL = 100;
     public static final double EXPERIENCE_GROW = 1.6;
     public static final int EXTRA_HP_PER_LEVEL = 10;
