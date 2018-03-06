@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/ui/forms/GameForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/Global.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/ui/forms/SettingsForm.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/util/IOUtils.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/Game.java</file>
-            <file>file:/C:/Storage/Programs/Tanks-master/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/units/battle/CombatUnit.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/media/Audio.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/ui/forms/GameForm.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/Statistics.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/Global.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/ui/forms/SettingsForm.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/Game.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/engine/GameMode.java</file>
+            <file>file:/D:/Storage/Programs/Tanks/src/ru/ovcharov_alexey/tanks/v4/ui/forms/MainForm.java</file>
         </group>
     </open-files>
 </project-private>

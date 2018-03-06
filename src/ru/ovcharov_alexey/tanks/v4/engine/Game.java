@@ -645,8 +645,8 @@ public class Game implements Runnable {
             g.setColor(Color.RED);
             g.drawString(framesString, 10, 10);
             g.drawString("Опыт: " + currentExperience + "/" + experienceForNextSkill, 30, 10);
-            g.drawString("Навык: " + playerSkill, 140, 10);
-            g.drawString("Уровень: " + currentLevel.getName(), 200, 10);
+            g.drawString("Звание: " + Global.getRank(playerSkill), (int) (width / xScale / 4), 10);
+            g.drawString("Уровень: " + currentLevel.getName(), (int) (width / xScale / 2), 10);
             drawAchievements(g, width, height);
             bufferStrategy.getDrawGraphics().drawImage(bufferedImage, 0, 0, null);
             bufferStrategy.show();

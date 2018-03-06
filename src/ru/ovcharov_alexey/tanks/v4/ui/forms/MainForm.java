@@ -1,9 +1,11 @@
 package ru.ovcharov_alexey.tanks.v4.ui.forms;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -15,12 +17,10 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.JFrame;
@@ -51,6 +51,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     public MainForm() throws IOException {
+        preInit();
         initComponents();
         init();
     }
@@ -80,6 +81,15 @@ public class MainForm extends javax.swing.JFrame {
             owner.addKeyListener(buttonListener);
             owner.addFocusListener(buttonListener);
             owner.addMouseListener(buttonListener);
+        }
+    }
+
+    private void preInit() {
+        if (Global.isFullScreen()) {
+            this.setUndecorated(true);
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            this.setUndecorated(false);
         }
     }
 
@@ -340,7 +350,10 @@ public class MainForm extends javax.swing.JFrame {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
         } else {
             setExtendedState(JFrame.NORMAL);
-            setSize(getPreferredSize());
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int width = (int) (screenSize.getWidth() * 0.8);
+            int height = (int) (screenSize.getHeight() * 0.8);
+            setSize(width, height);
             setLocationRelativeTo(null);
         }
 
@@ -410,9 +423,6 @@ public class MainForm extends javax.swing.JFrame {
             try {
                 Global.load();
                 MainForm mainForm = new MainForm();
-                if (Global.isFullScreen()) {
-                    mainForm.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                }
                 Global.getLogger().info("Игра запущена");
                 mainForm.setVisible(true);
             } catch (IOException ex) {

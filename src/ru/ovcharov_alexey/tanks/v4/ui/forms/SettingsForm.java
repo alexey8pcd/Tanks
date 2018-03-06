@@ -48,6 +48,7 @@ public class SettingsForm extends javax.swing.JDialog {
         rbLogOnlyCriticalErrors = new javax.swing.JRadioButton();
         rbLogAllMessages = new javax.swing.JRadioButton();
         cbFullScreen = new javax.swing.JCheckBox();
+        cbSound = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Настройки");
@@ -105,6 +106,14 @@ public class SettingsForm extends javax.swing.JDialog {
             }
         });
 
+        cbSound.setSelected(true);
+        cbSound.setText("Звук");
+        cbSound.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbSoundActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -122,7 +131,7 @@ public class SettingsForm extends javax.swing.JDialog {
                         .addComponent(bFindCampaignFolder))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbFullScreen)
+                            .addComponent(cbSound)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addGap(44, 44, 44)
@@ -133,16 +142,19 @@ public class SettingsForm extends javax.swing.JDialog {
                                 .addGap(34, 34, 34)
                                 .addComponent(rbLogOnlyCriticalErrors)
                                 .addGap(18, 18, 18)
-                                .addComponent(rbLogAllMessages)))
+                                .addComponent(rbLogAllMessages))
+                            .addComponent(cbFullScreen))
                         .addGap(0, 19, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
+                .addContainerGap()
                 .addComponent(cbFullScreen)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbSound)
+                .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(sliderGameSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
@@ -202,12 +214,17 @@ public class SettingsForm extends javax.swing.JDialog {
         Global.setFullScreen(cbFullScreen.isSelected());
     }//GEN-LAST:event_cbFullScreenActionPerformed
 
+    private void cbSoundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSoundActionPerformed
+        Global.setAudioEnable(cbSound.isSelected());
+    }//GEN-LAST:event_cbSoundActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bApply;
     private javax.swing.JButton bFindCampaignFolder;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox cbFullScreen;
+    private javax.swing.JCheckBox cbSound;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

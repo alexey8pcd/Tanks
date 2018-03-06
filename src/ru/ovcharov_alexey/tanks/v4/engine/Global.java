@@ -43,6 +43,7 @@ public class Global {
     private static final int BASE_SPEED = 50;
 
     private static int speed = BASE_SPEED;
+    private static boolean audio = true;
     private static String pathToCompaniesFolder = ".";
     private static Statistics statistics = Statistics.empty();
 
@@ -115,6 +116,7 @@ public class Global {
                 try (DataInputStream dataInputStream
                         = new DataInputStream(new FileInputStream(settings))) {
                     Global.setSpeed(dataInputStream.readInt());
+                    Global.setAudioEnable(dataInputStream.readBoolean());
                     Global.statistics = Statistics.load(dataInputStream);
                     Global.pathToCompaniesFolder = dataInputStream.readUTF();
                     Global.LOGGER.setLevel(Level.parse(String.valueOf(dataInputStream.readInt())));
@@ -143,6 +145,7 @@ public class Global {
                 try (DataOutputStream dataOutputStream
                         = new DataOutputStream(new FileOutputStream(settings))) {
                     dataOutputStream.writeInt(speed);
+                    dataOutputStream.writeBoolean(audio);
                     statistics.save(dataOutputStream);
                     dataOutputStream.writeUTF(pathToCompaniesFolder);
                     dataOutputStream.writeInt(LOGGER.getLevel().intValue());
@@ -199,7 +202,34 @@ public class Global {
     }
 
     public static boolean audioEnabled() {
-        return true;
+        return audio;
     }
+
+    private static final String[] RANKS = {
+        "Рядовой",
+        "Сержант",
+        "Старшина",
+        "Капрал",
+        "Лейтенант",
+        "Капитан",
+        "Майор",
+        "Подполковник",
+        "Полковник",
+        "Генерал",
+        "Военачальник",
+        "Маршал"
+    };
+
+    public static String getRank(int playerSkill) {
+        if (playerSkill > RANKS.length - 2) {
+            return RANKS[RANKS.length - 1] + "[" + playerSkill + "]";
+        }
+        return RANKS[playerSkill - 1] + "[" + playerSkill + "]";
+    }
+
+    public static void setAudioEnable(boolean value) {
+        audio = value;
+    }
+    
 
 }
