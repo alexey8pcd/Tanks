@@ -1,11 +1,14 @@
 package ru.ovcharov_alexey.tanks.v4.ui.forms;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.swing.AbstractListModel;
-import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.Level;
@@ -18,6 +21,7 @@ import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
 public class CampaignChooseForm extends javax.swing.JDialog {
 
     private List<Campaign> campaigns = new ArrayList<>();
+    private Campaign selectedCampaign;
     private List<Level> levels = new ArrayList<>();
     private LevelAndCampaign choosen;
 
@@ -39,14 +43,27 @@ public class CampaignChooseForm extends javax.swing.JDialog {
         this.listStartLevel.setModel(new AbstractListModel<String>() {
             @Override
             public int getSize() {
-                return levels.size();
+                return Global.getOpenLevels(selectedCampaign, levels).size();
             }
 
             @Override
             public String getElementAt(int index) {
-                return levels.get(index).getName();
+                return Global.getOpenLevels(selectedCampaign, levels).get(index).getName();
             }
         });
+    }
+
+    private Set<Campaign> getCampaigns(File dir) throws IOException {
+        String[] campaignFiles = dir.list((File dir1, String s) -> s.endsWith(".campaign"));
+        Set<Campaign> campaignsUnique = new TreeSet<>(
+                (Campaign o1, Campaign o2) -> o1.getName().compareTo(o2.getName()));
+        if (campaignFiles != null) {
+            for (String name : campaignFiles) {
+                Campaign c = Campaign.loadFromFile(dir + File.separator + name);
+                campaignsUnique.add(c);
+            }
+        }
+        return campaignsUnique;
     }
 
     @SuppressWarnings("unchecked")
@@ -131,7 +148,8 @@ public class CampaignChooseForm extends javax.swing.JDialog {
             if (lvlIdx < 0) {
                 lvlIdx = 0;
             }
-            choosen = new LevelAndCampaign(lvlIdx, campaigns.get(selectedIndex));
+            selectedCampaign = campaigns.get(selectedIndex);
+            choosen = new LevelAndCampaign(lvlIdx, selectedCampaign);
             dispose();
         }
     }//GEN-LAST:event_bChooseActionPerformed
@@ -160,16 +178,26 @@ public class CampaignChooseForm extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         LoadGameForm.asyncAction(() -> {
             try {
-                File dir = new File(Global.getPathToCompaniesFolder());
-                if (dir.exists() && dir.isDirectory()) {
-                    String[] campaignFiles = dir.list((File dir1, String s)
-                            -> s.endsWith(".campaign"));
-                    for (String name : campaignFiles) {
-                        Campaign c = Campaign.loadFromFile(dir + File.separator + name);
-                        campaigns.add(c);
+                File[] dirs = new File[]{
+                    new File(Global.getPathToCompaniesFolder()),
+                    new File(System.getProperty("user.home"))
+                };
+                Set<Campaign> campaignsSet = new TreeSet<>(
+                        (Campaign o1, Campaign o2) -> o1.getName().compareTo(o2.getName()));
+                for (File dir : dirs) {
+                    if (dir.exists() && dir.isDirectory()) {
+                        Set<Campaign> campaigns1 = getCampaigns(dir);
+                        campaignsSet.addAll(campaigns1);
+                        File[] subdirs = dir.listFiles(File::isDirectory);
+                        for (File subdir : subdirs) {
+                            Set<Campaign> campaigns2 = getCampaigns(subdir);
+                            campaignsSet.addAll(campaigns2);
+                        }
                     }
-                    listCampaign.updateUI();
                 }
+                this.campaigns.clear();
+                this.campaigns.addAll(campaignsSet);
+                listCampaign.updateUI();
             } catch (Exception ex) {
                 Global.logAndShowException(ex);
             }

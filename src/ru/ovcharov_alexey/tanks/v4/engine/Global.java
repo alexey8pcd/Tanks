@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign;
 import ru.ovcharov_alexey.tanks.v4.util.NonNull;
 
 /**
@@ -32,9 +34,9 @@ public class Global {
     public static final double CRITICAL_DAMAGE_FACTOR = 2.25;
     public static final int BASE_CHANCE_TO_CRITICAL_DAMAGE = 10;
     public static final int BASE_EXPERIENCE_FOR_NEXT_SKILL = 100;
-    public static final double EXPERIENCE_GROW = 1.6;
+    public static final double EXPERIENCE_GROW = 1.33;
     public static final int EXTRA_HP_PER_LEVEL = 10;
-    public static final int BASE_EXPERIENCE_PER_ENEMY = 10;
+    public static final int BASE_EXPERIENCE_PER_ENEMY = 20;
     public static final int EXTRA_DAMAGE_PER_LEVEL = 5;
     public static final long MAX_SHOW_DAMAGE_TIME = TimeUnit.SECONDS.toNanos(3);
 
@@ -50,6 +52,11 @@ public class Global {
     static {
         UIManager.put("OptionPane.yesButtonText", "Да");
         UIManager.put("OptionPane.noButtonText", "Нет");
+        UIManager.put("FileChooser.openButtonText", "Открыть");
+        UIManager.put("FileChooser.cancelButtonText", "Отмена");
+        UIManager.put("FileChooser.fileNameLabelText", "Название файла");
+        UIManager.put("FileChooser.filesOfTypeLabelText", "Тип файла");
+        UIManager.put("FileChooser.lookInLabelText", "Найти в");
         LOGGER.setLevel(java.util.logging.Level.INFO);
         try {
             FileHandler fileHandler = new FileHandler("game.log", true);
@@ -58,6 +65,11 @@ public class Global {
         } catch (IOException | SecurityException ex) {
             ex.printStackTrace(System.err);
         }
+    }
+
+    public static List<ru.ovcharov_alexey.tanks.v4.logic.campaign.Level> getOpenLevels(Campaign selectedCampaign,
+            List<ru.ovcharov_alexey.tanks.v4.logic.campaign.Level> allLevels) {
+        return allLevels;
     }
 
     public static void setFullScreen(boolean value) {
@@ -230,6 +242,5 @@ public class Global {
     public static void setAudioEnable(boolean value) {
         audio = value;
     }
-    
 
 }

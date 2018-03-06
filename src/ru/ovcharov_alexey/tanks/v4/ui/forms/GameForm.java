@@ -35,17 +35,17 @@ public class GameForm extends javax.swing.JDialog {
                     Global.getStatistics().addStartedGame();
                     break;
                 case ENEMY_KILL:
-                    AUDIO.playSound("flame.wav");
+                    AUDIO.playSound("flame.wav", Audio.Loudness.MEDIUM);
                     Global.getStatistics().addEnemyKill();
                     break;
                 case PLAYER_SHOT:
-                    AUDIO.playSound("explosion.wav");
+                    AUDIO.playSound("explosion.wav", Audio.Loudness.LOW);
                     break;
                 case PLAYER_HIT_ENEMY:
-                    AUDIO.playSound("shot.wav");
+                    AUDIO.playSound("shot.wav", Audio.Loudness.MEDIUM);
                     break;
                 case ACHEIVEMENT:
-                    AUDIO.playSound("achievement.wav");
+                    AUDIO.playSound("acheivement.wav", Audio.Loudness.HIGH);
                     break;
             }
         }

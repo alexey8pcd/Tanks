@@ -1,6 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.ui.forms;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
@@ -14,7 +15,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,17 +31,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.logic.campaign.LevelAndCampaign;
+import ru.ovcharov_alexey.tanks.v4.util.IOUtils;
 
 /**
  *
  * @author Алексей
  */
 public class MainForm extends javax.swing.JFrame {
-
-    private static final String HELP_MESSAGE = "<html>Для перемещения танка игрока используйте<br>"
-            + "клавиши курсора, для выстрела - пробел.<br> Для приостановки игры - клавишу Esc<br>"
-            + "Автор: Алексей Овчаров, 2016. <br>Сведения об ошибках и недочетах<br>"
-            + "отправлять на почту: alexey8rus@mail.ru";
 
     private static Image backImg;
     private Color defaultButtonBackgroundColor;
@@ -54,6 +54,34 @@ public class MainForm extends javax.swing.JFrame {
         preInit();
         initComponents();
         init();
+    }
+
+    private void showSettingsForm() throws HeadlessException {
+        SettingsForm settingsForm = new SettingsForm(this, true);
+        settingsForm.setLocationRelativeTo(pMain);
+        settingsForm.setVisible(true);
+        if (Global.isFullScreen()) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            setExtendedState(JFrame.NORMAL);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int width = (int) (screenSize.getWidth() * 0.8);
+            int height = (int) (screenSize.getHeight() * 0.8);
+            setSize(width, height);
+            setLocationRelativeTo(null);
+        }
+    }
+
+    private void openPdfHelp() {
+        File tmpFile;
+        try (FileOutputStream fileOutputStream = new FileOutputStream((tmpFile = File.createTempFile("help", ".pdf")));
+                InputStream is = getClass().getResourceAsStream("/pdf/help.pdf")) {
+            tmpFile.deleteOnExit();
+            IOUtils.copy(is, fileOutputStream);
+            Desktop.getDesktop().browse(tmpFile.toURI());
+        } catch (IOException ex) {
+            Global.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
     @Override
@@ -309,7 +337,9 @@ public class MainForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bAchievementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAchievementsActionPerformed
-        new AcheivementsForm(this, true).setVisible(true);
+        AcheivementsForm acheivementsForm = new AcheivementsForm(this, true);
+        acheivementsForm.setLocationRelativeTo(pMain);
+        acheivementsForm.setVisible(true);
     }//GEN-LAST:event_bAchievementsActionPerformed
 
     private void bExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExitActionPerformed
@@ -344,23 +374,14 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bSinglePlayerActionPerformed
 
     private void bSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSettingsActionPerformed
-        SettingsForm settingsForm = new SettingsForm(this, true);
-        settingsForm.setVisible(true);
-        if (Global.isFullScreen()) {
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-        } else {
-            setExtendedState(JFrame.NORMAL);
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int width = (int) (screenSize.getWidth() * 0.8);
-            int height = (int) (screenSize.getHeight() * 0.8);
-            setSize(width, height);
-            setLocationRelativeTo(null);
-        }
+        showSettingsForm();
 
     }//GEN-LAST:event_bSettingsActionPerformed
 
     private void bStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStatsActionPerformed
-        new StatisticsForm(this, true).setVisible(true);
+        StatisticsForm statisticsForm = new StatisticsForm(this, true);
+        statisticsForm.setLocationRelativeTo(pMain);
+        statisticsForm.setVisible(true);
     }//GEN-LAST:event_bStatsActionPerformed
 
     private void bCampaignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCampaignActionPerformed
@@ -369,7 +390,9 @@ public class MainForm extends javax.swing.JFrame {
 
     private void startCampaignAction() throws HeadlessException {
         CampaignChooseForm campaignChooseForm = new CampaignChooseForm(this, true);
+        campaignChooseForm.setLocationRelativeTo(pMain);
         campaignChooseForm.setVisible(true);
+
         LevelAndCampaign choosenCampaign = campaignChooseForm.getChoosenCampaign();
         if (choosenCampaign != null) {
             GameForm gameForm;
@@ -383,8 +406,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     private void bHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bHelpActionPerformed
-        JOptionPane.showMessageDialog(null, HELP_MESSAGE,
-                "Об игре", JOptionPane.INFORMATION_MESSAGE);
+        openPdfHelp();
     }//GEN-LAST:event_bHelpActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
