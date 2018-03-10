@@ -1,5 +1,7 @@
 package ru.ovcharov_alexey.tanks.v4.engine.geometry;
 
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
+
 /**
  * @author Alexey
  */
@@ -11,6 +13,11 @@ public enum Direction {
     DOWN(Axis.Y, 3);
     private static final double PI_4 = Math.PI / 4;
     private static final double PI_43 = Math.PI / 4 * 3;
+
+    public static Vector2D random(float speed) {
+        int r = Global.RANDOM.nextInt(4);
+        return Vector2D.create(values()[r], speed);
+    }
 
     public static Direction approximate(Vector2D direction) {
         double alpha = Math.atan2(direction.getJ(), direction.getI());
@@ -27,6 +34,10 @@ public enum Direction {
 
     private final Axis axis;
     private final int index;
+
+    public Vector2D toVector(float speed) {
+        return Vector2D.create(this, speed);
+    }
 
     public Direction getOrto() {
         switch (this) {

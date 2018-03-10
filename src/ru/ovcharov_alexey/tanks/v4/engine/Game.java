@@ -29,6 +29,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.events.GameEvent;
 import ru.ovcharov_alexey.tanks.v4.engine.events.GameListener;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
@@ -111,6 +112,7 @@ public class Game implements Runnable {
     private final List<DamageText> damageTextList = new ArrayList<>();
     private int secondsWithoutMove;
     private static final Logger LOGGER = Global.getLogger();
+    private Scene scene;
 
     public Game(Canvas canvas, int width, int height) throws IOException {
         gameMode = GameMode.OFF;
@@ -275,8 +277,7 @@ public class Game implements Runnable {
         currentLevel = new Level("Random level");
         currentLevel.setMap(map);
         for (int i = 0; i < 5; i++) {
-            currentLevel.addUnit(
-                    UnitFactory.createEnemyUnit(UnitType.randomType(RANDOM)));
+            currentLevel.addUnit(UnitType.randomType(RANDOM));
         }
         currentLevel.setBonusesCount(4);
         levelIterator = new Iterator<Level>() {
@@ -297,7 +298,12 @@ public class Game implements Runnable {
         shells.clear();
         secondsWithoutMove = 0;
         damageTextList.clear();
-        enemies = new ArrayList<>(currentLevel.getUnits());
+        List<CombatUnit> units = currentLevel.getUnits();
+        enemies = new ArrayList<>(units);
+        int i1 = 0;
+        for (CombatUnit unit : units) {
+            unit.setX(i1++ * unit.getWidth());
+        }
         clearBonus();
         bonusTimer.stop();
         time = 0;
@@ -307,6 +313,7 @@ public class Game implements Runnable {
         int mapHeight = currentLevel.getMap().getHeight();
         playerUnit.setLocation(mapWidth - playerUnit.getWidth() - 1,
                 mapHeight - playerUnit.getHeight() - 1);
+        playerUnit.disallowRandomChangeDirection();
         bonuses.clear();
         for (int i = 0; i < currentLevel.getBonusesCount(); i++) {
             int x;
@@ -320,6 +327,9 @@ public class Game implements Runnable {
             BonusType type = BonusType.randomType(RANDOM);
             bonuses.add(new Bonus(x, y, Bonus.SIZE, type));
         }
+        scene = new Scene(currentLevel.getMap());
+        scene.addShapes(enemies);
+        scene.addShape(playerUnit);
         fastGameTimer.start();
         fastGame = true;
     }
@@ -353,39 +363,43 @@ public class Game implements Runnable {
         }
         if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_RIGHT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.RIGHT) {
-                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(null, scene);
                 if (move) {
                     secondsWithoutMove = 0;
                 }
             } else {
-                playerUnit.setDirection(new Vector2D(playerUnit.getSpeed(), 0));
+                Vector2D right = new Vector2D(playerUnit.getSpeed(), 0);
+                playerUnit.setDirection(right);
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_LEFT))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.LEFT) {
-                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(null, scene);
                 if (move) {
                     secondsWithoutMove = 0;
                 }
             } else {
-                playerUnit.setDirection(new Vector2D(-playerUnit.getSpeed(), 0));
+                Vector2D left = new Vector2D(-playerUnit.getSpeed(), 0);
+                playerUnit.setDirection(left);
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_UP))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.UP) {
-                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(null, scene);
                 if (move) {
                     secondsWithoutMove = 0;
                 }
             } else {
-                playerUnit.setDirection(new Vector2D(0, playerUnit.getSpeed()));
+                Vector2D up = new Vector2D(0, playerUnit.getSpeed());
+                playerUnit.setDirection(up);
             }
         } else if (Boolean.TRUE.equals(keys.get(KeyEvent.VK_DOWN))) {
             if (Direction.approximate(playerUnit.getDirection()) == Direction.DOWN) {
-                boolean move = playerUnit.move(currentLevel.getMap(), null);
+                boolean move = playerUnit.move(null, scene);
                 if (move) {
                     secondsWithoutMove = 0;
                 }
             } else {
-                playerUnit.setDirection(new Vector2D(0, -playerUnit.getSpeed()));
+                Vector2D down = new Vector2D(0, -playerUnit.getSpeed());
+                playerUnit.setDirection(down);
             }
         }
 
@@ -455,6 +469,7 @@ public class Game implements Runnable {
             CombatUnit unit = iterator.next();
             if (!unit.isLive()) {
                 iterator.remove();
+                scene.removeShape(unit);
                 LOGGER.info("Игрок уничтожил вражескую машину: " + unit.getUnitType());
                 notifyListeners(GameEvent.ENEMY_KILL);
                 addExperience((int) (Global.BASE_EXPERIENCE_PER_ENEMY
@@ -512,7 +527,7 @@ public class Game implements Runnable {
             DamageDealer dd = iterator.next();
             if (dd.isFixedPosition()) {
                 InvisibleBomb bomb = (InvisibleBomb) dd;
-                if (bomb.intersectsWith(playerUnit)) {
+                if (bomb.nearWith(playerUnit, CombatUnit.UNIT_SIZE * 2)) {
                     int damage = bomb.getDamage();
                     playerUnit.decreaseHealth(damage);
                     int realDamage = playerUnit.calculateRealDamage(damage);
@@ -537,7 +552,7 @@ public class Game implements Runnable {
                     explosions.add(new Explosion(s));
                     continue;
                 }
-                if (!s.move(currentLevel.getMap(), null)) {
+                if (!s.move(null, scene)) {
                     ShellPool.getInstance().put(s);
                     iterator.remove();
                     explosions.add(new Explosion(s));
@@ -580,7 +595,7 @@ public class Game implements Runnable {
                     continue label;
                 }
             }
-            if (!s.move(currentLevel.getMap(), null)) {
+            if (!s.move(null, scene)) {
                 ShellPool.getInstance().put(s);
                 explosions.add(new Explosion(s));
                 iterator.remove();
@@ -590,23 +605,20 @@ public class Game implements Runnable {
 
     private void relocateEnemiesUnits() {
         if (enemiesCanMove) {
-            enemies.stream().map((unit) -> {
-                changeDirectionOfUnitIfCanNotMove(unit);
-                return unit;
-            }).forEach((unit) -> {
-                changeDirectionOfUnitWithChance(unit);
-            });
+            for (CombatUnit enemy : enemies) {
+
+                enemy.move(playerUnit.getPoint(), scene);
+            }
+//            enemies.stream().map((unit) -> {
+////                changeDirectionOfUnitIfCanNotMove(unit);
+//                unit.move(currentLevel.getMap(), playerUnit.getPoint());
+//                return unit;
+//            });
+//            .forEach((unit) -> {
+//                changeDirectionOfUnitWithChance(unit);
+//            });
         }
 
-    }
-
-    private void changeDirectionOfUnitIfCanNotMove(CombatUnit unit) {
-        final int restriction = Direction.values().length;
-        if (!unit.move(currentLevel.getMap(), playerUnit.getPoint())) {
-            Vector2D vector2D = Vector2D.create(
-                    Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
-            unit.setDirection(vector2D);
-        }
     }
 
     private void changeDirectionOfUnitWithChance(CombatUnit unit) {

@@ -10,6 +10,7 @@ import java.util.Map;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 
@@ -23,7 +24,8 @@ public class WaveAlgorithmBaseSearchMove extends AbstractMoveActionWithCollision
     }
 
     @Override
-    public boolean move(Movable movable, GeometryMap map, GeometryPoint target) {
+    public boolean move(Movable movable, GeometryPoint target, Scene scene) {
+        GeometryMap map = scene.getGeometryMap();
         try {
 /*
             int rows = map.getRowsCount();
@@ -82,7 +84,7 @@ public class WaveAlgorithmBaseSearchMove extends AbstractMoveActionWithCollision
 //                    Direction direction = Direction.approximate(dx, dy);
 //                    Vector2D vd = Vector2D.create(direction, movable.getSpeed());
 //                    movable.setDirection(vd);
-                    if (canMove(movable, map, target)) {
+                    if (canMove(movable, target, scene)) {
                         movable.setLocation(dLeftX, dTopY);
                         return true;
                     } else {

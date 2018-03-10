@@ -16,15 +16,17 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.actions.StraigthMove;
  */
 public class UnitFactory {
 
+    private static final int MAX_HEALTH = 100;
+
     private static final int DEFAULT_PLAYER_DAMAGE = 50;
-    
+
     public static CombatUnit createPlayerUnit() {
         return new CombatUnitBuilder().setArmor(40).
                 setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                 setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
                 setBreakingStrength(BREAK_BRICKS).setMoveSpeed(NORMAL).
                 setDrawer(DrawerFactory.getPlayerUnitDrawer()).
-                setDamage(DEFAULT_PLAYER_DAMAGE).setMaxHealth(100).setType(UnitType.TANK).createCombatUnit();
+                setDamage(DEFAULT_PLAYER_DAMAGE).setMaxHealth(MAX_HEALTH).setType(UnitType.TANK).createCombatUnit();
     }
 
     public static CombatUnit createPlayerUnit(int playerSkill) {
@@ -35,58 +37,84 @@ public class UnitFactory {
                 .setMoveSpeed(NORMAL).
                 setDrawer(DrawerFactory.getPlayerUnitDrawer()).
                 setDamage(DEFAULT_PLAYER_DAMAGE + Global.EXTRA_DAMAGE_PER_LEVEL * (playerSkill - 1))
-                .setMaxHealth(100 + Global.EXTRA_HP_PER_LEVEL * (playerSkill - 1))
+                .setMaxHealth(MAX_HEALTH + Global.EXTRA_HP_PER_LEVEL * (playerSkill - 1))
                 .setType(UnitType.TANK)
                 .createCombatUnit();
     }
-    
 
     public static CombatUnit createEnemyUnit(UnitType unitType) {
         switch (unitType) {
             case LIGHT_COMBAT_VEHICLE:
-                return new CombatUnitBuilder().setArmor(0).
+                return new CombatUnitBuilder().
+                        setArmor(0).
                         setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
                         setBreakingStrength(BREAK_WOOD).
                         setMoveSpeed(VERY_FAST).
-                        setDamage(33).setDrawer(DrawerFactory.getDrawer(unitType)).
-                        setMaxHealth(100).setType(unitType).createCombatUnit();
+                        setDamage(33).
+                        setDrawer(DrawerFactory.getDrawer(unitType)).
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
             case MIDDLE_COMBAT_VEHICLE:
-                return new CombatUnitBuilder().setArmor(20).
+                return new CombatUnitBuilder().
+                        setArmor(20).
                         setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
-                        setBreakingStrength(BREAK_BRICKS).setMoveSpeed(FAST).
+                        setBreakingStrength(BREAK_BRICKS).
+                        setMoveSpeed(FAST).
                         setDamage(50).
                         setDrawer(DrawerFactory.getDrawer(unitType)).
-                        setMaxHealth(100).setType(unitType).createCombatUnit();
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
             case HEAVY_COMBAT_VEHICLE:
-                return new CombatUnitBuilder().setArmor(40).
+                return new CombatUnitBuilder().
+                        setArmor(40).
                         setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
                         setBreakingStrength(BREAK_ARMOR).setMoveSpeed(SLOW).
                         setDrawer(DrawerFactory.getDrawer(unitType)).
-                        setDamage(66).setMaxHealth(100).setType(unitType).createCombatUnit();
+                        setDamage(66).
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
             case TANK:
-                return new CombatUnitBuilder().setArmor(60).
+                return new CombatUnitBuilder().
+                        setArmor(75).
                         setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
-                        setBreakingStrength(BREAK_ARMOR).setMoveSpeed(NORMAL).
+                        setBreakingStrength(BREAK_ARMOR).
+                        setMoveSpeed(NORMAL).
                         setDrawer(DrawerFactory.getDrawer(unitType)).
-                        setDamage(70).setMaxHealth(200).setType(unitType).createCombatUnit();
+                        setDamage(70).
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
             case FOCUSED_BLASTING:
-                return new CombatUnitBuilder().setArmor(80).
+                return new CombatUnitBuilder().setArmor(0).
                         setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_EXPLOSION).
-                        setBreakingStrength(BREAK_ARMOR).setMoveSpeed(NORMAL).
+                        setBreakingStrength(BREAK_ARMOR).
+                        setMoveSpeed(FAST).
                         setDrawer(DrawerFactory.getDrawer(unitType)).setDamage(100).
-                        setMaxHealth(100).setType(unitType).createCombatUnit();
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
             case DOUBLE_WEAPON_VEHICLE:
-                return new CombatUnitBuilder().setArmor(30).
+                CombatUnit unit = new CombatUnitBuilder().
+                        setArmor(30).
                         setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
-                        setBreakingStrength(BREAK_ARMOR).setMoveSpeed(NORMAL).
-                        setDamage(45).setDrawer(DrawerFactory.getDrawer(unitType)).
-                        setMaxHealth(140).setType(unitType).createCombatUnit();
+                        setBreakingStrength(BREAK_ARMOR).
+                        setMoveSpeed(NORMAL).
+                        setDamage(45).
+                        setDrawer(DrawerFactory.getDrawer(unitType)).
+                        setMaxHealth(MAX_HEALTH).
+                        setType(unitType).
+                        createCombatUnit();
+                unit.setRechargeTime(CombatUnit.HALF_RECHARGE_TIME);
+                return unit;
             default:
                 throw new AssertionError(unitType.name());
         }

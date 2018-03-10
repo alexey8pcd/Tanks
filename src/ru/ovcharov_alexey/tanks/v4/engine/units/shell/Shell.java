@@ -26,19 +26,12 @@ public class Shell extends RelocatingShape
     private BreakingStrength breakingStrength;
 
     public static final int SHELL_SIZE = 4;
-    public static final int SHELL_SPEED = 1;
+    public static final float SHELL_SPEED = 0.5f;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(
-            EnumSet.of(Material.METAL, Material.BRICKS, Material.FOREST));
+            EnumSet.of(Material.METAL, Material.BRICKS));
+//            EnumSet.of(Material.METAL, Material.BRICKS, Material.FOREST));
     private boolean critical;
-
-    public Shell(float x, float y, int size, int speed, int damage,
-            BreakingStrength breakingStrength, Direction direction) {
-        super(speed, x, y, size, direction, MOVE_ACTION);
-        this.damage = damage;
-        this.breakingStrength = breakingStrength;
-        alive = true;
-    }
 
     /**
      * Создает новый снаряд с координатами (0;0), шириной и высотой по
@@ -51,6 +44,11 @@ public class Shell extends RelocatingShape
         breakingStrength = BreakingStrength.BREAK_BRICKS;
         alive = true;
         damage = 0;
+    }
+
+    @Override
+    public boolean canRandomChangeDirection() {
+        return false;
     }
 
     @Override
@@ -112,7 +110,5 @@ public class Shell extends RelocatingShape
     public boolean isCritical() {
         return critical;
     }
-    
-    
 
 }

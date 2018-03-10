@@ -2,9 +2,9 @@ package ru.ovcharov_alexey.tanks.v4.engine.physics;
 
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.MoveAction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
-import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 
 /**
@@ -36,18 +36,18 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
     public RelocatingShape(float speed, MoveAction moveAction, int size) {
         super(size);
         this.speed = speed;
-        this.direction = Vector2D.NULL;
+        this.direction = Direction.random(speed);
         this.moveAction = moveAction;
     }
 
     @Override
-    public boolean move(GeometryMap map, GeometryPoint point) {
-        return moveAction.move(this, map, point);
+    public boolean move(GeometryPoint point, Scene scene) {
+        return moveAction.move(this, point, scene);
     }
 
     @Override
-    public boolean canMove(GeometryMap map, GeometryPoint point) {
-        return moveAction.canMove(this, map, point);
+    public boolean canMove(GeometryPoint point, Scene scene) {
+        return moveAction.canMove(this, point, scene);
     }
 
     @Override

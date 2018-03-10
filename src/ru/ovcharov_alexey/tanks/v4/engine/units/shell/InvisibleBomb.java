@@ -1,8 +1,9 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.shell;
 
+import java.awt.Graphics2D;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Drawable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.DamageDealer;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
-import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
 
 /**
  * Невидимая бомба, которая взрывается, когда к ней приближается боевая единица
@@ -11,7 +12,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.geometry.Visibility;
  */
 public class InvisibleBomb extends GeometryShape implements DamageDealer {
 
-    private int damage;
+    private final int damage;
     private boolean alive;
 
     @Override

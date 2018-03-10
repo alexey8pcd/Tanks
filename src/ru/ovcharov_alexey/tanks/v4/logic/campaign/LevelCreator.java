@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
-import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
-import ru.ovcharov_alexey.tanks.v4.engine.units.factory.UnitFactory;
 import ru.ovcharov_alexey.tanks.v4.ui.forms.MapEditorForm;
 import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 
@@ -18,7 +16,7 @@ import ru.ovcharov_alexey.tanks.v4.engine.persist.GeometryMapPersistance;
 public class LevelCreator {
 
     private GeometryMap map;
-    private List<CombatUnit> units;
+    private List<UnitType> units;
     private static final int MAX_UNITS_COUNT = 24;
 
     public LevelCreator() {
@@ -46,9 +44,7 @@ public class LevelCreator {
     public void addUnits(int count, int selectedIndex) {
         if (units.size() + count < MAX_UNITS_COUNT) {
             for (int i = 0; i < count; i++) {
-                CombatUnit enemyUnit = UnitFactory.createEnemyUnit(
-                        UnitType.typeOf(selectedIndex + 1));
-                units.add(enemyUnit);
+                units.add(UnitType.typeOf(selectedIndex + 1));
             }
         }
     }
@@ -58,7 +54,7 @@ public class LevelCreator {
     }
 
     public String getUnitAt(int index) {
-        return units.get(index).getUnitType().toString();
+        return units.get(index).toString();
     }
 
     public void removeUnits(int[] selectedIndices) {
@@ -66,7 +62,7 @@ public class LevelCreator {
                 && units.size() - selectedIndices.length > 0) {
             return;
         }
-        List<CombatUnit> rest = new ArrayList<>();
+        List<UnitType> rest = new ArrayList<>();
         for (int i = 0; i < units.size(); i++) {
             if (Arrays.binarySearch(selectedIndices, i) < 0) {
                 rest.add(units.get(i));

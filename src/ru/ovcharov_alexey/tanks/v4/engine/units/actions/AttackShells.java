@@ -38,7 +38,7 @@ public class AttackShells implements AttackAction {
         }
         shell.setLocation(attacker.getX() + dx, attacker.getY() + dy);
         shell.setBreakingStrength(attacker.getBreakingStrength());
-        shell.setDirection(Vector2D.create(approximate, Shell.SHELL_SPEED));
+        shell.setDirection(Vector2D.create(approximate, shell.getSpeed()));
         int damage = attacker.getDamage();
         boolean isCrit = Global.RANDOM.nextInt(100) < attacker.getCriticalDamageChance();
         shell.setCritical(isCrit);

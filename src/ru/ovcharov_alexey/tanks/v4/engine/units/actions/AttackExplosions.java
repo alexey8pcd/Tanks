@@ -10,10 +10,12 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.shell.InvisibleBomb;
  */
 public class AttackExplosions implements AttackAction {
 
+    private static final float DELTA = CombatUnit.UNIT_SIZE * 1.5f;
+
     @Override
     public void attack(CombatUnit attacker, Collection<DamageDealer> container,
             CombatUnit attackable) {
-        if (attacker.intersectsWith(attackable)) {
+        if (attacker.nearWith(attackable, DELTA)) {
             int damage = attacker.getDamage();
             if (damage < 1) {
                 damage = 1;

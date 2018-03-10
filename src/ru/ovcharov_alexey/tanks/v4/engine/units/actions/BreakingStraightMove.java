@@ -5,6 +5,9 @@ import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Breaking;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Killable;
@@ -20,11 +23,13 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
     }
 
     @Override
-    public boolean move(Movable movable, GeometryMap map, GeometryPoint point) {
+    public boolean move(Movable movable, GeometryPoint point, Scene scene) {
         calculateDesirePosition(movable);
         float dRightX = dLeftX + movable.getWidth();
         float dDownY = dTopY + movable.getHeight();
-        if (intoMap((int) dRightX, (int) dDownY, map)) {
+        Shape shape = new GeometryShape(dLeftX, dTopY, movable.getWidth(), movable.getHeight());
+        if (scene.into(shape)) {
+            GeometryMap map = scene.getGeometryMap();
             int tileSize = map.getTileSize();
             for (float x = dLeftX; x < dRightX;) {
                 for (float y = dTopY; y < dDownY;) {

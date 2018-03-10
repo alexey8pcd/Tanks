@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
+import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
+import ru.ovcharov_alexey.tanks.v4.engine.units.factory.UnitFactory;
 
 /**
  * @author Alexey
@@ -15,12 +17,11 @@ public class Level {
 
     private String name;
     private GeometryMap map;
-    private List<CombatUnit> units;
+    private final List<UnitType> units = new ArrayList<>();
     private int bonusesCount;
 
     public Level(String name) {
         this.name = name;
-        this.units = new ArrayList<>();
     }
 
     public String getName() {
@@ -40,10 +41,14 @@ public class Level {
     }
 
     public List<CombatUnit> getUnits() {
-        return units;
+        List<CombatUnit> enemies = new ArrayList<>(units.size());
+        for (UnitType unit : units) {
+            enemies.add(UnitFactory.createEnemyUnit(unit));
+        }
+        return enemies;
     }
 
-    public void addUnit(CombatUnit unit) {
+    public void addUnit(UnitType unit) {
         this.units.add(unit);
     }
 
@@ -51,7 +56,7 @@ public class Level {
         this.bonusesCount = bonusesCount;
     }
 
-    static Level loadLevel(DataInputStream dis) throws IOException  {
+    static Level loadLevel(DataInputStream dis) throws IOException {
         String name = dis.readUTF();
         GeometryMap gm = GeometryMap.load(dis);
         Level level = new Level(name);
@@ -60,7 +65,7 @@ public class Level {
         level.setBonusesCount(bonusesCount);
         int unitsCount = dis.readInt();
         for (int i = 0; i < unitsCount; i++) {
-            level.addUnit(CombatUnit.load(dis));
+            level.addUnit(UnitType.typeOf(dis.readInt()));
         }
         return level;
     }
@@ -70,12 +75,12 @@ public class Level {
         map.save(dos);
         dos.writeInt(bonusesCount);
         dos.writeInt(units.size());
-        for (CombatUnit unit : units) {
-            unit.save(dos);
+        for (UnitType unit : units) {
+            dos.writeInt(unit.getType());
         }
     }
 
-    void addUnits(List<CombatUnit> units) {
+    void addUnits(List<UnitType> units) {
         this.units.addAll(units);
     }
 

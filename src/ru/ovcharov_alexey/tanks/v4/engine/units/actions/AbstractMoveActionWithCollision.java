@@ -1,10 +1,15 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 
-import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
+import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 
 /**
  * Используется для проверки перемещения по карте. Перемещение невозможно, если
@@ -34,18 +39,25 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
     }
 
     @Override
-    public abstract boolean move(Movable movable, GeometryMap map, GeometryPoint target);
+    public abstract boolean move(Movable movable, GeometryPoint target, Scene scene);
 
     @Override
-    public boolean canMove(Movable movable, GeometryMap map, GeometryPoint target) {
+    public boolean canMove(Movable movable, GeometryPoint target, Scene scene) {
         calculateDesirePosition(movable);
-        float dRightX = dLeftX + movable.getWidth();
-        float dDownY = dTopY + movable.getHeight();
-        if (!intoMap(Math.round(dRightX), Math.round(dDownY), map)) {
+        Shape shape = new GeometryShape(dLeftX, dTopY, movable.getWidth(), movable.getHeight());
+        if (!scene.into(shape)) {
             return false;
         }
-        return !detectCollisions(map, dRightX, dDownY);
+        boolean collisionDetected = scene.isCollisionDetected(shape, impassable);
+        if (!collisionDetected) {
+            collisionDetected = scene.isUnitsCollisionDetected(shape, movable);
+            if (!collisionDetected) {
+                slowMove = scene.isSlowMove(shape, Material.ICE);
+            }
+        }
+        return !collisionDetected;
     }
+
 
     /**
      * Вычислить желаемую позицию. Результат сохраняется в полях dLeftX и dTopY
@@ -53,58 +65,7 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
      * @param movable
      */
     protected void calculateDesirePosition(Movable movable) {
-        dLeftX = movable.getX();
-        dTopY = movable.getY();
-        dLeftX += movable.getDirection().getI();
-        dTopY -= movable.getDirection().getJ();
+        dLeftX = movable.getX() + movable.getDirection().getI();
+        dTopY = movable.getY() - movable.getDirection().getJ();
     }
-
-    /**
-     * Проверяет столкновение с объектами карты
-     *
-     * @param map
-     * @param dRightX
-     * @param dDownY
-     * @return true, если обнаружено столкновение, false иначе
-     */
-    protected boolean detectCollisions(GeometryMap map, float dRightX, float dDownY) {
-        int tileSize = map.getTileSize();
-        slowMove = false;
-        for (float x = dLeftX; x < dRightX;) {
-            for (float y = dTopY; y < dDownY;) {
-                Material material = map.getTile((int) x, (int) y);
-                if (material == Material.ICE) {
-                    slowMove = true;
-                }
-                if (impassable.contains(material)) {
-                    return true;
-                }
-                if (y >= dDownY - tileSize) {
-                    ++y;
-                } else {
-                    y += tileSize;
-                }
-            }
-            if (x >= dRightX - tileSize) {
-                ++x;
-            } else {
-                x += tileSize;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Проверяет, что желаемая позиция находится в пределах карты
-     *
-     * @param dRightX
-     * @param map
-     * @param dDownY
-     * @return
-     */
-    protected boolean intoMap(int dRightX, int dDownY, GeometryMap map) {
-        return !(dLeftX < 0 || dRightX >= map.getWidth()
-                || dTopY < 0 || dDownY >= map.getHeight());
-    }
-
 }

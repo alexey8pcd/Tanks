@@ -5,7 +5,7 @@ package ru.ovcharov_alexey.tanks.v4.engine.geometry;
  */
 public class Vector2D {
 
-    public static Vector2D NULL = new Vector2D(0, 0);
+    private static Vector2D NULL = new Vector2D(0, 0);
 
     public static Vector2D create(Direction direction, float speed) {
         float i = 0, j = 0;
@@ -40,6 +40,15 @@ public class Vector2D {
     public Vector2D(double i, double j) {
         this.i = (float) i;
         this.j = (float) j;
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2D{" + "i=" + i + ", j=" + j + '}';
+    }
+
+    public Vector2D multiply(float value) {
+        return new Vector2D(i * value, j * value);
     }
 
     public float getI() {

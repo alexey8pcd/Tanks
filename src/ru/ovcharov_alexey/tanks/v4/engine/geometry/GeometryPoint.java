@@ -20,6 +20,11 @@ public class GeometryPoint {
         this.y = point.y;
     }
 
+    @Override
+    public String toString() {
+        return "GeometryPoint{" + "x=" + x + ", y=" + y + '}';
+    }
+
     public float getX() {
         return x;
     }
@@ -64,5 +69,7 @@ public class GeometryPoint {
         hash = (int) (67 * hash + this.y);
         return hash;
     }
+    
+    
 
 }

@@ -8,11 +8,16 @@ import java.util.Objects;
  *
  * @author alex
  */
-public abstract class GeometryShape implements Shape {
+public class GeometryShape implements Shape {
 
     protected GeometryPoint point;//левый верхний угол геометрической фигуры
     protected int width;
     protected int height;
+
+    @Override
+    public String toString() {
+        return "GeometryShape{" + "point=" + point + ", width=" + width + ", height=" + height + '}';
+    }
 
     @Override
     public float getX() {
@@ -60,6 +65,12 @@ public abstract class GeometryShape implements Shape {
         this.height = height;
     }
 
+    public GeometryShape(float rightX, float downY, float leftX, float topY) {
+        this.point = new GeometryPoint(leftX, topY);
+        this.width = Math.round(Math.abs(rightX - leftX));
+        this.height = Math.round(Math.abs(topY - downY));
+    }
+
     public GeometryShape(float x, float y, int size) {
         this.point = new GeometryPoint(x, y);
         this.width = size;
@@ -76,15 +87,6 @@ public abstract class GeometryShape implements Shape {
         this.width = size;
         this.height = size;
         this.point = new GeometryPoint(0, 0);
-    }
-
-    public boolean intersectsWith(Shape shape) {
-        int shapeRightX = (int) (shape.getX() + shape.getWidth());
-        int shapeDownY = (int) (shape.getY() + shape.getHeight());
-        int rightX = (int) (getX() + width);
-        int downY = (int) (getY() + height);
-        return !(getY() > shapeDownY || downY < shape.getY()
-                || rightX < shape.getX() || getX() > shapeRightX);
     }
 
     @Override
@@ -112,5 +114,7 @@ public abstract class GeometryShape implements Shape {
         hash = 17 * hash + this.height;
         return hash;
     }
+    
+    
 
 }

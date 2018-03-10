@@ -27,7 +27,7 @@ public class AttackMultishells implements AttackAction {
         int halfHeight = attacker.getHeight() / 2;
         int dx = halfWidth;
         int dy = halfHeight;
-        Direction approximate = Direction.approximate(attacker.getDirection());
+        Direction approximate = Direction.approximate(attacker.getDirection().multiply(shellC.getSpeed()));
         switch (approximate) {
             case LEFT:
                 dx -= halfWidth;

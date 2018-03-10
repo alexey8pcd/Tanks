@@ -1,0 +1,21 @@
+мар 10, 2018 1:25:53 AM ru.ovcharov_alexey.tanks.v4.ui.forms.MainForm lambda$main$0
+INFO: Игра запущена
+мар 10, 2018 1:25:55 AM ru.ovcharov_alexey.tanks.v4.engine.Global logAndShowException
+SEVERE: Тип 1069547520 не существует
+java.lang.IllegalArgumentException: Тип 1069547520 не существует
+	at ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType.typeOf(UnitType.java:28)
+	at ru.ovcharov_alexey.tanks.v4.logic.campaign.Level.loadLevel(Level.java:68)
+	at ru.ovcharov_alexey.tanks.v4.logic.campaign.Campaign.loadFromFile(Campaign.java:67)
+	at ru.ovcharov_alexey.tanks.v4.ui.forms.CampaignChooseForm.getCampaigns(CampaignChooseForm.java:62)
+	at ru.ovcharov_alexey.tanks.v4.ui.forms.CampaignChooseForm.lambda$loadCampaigns$3(CampaignChooseForm.java:193)
+	at ru.ovcharov_alexey.tanks.v4.ui.forms.LoadGameForm.lambda$asyncAction$0(LoadGameForm.java:33)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:748)
+
+мар 10, 2018 1:25:55 AM ru.ovcharov_alexey.tanks.v4.ui.forms.LoadGameForm asyncAction
+SEVERE: java.lang.RuntimeException: JOptionPane: type must be one of JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.WARNING_MESSAGE, JOptionPane.QUESTION_MESSAGE or JOptionPane.PLAIN_MESSAGE
+мар 10, 2018 1:25:58 AM ru.ovcharov_alexey.tanks.v4.ui.forms.MainForm exit
+INFO: Завершаю игру
