@@ -38,8 +38,6 @@ public class StraigthMove extends AbstractMoveActionWithCollision {
                 movable.randomDirection();
             }
             return true;
-        } else {
-            movable.randomDirection();
         }
         return false;
     }

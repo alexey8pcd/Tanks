@@ -58,14 +58,13 @@ public abstract class AbstractMoveActionWithCollision implements MoveAction {
         return !collisionDetected;
     }
 
-
     /**
      * Вычислить желаемую позицию. Результат сохраняется в полях dLeftX и dTopY
      *
      * @param movable
      */
     protected void calculateDesirePosition(Movable movable) {
-        dLeftX = movable.getX() + movable.getDirection().getI();
-        dTopY = movable.getY() - movable.getDirection().getJ();
+        dLeftX = movable.getX() + movable.getDirection().getI() * movable.getSpeed();
+        dTopY = movable.getY() - movable.getDirection().getJ() * movable.getSpeed();
     }
 }

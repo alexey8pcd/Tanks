@@ -7,24 +7,24 @@ public class Vector2D {
 
     private static Vector2D NULL = new Vector2D(0, 0);
 
-    public static Vector2D create(Direction direction, float speed) {
+    public static Vector2D create(Direction direction) {
         float i = 0, j = 0;
         switch (direction) {
             case DOWN:
                 i = 0;
-                j = -speed;
+                j = -1;
                 break;
             case LEFT:
-                i = -speed;
+                i = -1;
                 j = 0;
                 break;
             case RIGHT:
-                i = speed;
+                i = 1;
                 j = 0;
                 break;
             case UP:
                 i = 0;
-                j = speed;
+                j = 1;
         }
         return new Vector2D(i, j);
     }

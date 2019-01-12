@@ -7,7 +7,6 @@ import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnit;
 import static ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitSpeed.*;
 import ru.ovcharov_alexey.tanks.v4.engine.units.battle.CombatUnitBuilder;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.UnitType;
-import ru.ovcharov_alexey.tanks.v4.engine.units.actions.SimpleSearchMove;
 import ru.ovcharov_alexey.tanks.v4.engine.units.actions.StraigthMove;
 
 /**
@@ -82,7 +81,7 @@ public class UnitFactory {
             case TANK:
                 return new CombatUnitBuilder().
                         setArmor(75).
-                        setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
+                        setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
                         setBreakingStrength(BREAK_ARMOR).
                         setMoveSpeed(NORMAL).
@@ -93,7 +92,7 @@ public class UnitFactory {
                         createCombatUnit();
             case FOCUSED_BLASTING:
                 return new CombatUnitBuilder().setArmor(0).
-                        setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
+                        setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_EXPLOSION).
                         setBreakingStrength(BREAK_ARMOR).
                         setMoveSpeed(FAST).
@@ -104,7 +103,7 @@ public class UnitFactory {
             case DOUBLE_WEAPON_VEHICLE:
                 CombatUnit unit = new CombatUnitBuilder().
                         setArmor(30).
-                        setMoveAction(MoveActionFactory.createMoveAction(SimpleSearchMove.class.getCanonicalName())).
+                        setMoveAction(MoveActionFactory.createMoveAction(StraigthMove.class.getCanonicalName())).
                         setAttackAction(AttackActionFactory.UNIT_ATTACK_ACTION_WITH_SHELLS).
                         setBreakingStrength(BREAK_ARMOR).
                         setMoveSpeed(NORMAL).

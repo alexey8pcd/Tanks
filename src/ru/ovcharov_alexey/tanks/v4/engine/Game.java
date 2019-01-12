@@ -543,6 +543,8 @@ public class Game implements Runnable {
                     if (s.isCritical()) {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;
                     }
+                    float ds = s.getSpeed() / Shell.SHELL_SPEED;
+                    damage *= ds;
                     playerUnit.decreaseHealth(damage);
                     int realDamage = playerUnit.calculateRealDamage(damage);
                     LOGGER.info("Машина игрока получает " + realDamage + " урона от взрыва снаряда ");
@@ -573,6 +575,8 @@ public class Game implements Runnable {
                     if (s.isCritical()) {
                         damage *= Global.CRITICAL_DAMAGE_FACTOR;
                     }
+                    float ds = s.getSpeed() / Shell.SHELL_SPEED;
+                    damage *= ds;
                     boolean fullHealth = enemy.getHealth() == enemy.getMaxHealth();
                     enemy.decreaseHealth(damage);
                     if (enemy.isDead() && fullHealth) {
@@ -607,7 +611,9 @@ public class Game implements Runnable {
         if (enemiesCanMove) {
             for (CombatUnit enemy : enemies) {
 
-                enemy.move(playerUnit.getPoint(), scene);
+                if (!enemy.move(playerUnit.getPoint(), scene)) {
+                    enemy.randomDirection();
+                }
             }
 //            enemies.stream().map((unit) -> {
 ////                changeDirectionOfUnitIfCanNotMove(unit);
@@ -626,14 +632,13 @@ public class Game implements Runnable {
         if (directionOfFire != null) {
             Direction approximate = Direction.approximate(directionOfFire);
             Direction orto = approximate.getOrto();
-            unit.setDirection(Vector2D.create(orto, unit.getSpeed()));
+            unit.setDirection(Vector2D.create(orto));
             unit.decreaseFireDetectTime();
         } else {
             final int chanceDirection = 7;
             final int restriction = Direction.values().length;
             if (RANDOM.nextInt(1000) < chanceDirection) {
-                Vector2D vector2D = Vector2D.create(
-                        Direction.values()[RANDOM.nextInt(restriction)], unit.getSpeed());
+                Vector2D vector2D = Vector2D.create(Direction.values()[RANDOM.nextInt(restriction)]);
                 unit.setDirection(vector2D);
             }
         }

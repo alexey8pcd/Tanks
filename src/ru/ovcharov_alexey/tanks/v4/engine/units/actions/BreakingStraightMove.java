@@ -3,14 +3,17 @@ package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;
 import java.util.EnumSet;
+import ru.ovcharov_alexey.tanks.v4.engine.Global;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Direction;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryShape;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Shape;
+import ru.ovcharov_alexey.tanks.v4.engine.geometry.Vector2D;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Movable;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Breaking;
 import ru.ovcharov_alexey.tanks.v4.engine.units.abstraction.Killable;
+import ru.ovcharov_alexey.tanks.v4.engine.units.shell.Shell;
 
 /**
  *
@@ -75,6 +78,8 @@ public class BreakingStraightMove extends AbstractMoveActionWithCollision {
                 }
             }
             movable.setLocation(dLeftX, dTopY);
+            float dSpeed = (float)(movable.getSpeed() * movable.getSpeed() / 2 * Global.SPEED_SLOW_COEFF);
+            movable.setSpeed(movable.getSpeed() - dSpeed);//скорость уменьшается со временем
             return true;
         }
         ((Killable) movable).kill();

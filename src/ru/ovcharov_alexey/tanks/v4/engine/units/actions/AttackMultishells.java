@@ -27,7 +27,7 @@ public class AttackMultishells implements AttackAction {
         int halfHeight = attacker.getHeight() / 2;
         int dx = halfWidth;
         int dy = halfHeight;
-        Direction approximate = Direction.approximate(attacker.getDirection().multiply(shellC.getSpeed()));
+        Direction approximate = Direction.approximate(attacker.getDirection());
         switch (approximate) {
             case LEFT:
                 dx -= halfWidth;
@@ -43,6 +43,13 @@ public class AttackMultishells implements AttackAction {
         }
         float locX = attacker.getX() + dx;
         float locY = attacker.getY() + dy;
+        shellC.setSpeed(Shell.SHELL_SPEED);
+        shellDown.setSpeed(Shell.SHELL_SPEED);
+        shellDown2.setSpeed(Shell.SHELL_SPEED);
+        shellUp.setSpeed(Shell.SHELL_SPEED);
+        shellUp2.setSpeed(Shell.SHELL_SPEED);
+        
+        
         shellC.setLocation(locX, locY);
         shellDown.setLocation(locX, locY);
         shellDown2.setLocation(locX, locY);
@@ -61,7 +68,7 @@ public class AttackMultishells implements AttackAction {
         shellUp.setDamage(attacker.getDamage() / 2);
         shellUp2.setDamage(attacker.getDamage() / 2);
 
-        shellC.setDirection(Vector2D.create(approximate, Shell.SHELL_SPEED));
+        shellC.setDirection(Vector2D.create(approximate));
 
         double alphaUp, alphaDown, alphaUp2, alphaDown2;
         alphaUp = Math.PI - ANGLE;

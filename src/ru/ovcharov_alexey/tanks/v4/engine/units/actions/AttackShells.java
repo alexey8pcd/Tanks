@@ -17,6 +17,7 @@ public class AttackShells implements AttackAction {
     @Override
     public void attack(CombatUnit attacker, Collection<DamageDealer> container, CombatUnit attackable) {
         Shell shell = ShellPool.getInstance().take();
+        shell.setSpeed(Shell.SHELL_SPEED);
         int halfWidth = attacker.getWidth() / 2;
         int halfHeight = attacker.getHeight() / 2;
         int dx = halfWidth;
@@ -38,7 +39,7 @@ public class AttackShells implements AttackAction {
         }
         shell.setLocation(attacker.getX() + dx, attacker.getY() + dy);
         shell.setBreakingStrength(attacker.getBreakingStrength());
-        shell.setDirection(Vector2D.create(approximate, shell.getSpeed()));
+        shell.setDirection(Vector2D.create(approximate));
         int damage = attacker.getDamage();
         boolean isCrit = Global.RANDOM.nextInt(100) < attacker.getCriticalDamageChance();
         shell.setCritical(isCrit);

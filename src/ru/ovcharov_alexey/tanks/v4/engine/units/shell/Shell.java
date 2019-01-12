@@ -26,7 +26,7 @@ public class Shell extends RelocatingShape
     private BreakingStrength breakingStrength;
 
     public static final int SHELL_SIZE = 4;
-    public static final float SHELL_SPEED = 0.5f;
+    public static final float SHELL_SPEED = 2f;
     //снаряд не может пролететь через лес, кирпич и броню, но может их разрушить
     private static final MoveAction MOVE_ACTION = new BreakingStraightMove(
             EnumSet.of(Material.METAL, Material.BRICKS));

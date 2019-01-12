@@ -1,6 +1,5 @@
 package ru.ovcharov_alexey.tanks.v4.engine.units.actions;
 
-import ru.ovcharov_alexey.tanks.v4.engine.GeometryMap;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.GeometryPoint;
 import ru.ovcharov_alexey.tanks.v4.engine.geometry.Scene;
 import ru.ovcharov_alexey.tanks.v4.engine.physics.Material;

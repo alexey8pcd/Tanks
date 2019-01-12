@@ -48,6 +48,10 @@ public class Global {
     private static boolean audio = true;
     private static String pathToCompaniesFolder = ".";
     private static Statistics statistics = Statistics.empty();
+    /**
+     * Коэффициент аэродинамического сопротивления
+     */
+    public static double SPEED_SLOW_COEFF = 0.002;
 
     static {
         UIManager.put("OptionPane.yesButtonText", "Да");

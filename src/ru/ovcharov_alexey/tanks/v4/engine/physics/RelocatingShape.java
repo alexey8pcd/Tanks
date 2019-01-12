@@ -21,7 +21,7 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
             int width, int height, Direction direction, MoveAction moveAction) {
         super(x, y, width, height);
         this.speed = speed;
-        this.direction = Vector2D.create(direction, speed);
+        this.direction = Vector2D.create(direction);
         this.moveAction = moveAction;
     }
 
@@ -29,7 +29,7 @@ public abstract class RelocatingShape extends GeometryShape implements Movable {
             Direction direction, MoveAction moveAction) {
         super(x, y, size);
         this.speed = speed;
-        this.direction = Vector2D.create(direction, speed);
+        this.direction = Vector2D.create(direction);
         this.moveAction = moveAction;
     }
 

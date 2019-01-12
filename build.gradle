@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+sourceSets.main.java.srcDirs = ['src']
+
+manifest {
+    attributes 'Implementation-Title': 'Tanks 4',
+            'Implementation-Version': version,
+            'Main-Class': 'ru.ovcharov_alexey.tanks.v4.ui.forms.MainForm.java'
+}
+
+
+repositories {
+    mavenCentral()
+}

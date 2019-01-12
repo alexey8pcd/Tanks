@@ -16,7 +16,7 @@ public enum Direction {
 
     public static Vector2D random(float speed) {
         int r = Global.RANDOM.nextInt(4);
-        return Vector2D.create(values()[r], speed);
+        return Vector2D.create(values()[r]);
     }
 
     public static Direction approximate(Vector2D direction) {
@@ -36,7 +36,7 @@ public enum Direction {
     private final int index;
 
     public Vector2D toVector(float speed) {
-        return Vector2D.create(this, speed);
+        return Vector2D.create(this);
     }
 
     public Direction getOrto() {

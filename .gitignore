@@ -1,5 +1,10 @@
-/Tanks 4/nbproject/private/
-/Tanks 4/build/
-/Tanks 4/dist/
 /settings.dat
 /game.log
+/.gradle
+/.idea
+*.iml
+/build
+/out
+/nbproject
+/dist
+/build
